@@ -1,0 +1,32 @@
+# Docker Composeのバージョン
+version: "3.7"
+
+# サービスの定義
+services:
+  # "front"というサービスの設定
+  react-vite-pair-money:
+    # イメージのビルド情報
+    container_name: react-vite-pair-money-img
+    build:
+      # Dockerイメージをビルドするためのコンテキスト
+      context: .
+      # Dockerfileの場所
+      dockerfile: Dockerfile
+
+    # ボリュームのマウント設定
+    volumes:
+      # ホストの"./front"ディレクトリをコンテナの"/front"にマウント
+      - ./front:/react-vite-pair-money
+
+    # 作業ディレクトリの設定
+    working_dir: /react-vite-pair-money
+
+    # コンテナ内で実行されるコマンド
+    command: node
+
+    # 公開用のポート指定。ホスト側:コンテナ側
+    ports:
+      - "5173:5173"
+
+    # ttyを有効にする（コンテナと対話的なセッションを可能にする）
+    tty: true
