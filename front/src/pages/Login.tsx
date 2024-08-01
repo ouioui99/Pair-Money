@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import TextFormInput from "../components/TextFormInput";
+import { Link } from "react-router-dom";
 
 export default function Login() {
   const [email, setEmail] = useState<string>("");
@@ -55,6 +56,12 @@ export default function Login() {
             </button>
           </div>
         </form>
+        <p className="text-sm text-center text-gray-600">
+          アカウントをお持ちでないですか?
+          <Link to="/signup" className="text-indigo-600 hover:text-indigo-500">
+            サインアップ
+          </Link>
+        </p>
       </div>
     </div>
   );
