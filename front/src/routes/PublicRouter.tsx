@@ -1,4 +1,4 @@
-import { Route, Navigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { UserContext } from "../contexts/UserContextProvider";
 import { useContext } from "react";
 

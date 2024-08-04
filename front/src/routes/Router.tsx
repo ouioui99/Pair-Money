@@ -5,6 +5,11 @@ import Home from "../pages/Home";
 import Signup from "../pages/Signup";
 import PrivateRouter from "./PrivateRouter";
 import PublicRouter from "./PublicRouter";
+import CustomBottomNavigation from "../components/CustomBottomNavigation";
+import SpendingSummary from "../pages/SpendingSummary";
+import FixedCostsList from "../pages/FixedCostsList";
+import Mypage from "../pages/Mypage";
+import ReceiptScanning from "../pages/ReceiptScanning";
 
 export default function Router() {
   return (
@@ -15,6 +20,43 @@ export default function Router() {
           element={
             <PrivateRouter>
               <Home />
+              <CustomBottomNavigation />
+            </PrivateRouter>
+          }
+        />
+        <Route
+          path="/spending-summary"
+          element={
+            <PrivateRouter>
+              <SpendingSummary />
+              <CustomBottomNavigation />
+            </PrivateRouter>
+          }
+        />
+        <Route
+          path="/mypage"
+          element={
+            <PrivateRouter>
+              <Mypage />
+              <CustomBottomNavigation />
+            </PrivateRouter>
+          }
+        />
+        <Route
+          path="/receipt-scanning"
+          element={
+            <PrivateRouter>
+              <ReceiptScanning />
+              <CustomBottomNavigation />
+            </PrivateRouter>
+          }
+        />
+        <Route
+          path="/fixed-costs-list"
+          element={
+            <PrivateRouter>
+              <FixedCostsList />
+              <CustomBottomNavigation />
             </PrivateRouter>
           }
         />

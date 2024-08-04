@@ -43,8 +43,6 @@ export const login = (email: string, password: string): Promise<User> => {
 export const initialAuthentication = (): Promise<User> => {
   return new Promise((resolve) => {
     onAuthStateChanged(auth, (user) => {
-      console.log(user);
-
       if (user) {
         resolve(user);
       }
