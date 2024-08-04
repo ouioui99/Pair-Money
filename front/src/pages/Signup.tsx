@@ -1,17 +1,29 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import TextFormInput from "../components/TextFormInput";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { UserContext } from "../contexts/UserContextProvider";
+import { singup } from "../firebase/api/user/user";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const userContext = useContext(UserContext);
+  const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // サインアップロジックをここに追加
-    console.log("Email:", email);
-    console.log("Password:", password);
+    if (userContext) {
+      singup(email, password)
+        .then((result) => {
+          userContext.setUser(result);
+          navigate("/");
+        })
+        .catch((error) => {
+          console.log(error.errorCode);
+        });
+    }
+    e.preventDefault();
   };
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">

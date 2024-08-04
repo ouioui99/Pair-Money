@@ -13,11 +13,11 @@ type Props = {
 export default function TextFormInput(props: Props) {
   return (
     <input
-      id="email"
-      name="email"
-      type="email"
-      autoComplete="email"
-      required
+      id={props.id}
+      name={props.name}
+      type={props.type}
+      autoComplete={props.autoComplete}
+      required={props.required}
       value={props.value}
       onChange={(e: ChangeEvent<HTMLInputElement>) =>
         props.onChange(e.target.value)

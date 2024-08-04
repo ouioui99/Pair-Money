@@ -1,11 +1,26 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import TextFormInput from "../components/TextFormInput";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { UserContext } from "../contexts/UserContextProvider";
+import { login, singup } from "../firebase/api/user/user";
 
 export default function Login() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const userContext = useContext(UserContext);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    if (userContext) {
+      login(email, password)
+        .then((result) => {
+          userContext.setUser(result);
+          navigate("/");
+        })
+        .catch((error) => {
+          console.log(error.errorCode);
+        });
+    }
     e.preventDefault();
   };
   return (
