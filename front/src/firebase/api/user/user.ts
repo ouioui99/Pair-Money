@@ -40,13 +40,13 @@ export const login = (email: string, password: string): Promise<User> => {
   });
 };
 
-export const initialAuthentication = (): Promise<User> => {
+export const initialAuthentication = (): Promise<User | null> => {
   return new Promise((resolve) => {
     onAuthStateChanged(auth, (user) => {
-      console.log(user);
-
       if (user) {
         resolve(user);
+      } else {
+        resolve(null);
       }
     });
   });
