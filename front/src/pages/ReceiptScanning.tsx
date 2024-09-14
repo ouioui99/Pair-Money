@@ -31,10 +31,12 @@ export default function ReceiptScanning() {
       />
       <button
         type="button"
-        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text- p-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         style={{
+          width: "70px",
+          height: "70px",
           position: "absolute",
-          top: "10px", // 上から10pxの位置に配置
+          top: "550px",
           zIndex: 10, // ボタンを前面に表示
         }}
         onClick={() => {
@@ -47,19 +49,10 @@ export default function ReceiptScanning() {
         <IoCamera className="w-5 h-5" />
         <span className="sr-only">Take photo</span>
       </button>
-      <button
-        style={{}}
-        onClick={() => {
-          if (camera.current) {
-            const photo = camera.current.takePhoto();
-            setImage(photo as string);
-          }
-        }}
-      >
-        Take photo
-      </button>
     </div>
   ) : (
-    <PhotoResult img={image} />
+    <>
+      <PhotoResult img={image} setImage={setImage} />
+    </>
   );
 }

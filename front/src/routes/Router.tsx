@@ -47,7 +47,7 @@ export default function Router() {
           element={
             <PrivateRouter>
               <ReceiptScanning />
-              <CustomBottomNavigation />
+              {/* <CustomBottomNavigation /> */}
             </PrivateRouter>
           }
         />
