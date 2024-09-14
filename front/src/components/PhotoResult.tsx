@@ -1,4 +1,5 @@
 import React, { Dispatch, SetStateAction } from "react";
+import { analyzeImage } from "../googleCloud/api/cloudVision";
 
 type Props = {
   setImage: Dispatch<SetStateAction<string | undefined>>;
@@ -37,7 +38,11 @@ export default function PhotoResult(props: Props) {
             width: "150px",
             height: "50px",
           }}
-          onClick={() => {}}
+          onClick={() => {
+            if (props.img) {
+              analyzeImage(props.img);
+            }
+          }}
         >
           読み込み
         </button>
