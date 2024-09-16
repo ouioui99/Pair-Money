@@ -1,5 +1,6 @@
 import React, { Dispatch, SetStateAction } from "react";
 import { analyzeImage } from "../googleCloud/api/cloudVision";
+import { transformApiData } from "../util/apiUtils";
 
 type Props = {
   setImage: Dispatch<SetStateAction<string | undefined>>;
@@ -38,9 +39,12 @@ export default function PhotoResult(props: Props) {
             width: "150px",
             height: "50px",
           }}
-          onClick={() => {
+          onClick={async () => {
             if (props.img) {
-              analyzeImage(props.img);
+              const result = await analyzeImage(props.img);
+              console.log(result);
+
+              transformApiData(result);
             }
           }}
         >

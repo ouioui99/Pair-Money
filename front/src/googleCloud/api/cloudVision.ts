@@ -25,9 +25,9 @@ export const analyzeImage = async (image: string) => {
 
   try {
     const response = await axios.post(url, request);
-    console.log(response.data);
+    console.log(response.data.responses[0]);
 
-    return response.data;
+    return response.data.responses[0];
   } catch (error) {
     console.error("Error calling the Vision API", error);
     return;
