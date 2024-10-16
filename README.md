@@ -77,7 +77,7 @@
 - amount
   - id
   - user_id
-  - type_id
+  - money_types_id
   - date
   - amount
 - fiexd_cost
