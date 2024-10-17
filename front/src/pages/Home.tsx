@@ -1,13 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import FixedCostsInputForm from "../components/FixedCostsInputForm";
 
 export default function Home() {
   return (
-    <div className="w-full h-20 flex items-center justify-center">
-      <h1>Home</h1>
-      <div>
-        <Link to="/login">login</Link> | <Link to="/signup">About</Link>
-      </div>
+    <div className=" flex items-center justify-center w-100">
+      <FixedCostsInputForm></FixedCostsInputForm>
     </div>
   );
 }
