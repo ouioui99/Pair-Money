@@ -1,103 +1,75 @@
-import React, { ChangeEvent, FormEvent, useState } from "react";
+import React, { useState } from "react";
 
-// フォームデータの型定義
-interface FormData {
-  amount: string;
-  date: string;
-  category: string;
-}
+type FixedCostsForm = {
+  onSubmit: (data: { amount: number; category: string }) => void;
+};
 
-export default function FixedCostsInputForm() {
-  // 初期状態として空の値をセット
-  const [formData, setFormData] = useState<FormData>({
-    amount: "",
-    date: "",
-    category: "",
-  });
+const FixedCostsInputForm: React.FC<FixedCostsForm> = ({ onSubmit }) => {
+  const [amount, setAmount] = useState<number | "">("");
+  const [category, setCategory] = useState<string>("");
 
-  // 入力変更を処理する関数
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  // フォーム送信を処理する関数
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Submitted Data:", formData);
-    // ここに送信処理を追加
+    if (amount && category) {
+      onSubmit({ amount: Number(amount), category });
+      setAmount("");
+      setCategory("");
+    }
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white shadow-md rounded-lg">
-      <h2 className="text-2xl font-bold mb-4">Expense Form</h2>
-      <form onSubmit={handleSubmit}>
-        {/* Amount Input */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-2" htmlFor="amount">
-            Amount
-          </label>
-          <input
-            type="number"
-            id="amount"
-            name="amount"
-            value={formData.amount}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter amount"
-          />
-        </div>
+    <form
+      onSubmit={handleSubmit}
+      className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md"
+    >
+      <div className="mb-4">
+        <label
+          htmlFor="amount"
+          className="block text-gray-700 font-medium mb-2"
+        >
+          金額
+        </label>
+        <input
+          type="number"
+          id="amount"
+          value={amount}
+          onChange={(e) => setAmount(e.target.valueAsNumber || "")}
+          className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
+          placeholder="例: 1000"
+          required
+        />
+      </div>
 
-        {/* Date Input */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-2" htmlFor="date">
-            Date
-          </label>
-          <input
-            type="date"
-            id="date"
-            name="date"
-            value={formData.date}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
+      <div className="mb-4">
+        <label
+          htmlFor="category"
+          className="block text-gray-700 font-medium mb-2"
+        >
+          カテゴリー
+        </label>
+        <select
+          id="category"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
+          required
+        >
+          <option value="">選択してください</option>
+          <option value="食費">食費</option>
+          <option value="交通費">交通費</option>
+          <option value="娯楽">娯楽</option>
+          <option value="その他">その他</option>
+        </select>
+      </div>
 
-        {/* Category Input */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-2" htmlFor="category">
-            Category
-          </label>
-          <select
-            id="category"
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">Select category</option>
-            <option value="food">Food</option>
-            <option value="transport">Transport</option>
-            <option value="entertainment">Entertainment</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-
-        {/* Submit Button */}
-        <div>
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300"
-          >
-            Submit
-          </button>
-        </div>
-      </form>
-    </div>
+      <button
+        type="submit"
+        className="w-full bg-indigo-500 text-white py-2 px-4 rounded-md hover:bg-indigo-600"
+      >
+        登録
+      </button>
+    </form>
   );
-}
+};
+
+export default FixedCostsInputForm;
