@@ -103,7 +103,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit }) => {
         onClick={handleCameraClick}
         className="w-full mt-7 bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600"
       >
-        カメラで追加する
+        カメラでレシートを読み込む
       </button>
     </form>
   );

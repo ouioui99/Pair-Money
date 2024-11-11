@@ -1,6 +1,7 @@
 import React, { Dispatch, SetStateAction } from "react";
 import { analyzeImage } from "../googleCloud/api/cloudVision";
 import { transformApiData } from "../util/apiUtils";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   setImage: Dispatch<SetStateAction<string | undefined>>;
@@ -8,6 +9,7 @@ type Props = {
 };
 
 export default function PhotoResult(props: Props) {
+  const navigate = useNavigate();
   return (
     <div className="h-dvh">
       <div className="h-4/5">
@@ -42,9 +44,9 @@ export default function PhotoResult(props: Props) {
           onClick={async () => {
             if (props.img) {
               const result = await analyzeImage(props.img);
-              console.log(result);
+              const totalAmount = transformApiData(result);
 
-              transformApiData(result);
+              navigate("/");
             }
           }}
         >
