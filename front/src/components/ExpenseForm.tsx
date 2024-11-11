@@ -1,10 +1,13 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 type ExpenseFormProps = {
   onSubmit: (data: { amount: number; date: string; category: string }) => void;
 };
 
 const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit }) => {
+  const navigate = useNavigate();
+
   const today = new Date();
   const formattedToday = `${today.getFullYear()}-${String(
     today.getMonth() + 1
@@ -21,6 +24,12 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit }) => {
       setDate(formattedToday); // フォーム送信後も日付を今日にリセット
       setCategory("");
     }
+  };
+
+  // カメラを起動する処理
+  const handleCameraClick = (e: React.FormEvent) => {
+    e.preventDefault();
+    navigate("/receipt-scanning");
   };
 
   return (
@@ -87,6 +96,14 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit }) => {
         className="w-full bg-indigo-500 text-white py-2 px-4 rounded-md hover:bg-indigo-600"
       >
         登録
+      </button>
+
+      <button
+        type="button"
+        onClick={handleCameraClick}
+        className="w-full mt-7 bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600"
+      >
+        カメラで追加する
       </button>
     </form>
   );

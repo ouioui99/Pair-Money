@@ -10,6 +10,7 @@ import SpendingSummary from "../pages/SpendingSummary";
 import FixedCostsList from "../pages/FixedCostsList";
 import Mypage from "../pages/Mypage";
 import ReceiptScanning from "../pages/ReceiptScanning";
+import SpendingIndex from "../pages/SpendingIndex";
 
 export default function Router() {
   return (
@@ -48,6 +49,15 @@ export default function Router() {
             <PrivateRouter>
               <ReceiptScanning />
               {/* <CustomBottomNavigation /> */}
+            </PrivateRouter>
+          }
+        />
+        <Route
+          path="/spending-index"
+          element={
+            <PrivateRouter>
+              <SpendingIndex />
+              <CustomBottomNavigation />
             </PrivateRouter>
           }
         />

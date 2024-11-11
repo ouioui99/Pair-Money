@@ -25,7 +25,7 @@ const MoneyTypesInputForm: React.FC = () => {
   return (
     <div className="min-h-screen min-w-full bg-gray-50 p-6">
       <div className="max-w-md mx-auto bg-white shadow-md rounded-lg p-6">
-        <h2 className="text-xl font-semibold mb-4">Register New Type</h2>
+        <h2 className="text-xl font-semibold mb-4">使用金額種類画面</h2>
 
         {/* フォーム */}
         <form onSubmit={handleSubmit}>
