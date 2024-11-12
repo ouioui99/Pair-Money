@@ -1,14 +1,30 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { analyzeImage } from "../googleCloud/api/cloudVision";
 import { transformApiData } from "../util/apiUtils";
 import { useNavigate } from "react-router-dom";
+import PopupExample from "./PopupExample";
 
 type Props = {
   setImage: Dispatch<SetStateAction<string | undefined>>;
   img?: string;
 };
 
+interface TransformResult {
+  totalAmount?: number;
+  error?: { title: string; message: string };
+}
+
 export default function PhotoResult(props: Props) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<
+    { title: string; message: string } | undefined
+  >();
+
+  const togglePopup = () => {
+    console.log(isOpen);
+
+    setIsOpen(!isOpen);
+  };
   const navigate = useNavigate();
   return (
     <div className="h-dvh">
@@ -44,15 +60,38 @@ export default function PhotoResult(props: Props) {
           onClick={async () => {
             if (props.img) {
               const result = await analyzeImage(props.img);
-              const totalAmount = transformApiData(result);
+              const transformResult: TransformResult = transformApiData(result);
 
-              navigate("/");
+              console.log(transformResult);
+
+              if (transformResult.error) {
+                setIsOpen(true);
+                setErrorMessage(transformResult.error);
+              } else {
+                navigate("/", {
+                  state: { totalAmount: transformResult.totalAmount },
+                });
+              }
             }
           }}
         >
           読み込み
         </button>
       </div>
+      {isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded shadow-lg max-w-sm w-full">
+            <h2 className="text-xl font-bold mb-4">{errorMessage?.title}</h2>
+            <p className="mb-4">{errorMessage?.message}</p>
+            <button
+              className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+              onClick={togglePopup}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
