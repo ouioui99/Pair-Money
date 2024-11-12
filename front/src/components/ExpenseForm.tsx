@@ -1,18 +1,27 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+interface TransformResult {
+  totalAmount?: number;
+  error?: { title: string; message: string };
+}
+
 type ExpenseFormProps = {
   onSubmit: (data: { amount: number; date: string; category: string }) => void;
+  totalAmount?: number;
 };
 
-const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit }) => {
+const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, totalAmount }) => {
   const navigate = useNavigate();
 
   const today = new Date();
   const formattedToday = `${today.getFullYear()}-${String(
     today.getMonth() + 1
   ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
-  const [amount, setAmount] = useState<number | "">("");
+  // transformResult.totalAmountが定義されていればその値を初期値とし、なければ空文字を設定
+  const [amount, setAmount] = useState<number | "">(
+    totalAmount !== undefined ? totalAmount : ""
+  );
   const [date, setDate] = useState<string>(formattedToday); // 初期状態として今日の日付を設定
   const [category, setCategory] = useState<string>("");
 

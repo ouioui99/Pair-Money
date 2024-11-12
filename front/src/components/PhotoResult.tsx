@@ -16,8 +16,8 @@ interface TransformResult {
 
 export default function PhotoResult(props: Props) {
   const [isOpen, setIsOpen] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<
-    { title: string; message: string } | undefined
+  const [transformResult, setTransformResult] = useState<
+    TransformResult | undefined
   >();
 
   const togglePopup = () => {
@@ -26,6 +26,14 @@ export default function PhotoResult(props: Props) {
     setIsOpen(!isOpen);
   };
   const navigate = useNavigate();
+
+  const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    const intValue = Number(value);
+    if (!isNaN(intValue)) {
+      setTransformResult({ totalAmount: intValue });
+    }
+  };
   return (
     <div className="h-dvh">
       <div className="h-4/5">
@@ -62,16 +70,8 @@ export default function PhotoResult(props: Props) {
               const result = await analyzeImage(props.img);
               const transformResult: TransformResult = transformApiData(result);
 
-              console.log(transformResult);
-
-              if (transformResult.error) {
-                setIsOpen(true);
-                setErrorMessage(transformResult.error);
-              } else {
-                navigate("/", {
-                  state: { totalAmount: transformResult.totalAmount },
-                });
-              }
+              setIsOpen(true);
+              setTransformResult(transformResult);
             }
           }}
         >
@@ -80,15 +80,57 @@ export default function PhotoResult(props: Props) {
       </div>
       {isOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded shadow-lg max-w-sm w-full">
-            <h2 className="text-xl font-bold mb-4">{errorMessage?.title}</h2>
-            <p className="mb-4">{errorMessage?.message}</p>
-            <button
-              className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-              onClick={togglePopup}
-            >
-              Close
-            </button>
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+            {transformResult?.error ? (
+              <>
+                <h2 className="text-2xl font-semibold mb-4 text-red-600">
+                  {transformResult?.error.title}
+                </h2>
+                <p className="mb-4 text-gray-700">
+                  {transformResult?.error.message}
+                </p>
+                <button
+                  className="w-full px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
+                  onClick={togglePopup}
+                >
+                  Close
+                </button>
+              </>
+            ) : (
+              <>
+                <h2 className="text-2xl font-semibold mb-4 text-green-600">
+                  合計金額
+                </h2>
+                <p className="mb-2 text-gray-700">
+                  認識された合計金額を編集できます:
+                </p>
+                <input
+                  type="text"
+                  value={transformResult?.totalAmount}
+                  onChange={handleAmountChange}
+                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-200"
+                />
+                <div className="flex gap-2 mt-4">
+                  <button
+                    className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+                    onClick={() => {
+                      navigate("/", {
+                        state: { totalAmount: transformResult?.totalAmount },
+                      });
+                      togglePopup();
+                    }}
+                  >
+                    読み込み
+                  </button>
+                  <button
+                    className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+                    onClick={togglePopup}
+                  >
+                    再撮影
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
