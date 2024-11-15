@@ -2,6 +2,8 @@ import React from "react";
 
 interface Props {
   fixedCosts: FixedCostType[];
+  handleEdit: (index: number) => void;
+  handleDelete: (index: number) => void;
 }
 
 interface FixedCostType {
@@ -9,29 +11,46 @@ interface FixedCostType {
   category: string;
 }
 
-export default function FixedCostsIndexList(items: Props) {
+export default function FixedCostsIndexList(props: Props) {
   return (
     <div>
       <div>
-        <header className="p-4 border-b ">
+        <header className="p-4 border-b">
           <h1 className="text-xl font-semibold">固定費一覧</h1>
         </header>
 
         {/* Responsive Table */}
         <div className="overflow-hidden">
+          {/* Desktop View */}
           <table className="min-w-full hidden md:table table-auto">
             <thead>
               <tr className="bg-gray-100 text-left">
                 <th className="p-4">金額</th>
                 <th className="p-4">カテゴリー</th>
+                <th className="p-4">操作</th>
               </tr>
             </thead>
             <tbody>
-              {items.fixedCosts.map((fixedCost, index) => (
+              {props.fixedCosts.map((fixedCost, index) => (
                 <tr key={index} className="border-t hover:bg-gray-200">
-                  {/* ホバー時の色を設定 */}
                   <td className="p-4 whitespace-nowrap">{fixedCost.amount}</td>
                   <td className="p-4">{fixedCost.category}</td>
+                  <td className="p-4">
+                    {/* 編集ボタン */}
+                    <button
+                      onClick={() => props.handleEdit(index)}
+                      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition mr-2"
+                    >
+                      編集
+                    </button>
+                    {/* 削除ボタン */}
+                    <button
+                      onClick={() => props.handleDelete(index)}
+                      className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
+                    >
+                      削除
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -39,10 +58,10 @@ export default function FixedCostsIndexList(items: Props) {
 
           {/* Mobile View */}
           <div className="block md:hidden">
-            {items.fixedCosts.map((fixedCost, index) => (
+            {props.fixedCosts.map((fixedCost, index) => (
               <div
                 key={index}
-                className="border rounded-lg p-4 bg-white shadow-md" // ホバー時の色を設定
+                className="border rounded-lg p-4 bg-white shadow-md mb-4"
               >
                 <div className="flex justify-between mb-2">
                   <span className="font-semibold">金額</span>
@@ -51,6 +70,22 @@ export default function FixedCostsIndexList(items: Props) {
                 <div className="flex justify-between mb-2">
                   <span className="font-semibold">カテゴリー</span>
                   <span>{fixedCost.category}</span>
+                </div>
+                <div className="flex justify-end mt-2 space-x-2">
+                  {/* 編集ボタン */}
+                  <button
+                    onClick={() => props.handleEdit(index)}
+                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+                  >
+                    編集
+                  </button>
+                  {/* 削除ボタン */}
+                  <button
+                    onClick={() => props.handleDelete(index)}
+                    className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
+                  >
+                    削除
+                  </button>
                 </div>
               </div>
             ))}

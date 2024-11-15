@@ -21,7 +21,6 @@ export default function Router() {
           element={
             <PrivateRouter>
               <Home />
-              <CustomBottomNavigation />
             </PrivateRouter>
           }
         />

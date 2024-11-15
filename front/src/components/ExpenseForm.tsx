@@ -46,7 +46,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, totalAmount }) => {
       onSubmit={handleSubmit}
       className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md"
     >
-      <div className="mb-4">
+      <div className="mb-4 font-bold">
         <label
           htmlFor="amount"
           className="block text-gray-700 font-medium mb-2"
