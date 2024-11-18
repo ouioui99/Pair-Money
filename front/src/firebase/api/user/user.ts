@@ -53,11 +53,13 @@ export const initialAuthentication = (): Promise<User | null> => {
 };
 
 export const logout = () => {
-  signOut(auth)
-    .then(() => {
-      // Sign-out successful.
-    })
-    .catch((error) => {
-      // An error happened.
-    });
+  return new Promise((resolve) => {
+    signOut(auth)
+      .then(() => {
+        resolve("");
+      })
+      .catch((error) => {
+        resolve(error);
+      });
+  });
 };
