@@ -3,6 +3,8 @@ import TextFormInput from "../components/TextFormInput";
 import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../contexts/UserContextProvider";
 import { singup } from "../firebase/api/user/user";
+import { insertData } from "../firebase/firestore";
+import firebase from "firebase/compat/app";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
@@ -16,6 +18,14 @@ export default function Signup() {
     if (userContext) {
       singup(email, password)
         .then((result) => {
+          const user = {
+            //name: result?.name,
+            uid: result.uid,
+            created_at: firebase.firestore.FieldValue.serverTimestamp(),
+          };
+
+          insertData("users", user);
+
           userContext.setUser(result);
           navigate("/");
         })
