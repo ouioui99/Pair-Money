@@ -3,6 +3,7 @@ import MoneyTypeIndexList from "../components/MoneyTypeIndexList";
 import SpendingCategoriesInputForm from "../components/SpendingCategoriesInputForm";
 import { getData, insertData, realtimeGetter } from "../firebase/firestore";
 import { UserContext } from "../contexts/UserContextProvider";
+import { FieldValue, serverTimestamp } from "firebase/firestore";
 
 interface Data {
   category: string;
@@ -11,6 +12,8 @@ interface Data {
 interface CategoryData {
   category: string;
   uid: string;
+  createdAt: FieldValue;
+  updatedAt: FieldValue;
 }
 
 export default function SpendingCategory() {
@@ -21,6 +24,8 @@ export default function SpendingCategory() {
       const categoryInputValue: CategoryData = {
         category: data.category,
         uid: userContext.user.uid,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
       };
 
       insertData("spendingCategories", categoryInputValue);
