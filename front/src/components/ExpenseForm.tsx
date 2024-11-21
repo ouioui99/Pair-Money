@@ -1,17 +1,31 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { CategorySelect } from "./CategorySelect";
+import { FieldValue } from "firebase/firestore";
 
 interface TransformResult {
   totalAmount?: number;
   error?: { title: string; message: string };
 }
 
+interface CategoryData {
+  category: string;
+  uid: string;
+  createdAt: FieldValue;
+  updatedAt: FieldValue;
+}
+
 type ExpenseFormProps = {
   onSubmit: (data: { amount: number; date: string; category: string }) => void;
   totalAmount?: number;
+  categoryDataList: CategoryData[];
 };
 
-const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, totalAmount }) => {
+const ExpenseForm: React.FC<ExpenseFormProps> = ({
+  onSubmit,
+  totalAmount,
+  categoryDataList,
+}) => {
   const navigate = useNavigate();
 
   const today = new Date();
@@ -27,12 +41,14 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, totalAmount }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (amount && date && category) {
-      onSubmit({ amount: Number(amount), date, category });
-      setAmount("");
-      setDate(formattedToday); // フォーム送信後も日付を今日にリセット
-      setCategory("");
-    }
+    console.log(category);
+
+    // if (amount && date && category) {
+    //   onSubmit({ amount: Number(amount), date, category });
+    //   setAmount("");
+    //   setDate(formattedToday); // フォーム送信後も日付を今日にリセット
+    //   setCategory("");
+    // }
   };
 
   // カメラを起動する処理
@@ -78,27 +94,11 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, totalAmount }) => {
         />
       </div>
 
-      <div className="mb-4">
-        <label
-          htmlFor="category"
-          className="block text-gray-700 font-medium mb-2"
-        >
-          カテゴリー
-        </label>
-        <select
-          id="category"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
-          required
-        >
-          <option value="">選択してください</option>
-          <option value="食費">食費</option>
-          <option value="交通費">交通費</option>
-          <option value="娯楽">娯楽</option>
-          <option value="その他">その他</option>
-        </select>
-      </div>
+      <CategorySelect
+        category={category}
+        setCategory={setCategory}
+        categoryDataList={categoryDataList}
+      ></CategorySelect>
 
       <button
         type="submit"
