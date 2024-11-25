@@ -10,10 +10,13 @@ import { realtimeGetter } from "../firebase/firestore";
 import { FieldValue } from "firebase/firestore";
 
 interface CategoryData {
-  category: string;
-  uid: string;
-  createdAt: FieldValue;
-  updatedAt: FieldValue;
+  data: {
+    category: string;
+    uid: string;
+    createdAt: FieldValue;
+    updatedAt: FieldValue;
+  };
+  id: string;
 }
 
 export default function Home() {

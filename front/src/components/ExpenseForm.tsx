@@ -9,10 +9,13 @@ interface TransformResult {
 }
 
 interface CategoryData {
-  category: string;
-  uid: string;
-  createdAt: FieldValue;
-  updatedAt: FieldValue;
+  data: {
+    category: string;
+    uid: string;
+    createdAt: FieldValue;
+    updatedAt: FieldValue;
+  };
+  id: string;
 }
 
 type ExpenseFormProps = {

@@ -8,6 +8,8 @@ import {
   onSnapshot,
   serverTimestamp,
   orderBy,
+  deleteDoc,
+  doc,
 } from "firebase/firestore";
 import { db } from "./config";
 
@@ -61,12 +63,22 @@ export const realtimeGetter = <T>(
   const unsubscribe = onSnapshot(q, (querySnapshot) => {
     const results: T[] = [];
     querySnapshot.forEach((doc) => {
-      results.push(doc.data() as T);
+      results.push({ data: doc.data(), id: doc.id } as T);
     });
-    // results.sort((a, b) =>
-    //   a.created_at > b.created_at ? 1 : -1
-    // )
     setter(results);
+
     return unsubscribe;
   });
+};
+
+export const deleteDocument = async (
+  collectionName: string,
+  documentID: string
+) => {
+  try {
+    await deleteDoc(doc(db, collectionName, documentID));
+    console.log("Document successfully deleted!");
+  } catch (e) {
+    console.error("Error deleting document: ", e);
+  }
 };

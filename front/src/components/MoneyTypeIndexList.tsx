@@ -1,9 +1,9 @@
 import React from "react";
 
 interface Props {
-  fixedCosts: CategoryData[];
-  handleEdit: (index: number) => void;
-  handleDelete: (index: number) => void;
+  fixedCosts: { data: CategoryData; id: string }[];
+  handleEdit: (index: string) => void;
+  handleDelete: (index: string) => void;
 }
 
 interface CategoryData {
@@ -33,19 +33,19 @@ export default function MoneyTypeIndexList(props: Props) {
               {props.fixedCosts.map((fixedCost, index) => (
                 <tr key={index} className="border-t hover:bg-gray-200">
                   <td className="p-4 whitespace-nowrap">
-                    {fixedCost.category}
+                    {fixedCost.data.category}
                   </td>
                   <td className="p-4">
                     {/* 編集ボタン */}
                     <button
-                      onClick={() => props.handleEdit(index)}
+                      onClick={() => props.handleEdit(fixedCost.id)}
                       className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition mr-2"
                     >
                       編集
                     </button>
                     {/* 削除ボタン */}
                     <button
-                      onClick={() => props.handleDelete(index)}
+                      onClick={() => props.handleDelete(fixedCost.id)}
                       className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
                     >
                       削除
@@ -65,19 +65,19 @@ export default function MoneyTypeIndexList(props: Props) {
               >
                 <div className="flex justify-between mb-2">
                   <span className="font-semibold">カテゴリー</span>
-                  <span>{fixedCost.category}</span>
+                  <span>{fixedCost.data.category}</span>
                 </div>
                 <div className="flex justify-end mt-2 space-x-2">
                   {/* 編集ボタン */}
                   <button
-                    onClick={() => props.handleEdit(index)}
+                    onClick={() => props.handleEdit(fixedCost.id)}
                     className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
                   >
                     編集
                   </button>
                   {/* 削除ボタン */}
                   <button
-                    onClick={() => props.handleDelete(index)}
+                    onClick={() => props.handleDelete(fixedCost.id)}
                     className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
                   >
                     削除

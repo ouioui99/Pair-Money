@@ -18,7 +18,9 @@ interface CategoryData {
 
 export default function SpendingCategory() {
   const userContext = useContext(UserContext);
-  const [categoryDataList, setCategoryDataList] = useState<CategoryData[]>([]);
+  const [categoryDataList, setCategoryDataList] = useState<
+    { data: CategoryData; id: string }[]
+  >([]);
   const handleOnSubmit = (data: Data) => {
     if (userContext?.user?.uid) {
       const categoryInputValue: CategoryData = {
@@ -34,11 +36,11 @@ export default function SpendingCategory() {
       console.log("");
     }
   };
-  const handleEdit = (index: number) => {
+  const handleEdit = (index: string) => {
     console.log(index);
   };
 
-  const handleDelete = (index: number) => {
+  const handleDelete = (index: string) => {
     console.log(index);
   };
 

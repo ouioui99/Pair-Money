@@ -11,7 +11,7 @@ interface CategoryData {
 interface CategorySelect {
   category: string;
   setCategory: (e: string) => void;
-  categoryDataList: CategoryData[];
+  categoryDataList: { data: CategoryData; id: string }[];
 }
 
 export const CategorySelect: React.FC<CategorySelect> = ({
@@ -20,8 +20,8 @@ export const CategorySelect: React.FC<CategorySelect> = ({
   categoryDataList,
 }) => {
   const option = categoryDataList.map((data, index) => (
-    <option key={index} value={data.category}>
-      {data.category}
+    <option key={index} value={data.data.category}>
+      {data.data.category}
     </option>
   ));
   return (
