@@ -3,7 +3,10 @@ import React from "react";
 interface Props {
   fixedCosts: { data: CategoryData; id: string }[];
   handleEdit: (index: string) => void;
-  handleDelete: (index: string) => void;
+  handleDelete: (
+    selectedDocumentID: string,
+    selectedCategoryName: string
+  ) => void;
 }
 
 interface CategoryData {
@@ -45,7 +48,12 @@ export default function MoneyTypeIndexList(props: Props) {
                     </button>
                     {/* 削除ボタン */}
                     <button
-                      onClick={() => props.handleDelete(fixedCost.id)}
+                      onClick={() =>
+                        props.handleDelete(
+                          fixedCost.id,
+                          fixedCost.data.category
+                        )
+                      }
                       className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
                     >
                       削除
@@ -77,7 +85,9 @@ export default function MoneyTypeIndexList(props: Props) {
                   </button>
                   {/* 削除ボタン */}
                   <button
-                    onClick={() => props.handleDelete(fixedCost.id)}
+                    onClick={() =>
+                      props.handleDelete(fixedCost.id, fixedCost.data.category)
+                    }
                     className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
                   >
                     削除

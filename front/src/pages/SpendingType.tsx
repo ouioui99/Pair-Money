@@ -1,9 +1,16 @@
 import React, { useContext, useEffect, useState } from "react";
 import MoneyTypeIndexList from "../components/MoneyTypeIndexList";
 import SpendingCategoriesInputForm from "../components/SpendingCategoriesInputForm";
-import { getData, insertData, realtimeGetter } from "../firebase/firestore";
+import {
+  deleteDocument,
+  getData,
+  insertData,
+  realtimeGetter,
+} from "../firebase/firestore";
 import { UserContext } from "../contexts/UserContextProvider";
 import { FieldValue, serverTimestamp } from "firebase/firestore";
+import ConfirmModal from "../components/ConfirmModal";
+import DeleteConfirmModal from "../components/DeleteConfirmModal";
 
 interface Data {
   category: string;
@@ -18,9 +25,17 @@ interface CategoryData {
 
 export default function SpendingCategory() {
   const userContext = useContext(UserContext);
+  const [showModal, setShowModal] = useState(false);
   const [categoryDataList, setCategoryDataList] = useState<
     { data: CategoryData; id: string }[]
   >([]);
+  const [selectedDocumentID, setSelectedDocumentID] = useState<string | null>(
+    null
+  );
+  const [selectedCategoryName, setSelectedCategoryName] = useState<
+    string | null
+  >(null);
+
   const handleOnSubmit = (data: Data) => {
     if (userContext?.user?.uid) {
       const categoryInputValue: CategoryData = {
@@ -40,8 +55,19 @@ export default function SpendingCategory() {
     console.log(index);
   };
 
-  const handleDelete = (index: string) => {
-    console.log(index);
+  const confirmDelete = () => {
+    const collectionName = "spendingCategories";
+    if (selectedDocumentID) {
+      deleteDocument(collectionName, selectedDocumentID);
+    }
+    setShowModal(false);
+    setSelectedDocumentID(null);
+  };
+
+  const handleDelete = (documentID: string, categoryName: string) => {
+    setSelectedDocumentID(documentID);
+    setSelectedCategoryName(categoryName);
+    setShowModal(true);
   };
 
   useEffect(() => {
@@ -78,6 +104,26 @@ export default function SpendingCategory() {
           handleDelete={handleDelete}
         ></MoneyTypeIndexList>
       </div>
+      <DeleteConfirmModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onConfirm={confirmDelete}
+        title="このカテゴリーを削除しますか？"
+        description={
+          selectedCategoryName ? (
+            <>
+              <p className="text-sm text-center text-gray-600 mb-4">
+                以下のカテゴリーを削除すると元に戻せません。
+              </p>
+              <p className="text-lg font-bold text-black bg-gray-100 px-4 py-2 rounded-md text-center">
+                「{selectedCategoryName}」
+              </p>
+            </>
+          ) : (
+            "削除すると元に戻せません。本当に削除してよろしいですか？"
+          )
+        }
+      />
     </>
   );
 }
