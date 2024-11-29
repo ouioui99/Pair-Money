@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import MoneyTypeIndexList from "../components/MoneyTypeIndexList";
-import SpendingCategoriesInputForm from "../components/SpendingCategoriesInputForm";
+import SpendingCategoriesInputFormModal from "../components/SpendingCategoriesInputFormModal";
 import {
   deleteDocument,
   getData,
@@ -9,7 +9,6 @@ import {
 } from "../firebase/firestore";
 import { UserContext } from "../contexts/UserContextProvider";
 import { FieldValue, serverTimestamp } from "firebase/firestore";
-import ConfirmModal from "../components/ConfirmModal";
 import DeleteConfirmModal from "../components/DeleteConfirmModal";
 
 interface Data {
@@ -26,6 +25,7 @@ interface CategoryData {
 export default function SpendingCategory() {
   const userContext = useContext(UserContext);
   const [showModal, setShowModal] = useState(false);
+  const [showFormModal, setShowFormModal] = useState(false);
   const [categoryDataList, setCategoryDataList] = useState<
     { data: CategoryData; id: string }[]
   >([]);
@@ -91,9 +91,18 @@ export default function SpendingCategory() {
             <h1 className="text-2xl font-bold text-center mb-6">
               支出カテゴリー管理
             </h1>
-            <div className="sticky top-0 z-10 w-full rounded-md">
-              <SpendingCategoriesInputForm onSubmit={handleOnSubmit} />
-            </div>
+            <SpendingCategoriesInputFormModal
+              isOpen={showFormModal}
+              onClose={() => setShowFormModal(false)}
+              onSubmit={handleOnSubmit}
+            />
+            {/* 新規登録ボタンを追加 */}
+            <button
+              onClick={() => setShowFormModal(true)}
+              className="mt-4 bg-indigo-500 text-white rounded-md shadow-lg w-full py-3 text-lg font-semibold text-center hover:bg-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-300"
+            >
+              新規登録
+            </button>
           </div>
         </div>
       </div>
