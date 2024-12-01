@@ -6,53 +6,67 @@ import {
   getData,
   insertData,
   realtimeGetter,
+  updateCategoryData,
 } from "../firebase/firestore";
 import { UserContext } from "../contexts/UserContextProvider";
 import { FieldValue, serverTimestamp } from "firebase/firestore";
 import DeleteConfirmModal from "../components/DeleteConfirmModal";
+import { findTargetIDObject } from "../util/calculateUtils";
+import { CategoryResponse, CommonResponseData } from "../types";
 
 interface Data {
   category: string;
-}
-
-interface CategoryData {
-  category: string;
-  uid: string;
-  createdAt: FieldValue;
-  updatedAt: FieldValue;
 }
 
 export default function SpendingCategory() {
   const userContext = useContext(UserContext);
   const [showModal, setShowModal] = useState(false);
   const [showFormModal, setShowFormModal] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
   const [categoryDataList, setCategoryDataList] = useState<
-    { data: CategoryData; id: string }[]
+    CommonResponseData<CategoryResponse>[]
   >([]);
+  const [categoryData, setCategoryData] =
+    useState<CommonResponseData<CategoryResponse>>();
+  const [category, setCategory] = useState<string>("");
   const [selectedDocumentID, setSelectedDocumentID] = useState<string | null>(
     null
   );
+
   const [selectedCategoryName, setSelectedCategoryName] = useState<
     string | null
   >(null);
 
   const handleOnSubmit = (data: Data) => {
     if (userContext?.user?.uid) {
-      const categoryInputValue: CategoryData = {
-        category: data.category,
-        uid: userContext.user.uid,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      };
+      if (typeof categoryData === "undefined") {
+        const categoryInputValue: CategoryResponse = {
+          category: data.category,
+          uid: userContext.user.uid,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        };
 
-      insertData("spendingCategories", categoryInputValue);
+        insertData("spendingCategories", categoryInputValue);
+      } else {
+        updateCategoryData(categoryData.id, data.category);
+      }
     } else {
       //ユーザIDなしのエラー処理
       console.log("");
     }
+    setCategoryData(undefined);
   };
   const handleEdit = (index: string) => {
-    console.log(index);
+    setShowFormModal(true);
+    const targetObject = findTargetIDObject<CategoryResponse>(
+      categoryDataList,
+      index
+    );
+    if (typeof targetObject !== "undefined") {
+      setCategory(targetObject.data.category);
+      setCategoryData(targetObject);
+    }
   };
 
   const confirmDelete = () => {
@@ -95,6 +109,8 @@ export default function SpendingCategory() {
               isOpen={showFormModal}
               onClose={() => setShowFormModal(false)}
               onSubmit={handleOnSubmit}
+              category={category}
+              setCategory={setCategory}
             />
             {/* 新規登録ボタンを追加 */}
             <button

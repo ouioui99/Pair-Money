@@ -1,18 +1,21 @@
 import React, { useState } from "react";
+import { CommonResponseData, CategoryResponse } from "../types";
 
 type FixedCostsForm = {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: { category: string }) => void;
+  category?: string;
+  setCategory: React.Dispatch<string>;
 };
 
 const SpendingCategoriesInputFormModal: React.FC<FixedCostsForm> = ({
   isOpen,
   onClose,
   onSubmit,
+  category,
+  setCategory,
 }) => {
-  const [category, setCategory] = useState<string>("");
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (category) {

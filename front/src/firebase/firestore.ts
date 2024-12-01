@@ -10,6 +10,7 @@ import {
   orderBy,
   deleteDoc,
   doc,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "./config";
 
@@ -19,6 +20,15 @@ export const insertData = async (table: string, data: Object) => {
   } catch (e) {
     console.error("Error adding document: ", e);
   }
+};
+
+export const updateCategoryData = async (id: string, category: string) => {
+  const targetDB = doc(db, "spendingCategories", id);
+
+  await updateDoc(targetDB, {
+    category: category,
+    updateAt: serverTimestamp(),
+  });
 };
 
 type CategoryData = {
