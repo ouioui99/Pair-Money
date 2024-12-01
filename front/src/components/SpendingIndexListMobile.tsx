@@ -6,18 +6,28 @@ interface Props {
   handleDelete: (index: number) => void;
 }
 
+interface IndexList<T> {
+  header: string;
+  tHeaders: string[];
+  tbody: T;
+  handleEdit: (index: number) => void;
+  handleDelete: (index: number) => void;
+}
+
 interface FixedCostType {
   amount: number;
   date: string;
   category: string;
 }
 
-export default function SpendingIndexList(props: Props) {
+export default function SpendingIndexListMobile<T extends {}[]>(
+  props: IndexList<T>
+) {
   return (
     <div>
       <div>
         <header className="p-4 border-b">
-          <h1 className="text-xl font-semibold">支出一覧</h1>
+          <h1 className="text-xl font-semibold">{props.header}</h1>
         </header>
 
         {/* Responsive Table */}
@@ -26,14 +36,13 @@ export default function SpendingIndexList(props: Props) {
           <table className="min-w-full hidden md:table table-auto">
             <thead>
               <tr className="bg-gray-100 text-left">
-                <th className="p-4">日付</th>
-                <th className="p-4">金額</th>
-                <th className="p-4">カテゴリー</th>
-                <th className="p-4">操作</th>
+                {props.tHeaders.map((tHeader) => {
+                  return <th className="p-4">{tHeader}</th>;
+                })}
               </tr>
             </thead>
             <tbody>
-              {props.fixedCosts.map((fixedCost, index) => (
+              {props.tbody.map((fixedCost, index) => (
                 <tr key={index} className="border-t hover:bg-gray-200">
                   <td className="p-4 whitespace-nowrap">{fixedCost.date}</td>
                   <td className="p-4">{fixedCost.amount}</td>

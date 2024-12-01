@@ -11,3 +11,7 @@ export interface CommonResponseData<T> {
   data: T;
   id: string;
 }
+
+export interface IndexLisHeader {
+  tHeaders: string[];
+}
