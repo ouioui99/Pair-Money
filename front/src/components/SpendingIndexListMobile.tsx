@@ -1,145 +1,78 @@
 import React from "react";
+import { SpendingIndexList, IndexListTbody } from "../types";
 
-interface Props {
-  fixedCosts: FixedCostType[];
-  handleEdit: (index: number) => void;
-  handleDelete: (index: number) => void;
-}
-
-interface IndexList<T> {
-  header: string;
-  tHeaders: string[];
-  tbody: T;
-  handleEdit: (index: number) => void;
-  handleDelete: (index: number) => void;
-}
-
-interface FixedCostType {
-  amount: number;
-  date: string;
-  category: string;
-}
-
-export default function SpendingIndexListMobile<T extends {}[]>(
-  props: IndexList<T>
-) {
+export default function SpendingIndexListMobile<T extends SpendingIndexList[]>({
+  tbodyList,
+  handleEdit,
+  handleDelete,
+}: IndexListTbody<T>) {
   return (
-    <div>
-      <div>
-        <header className="p-4 border-b">
-          <h1 className="text-xl font-semibold">{props.header}</h1>
-        </header>
-
-        {/* Responsive Table */}
-        <div className="overflow-hidden">
-          {/* Desktop View */}
-          <table className="min-w-full hidden md:table table-auto">
-            <thead>
-              <tr className="bg-gray-100 text-left">
-                {props.tHeaders.map((tHeader) => {
-                  return <th className="p-4">{tHeader}</th>;
-                })}
-              </tr>
-            </thead>
-            <tbody>
-              {props.tbody.map((fixedCost, index) => (
-                <tr key={index} className="border-t hover:bg-gray-200">
-                  <td className="p-4 whitespace-nowrap">{fixedCost.date}</td>
-                  <td className="p-4">{fixedCost.amount}</td>
-                  <td className="p-4">{fixedCost.category}</td>
-                  <td className="p-4">
-                    {/* 編集ボタン */}
-                    <button
-                      onClick={() => props.handleEdit(index)}
-                      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition mr-2"
-                    >
-                      編集
-                    </button>
-                    {/* 削除ボタン */}
-                    <button
-                      onClick={() => props.handleDelete(index)}
-                      className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
-                    >
-                      削除
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          {/* Mobile View */}
-          <div className="block md:hidden">
-            {props.fixedCosts.map((fixedCost, index) => (
-              <div
-                key={index}
-                className="border rounded-lg p-6 bg-white shadow-lg hover:shadow-xl mb-6 transition-all duration-300 ease-in-out"
+    <div className="block md:hidden">
+      {tbodyList.map((fixedCost, index) => (
+        <div
+          key={index}
+          className="border rounded-lg p-6 bg-white shadow-lg hover:shadow-xl mb-6 transition-all duration-300 ease-in-out"
+        >
+          <div className="flex justify-between mb-3">
+            <span className="font-medium text-gray-700 text-lg">金額</span>
+            <span className="text-xl font-semibold text-gray-900">
+              {fixedCost.amount}
+            </span>
+          </div>
+          <div className="flex justify-between mb-3">
+            <span className="font-medium text-gray-700 text-lg">
+              カテゴリー
+            </span>
+            <span className="text-xl font-semibold text-gray-900">
+              {fixedCost.category}
+            </span>
+          </div>
+          <div className="flex justify-end mt-4 space-x-4">
+            {/* 編集ボタン */}
+            <button
+              onClick={() => handleEdit(index)}
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all transform hover:scale-105 flex items-center space-x-2"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                className="w-5 h-5"
               >
-                <div className="flex justify-between mb-3">
-                  <span className="font-medium text-gray-700 text-lg">
-                    金額
-                  </span>
-                  <span className="text-xl font-semibold text-gray-900">
-                    {fixedCost.amount}
-                  </span>
-                </div>
-                <div className="flex justify-between mb-3">
-                  <span className="font-medium text-gray-700 text-lg">
-                    カテゴリー
-                  </span>
-                  <span className="text-xl font-semibold text-gray-900">
-                    {fixedCost.category}
-                  </span>
-                </div>
-                <div className="flex justify-end mt-4 space-x-4">
-                  {/* 編集ボタン */}
-                  <button
-                    onClick={() => props.handleEdit(index)}
-                    className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all transform hover:scale-105 flex items-center space-x-2"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      className="w-5 h-5"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M17 3l4 4m0 0l-10 10L3 19l2-8 10-10z"
-                      />
-                    </svg>
-                    <span>編集</span>
-                  </button>
-                  {/* 削除ボタン */}
-                  <button
-                    onClick={() => props.handleDelete(index)}
-                    className="bg-red-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 transition-all transform hover:scale-105 flex items-center space-x-2"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      className="w-5 h-5"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                    <span>削除</span>
-                  </button>
-                </div>
-              </div>
-            ))}
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M17 3l4 4m0 0l-10 10L3 19l2-8 10-10z"
+                />
+              </svg>
+              <span>編集</span>
+            </button>
+            {/* 削除ボタン */}
+            <button
+              onClick={() => handleDelete(index)}
+              className="bg-red-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 transition-all transform hover:scale-105 flex items-center space-x-2"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                className="w-5 h-5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+              <span>削除</span>
+            </button>
           </div>
         </div>
-      </div>
+      ))}
     </div>
   );
 }
