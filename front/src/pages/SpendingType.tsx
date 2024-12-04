@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import MoneyTypeIndexList from "../components/MoneyTypeIndexList";
+import MoneyTypeIndexList from "../components/MoneyTypeIndexListTBody";
 import SpendingCategoriesInputFormModal from "../components/SpendingCategoriesInputFormModal";
 import {
   deleteDocument,
@@ -12,7 +12,16 @@ import { UserContext } from "../contexts/UserContextProvider";
 import { FieldValue, serverTimestamp } from "firebase/firestore";
 import DeleteConfirmModal from "../components/DeleteConfirmModal";
 import { findTargetIDObject } from "../util/calculateUtils";
-import { CategoryResponse, CommonResponseData } from "../types";
+import {
+  CategoryIndexList,
+  CategoryResponse,
+  CommonResponseData,
+  SpendingIndexList,
+} from "../types";
+import IndexListTHeader from "../components/IndexListTHeader";
+import SpendingIndexListTBody from "../components/SpendingIndexListTBody";
+import MoneyTypeIndexListTbody from "../components/MoneyTypeIndexListTBody";
+import MoneyTypeIndexListMobile from "../components/MoneyTypeIndexListMobile";
 
 interface Data {
   category: string;
@@ -99,36 +108,34 @@ export default function SpendingCategory() {
 
   return (
     <>
-      <div className="font-bold text-gray-700 flex flex-col items-center justify-start">
-        <div className="w-full max-w-lg">
-          <div className="w-full p-1">
-            <h1 className="text-2xl font-bold text-center mb-6">
-              支出カテゴリー管理
-            </h1>
-            <SpendingCategoriesInputFormModal
-              isOpen={showFormModal}
-              onClose={() => setShowFormModal(false)}
-              onSubmit={handleOnSubmit}
-              category={category}
-              setCategory={setCategory}
-            />
-            {/* 新規登録ボタンを追加 */}
-            <button
-              onClick={() => setShowFormModal(true)}
-              className="mt-4 bg-indigo-500 text-white rounded-md shadow-lg w-full py-3 text-lg font-semibold text-center hover:bg-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-300"
-            >
-              新規登録
-            </button>
-          </div>
-        </div>
+      <header className="p-4 border-b flex items-center justify-between">
+        <h1 className="text-xl font-semibold">カテゴリー一覧</h1>
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          onClick={() => setShowFormModal(true)}
+        >
+          新規作成
+        </button>
+      </header>
+      <div className="overflow-hidden">
+        <table className="min-w-full hidden md:table table-auto">
+          <IndexListTHeader tHeaders={["カテゴリー", "操作"]} />
+          <MoneyTypeIndexListTbody<CategoryIndexList[]>
+            tbodyList={categoryDataList}
+            handleEdit={handleEdit}
+            handleDelete={handleDelete}
+          />
+        </table>
+
+        <SpendingCategoriesInputFormModal
+          isOpen={showFormModal}
+          onClose={() => setShowFormModal(false)}
+          onSubmit={handleOnSubmit}
+          category={category}
+          setCategory={setCategory}
+        />
       </div>
-      <div className="flex flex-col w-full p-1 rounded-md">
-        <MoneyTypeIndexList
-          fixedCosts={categoryDataList}
-          handleEdit={handleEdit}
-          handleDelete={handleDelete}
-        ></MoneyTypeIndexList>
-      </div>
+
       <DeleteConfirmModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
@@ -148,6 +155,12 @@ export default function SpendingCategory() {
             "削除すると元に戻せません。本当に削除してよろしいですか？"
           )
         }
+      />
+
+      <MoneyTypeIndexListMobile<CategoryIndexList[]>
+        tbodyList={categoryDataList}
+        handleEdit={handleEdit}
+        handleDelete={handleDelete}
       />
     </>
   );
