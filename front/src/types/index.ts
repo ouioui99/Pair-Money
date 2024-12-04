@@ -23,6 +23,21 @@ export interface SpendingIndexList {
   category: string;
 }
 
+export interface CreateSpendingRequest {
+  amount: number;
+  date: string;
+  category: string;
+  uid: string;
+  createdAt: FieldValue;
+  updatedAt: FieldValue;
+}
+
+export interface SpendingFormValue {
+  amount: number;
+  date: string;
+  category: string;
+}
+
 //category
 export interface CategoryResponse {
   category: string;
@@ -32,11 +47,11 @@ export interface CategoryResponse {
 }
 
 export interface CategoryIndexList {
-  data: CategoryData;
+  data: { category: string; uid: string };
   id: string;
 }
 
-interface CategoryData {
-  category: string;
-  uid: string;
+export interface CategoryData {
+  data: CategoryResponse;
+  id: string;
 }

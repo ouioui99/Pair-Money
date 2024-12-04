@@ -6,28 +6,34 @@ import ExpenseForm from "../components/ExpenseForm";
 import IndexList from "../components/IndexList";
 import CustomBottomNavigation from "../components/CustomBottomNavigation";
 import { UserContext } from "../contexts/UserContextProvider";
-import { realtimeGetter } from "../firebase/firestore";
-import { FieldValue } from "firebase/firestore";
-
-interface CategoryData {
-  data: {
-    category: string;
-    uid: string;
-    createdAt: FieldValue;
-    updatedAt: FieldValue;
-  };
-  id: string;
-}
+import { insertData, realtimeGetter } from "../firebase/firestore";
+import { FieldValue, serverTimestamp } from "firebase/firestore";
+import {
+  CategoryData,
+  CategoryResponse,
+  CreateSpendingRequest,
+  SpendingFormValue,
+} from "../types";
 
 export default function Home() {
   const userContext = useContext(UserContext);
   const [categoryDataList, setCategoryDataList] = useState<CategoryData[]>([]);
-  const handleOnSubmit = (data: {
-    amount: number;
-    date: string;
-    category: string;
-  }) => {
-    console.log(data);
+  const handleOnSubmit = (data: SpendingFormValue) => {
+    if (userContext?.user?.uid) {
+      const spendingFormValue: CreateSpendingRequest = {
+        amount: data.amount,
+        date: data.date,
+        category: data.category,
+        uid: userContext.user.uid,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      };
+
+      insertData("spendings", spendingFormValue);
+    } else {
+      //ユーザIDなしのエラー処理
+      console.log("");
+    }
   };
 
   useEffect(() => {

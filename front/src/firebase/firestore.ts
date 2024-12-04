@@ -17,6 +17,7 @@ import { db } from "./config";
 export const insertData = async (table: string, data: Object) => {
   try {
     const docRef = await addDoc(collection(db, table), data);
+    console.log("success");
   } catch (e) {
     console.error("Error adding document: ", e);
   }

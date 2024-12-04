@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CategorySelect } from "./CategorySelect";
 import { FieldValue } from "firebase/firestore";
+import { SpendingFormValue } from "../types";
 
 interface TransformResult {
   totalAmount?: number;
@@ -19,7 +20,7 @@ interface CategoryData {
 }
 
 type ExpenseFormProps = {
-  onSubmit: (data: { amount: number; date: string; category: string }) => void;
+  onSubmit: (data: SpendingFormValue) => void;
   totalAmount?: number;
   categoryDataList: CategoryData[];
 };
@@ -44,14 +45,13 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(category);
 
-    // if (amount && date && category) {
-    //   onSubmit({ amount: Number(amount), date, category });
-    //   setAmount("");
-    //   setDate(formattedToday); // フォーム送信後も日付を今日にリセット
-    //   setCategory("");
-    // }
+    if (amount && date && category) {
+      onSubmit({ amount: Number(amount), date, category });
+      setAmount("");
+      setDate(formattedToday); // フォーム送信後も日付を今日にリセット
+      setCategory("");
+    }
   };
 
   // カメラを起動する処理

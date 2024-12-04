@@ -1,5 +1,5 @@
 import { FieldValue } from "firebase/firestore";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface CategoryData {
   category: string;
@@ -19,11 +19,19 @@ export const CategorySelect: React.FC<CategorySelect> = ({
   setCategory,
   categoryDataList,
 }) => {
+  // categoryDataListが空でない場合に初期値を設定
+  useEffect(() => {
+    if (categoryDataList.length > 0) {
+      setCategory(categoryDataList[0].data.category);
+    }
+  }, [categoryDataList, setCategory]);
+
   const option = categoryDataList.map((data, index) => (
     <option key={index} value={data.data.category}>
       {data.data.category}
     </option>
   ));
+
   return (
     <div className="mb-4">
       <label

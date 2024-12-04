@@ -47,23 +47,25 @@ export default function SpendingCategory() {
   >(null);
 
   const handleOnSubmit = (data: Data) => {
-    if (userContext?.user?.uid) {
-      if (typeof categoryData === "undefined") {
-        const categoryInputValue: CategoryResponse = {
-          category: data.category,
-          uid: userContext.user.uid,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
-        };
+    console.log(data);
 
-        insertData("spendingCategories", categoryInputValue);
-      } else {
-        updateCategoryData(categoryData.id, data.category);
-      }
-    } else {
-      //ユーザIDなしのエラー処理
-      console.log("");
-    }
+    // if (userContext?.user?.uid) {
+    //   if (typeof categoryData === "undefined") {
+    //     const categoryInputValue: CategoryResponse = {
+    //       category: data.category,
+    //       uid: userContext.user.uid,
+    //       createdAt: serverTimestamp(),
+    //       updatedAt: serverTimestamp(),
+    //     };
+
+    //     insertData("spendingCategories", categoryInputValue);
+    //   } else {
+    //     updateCategoryData(categoryData.id, data.category);
+    //   }
+    // } else {
+    //   //ユーザIDなしのエラー処理
+    //   console.log("");
+    // }
     setCategoryData(undefined);
   };
   const handleEdit = (index: string) => {
