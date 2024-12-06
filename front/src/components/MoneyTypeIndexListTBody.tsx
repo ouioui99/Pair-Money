@@ -10,7 +10,7 @@ import { CategoryIndexList, IndexListTbody } from "../types";
 //   ) => void;
 // }
 
-const MoneyTypeIndexListTbody = <T extends CategoryIndexList[]>({
+const MoneyTypeIndexListTbody = <T extends CategoryIndexList>({
   tbodyList,
   handleEdit,
   handleDelete,
@@ -46,9 +46,7 @@ const MoneyTypeIndexListTbody = <T extends CategoryIndexList[]>({
             </button>
             {/* 削除ボタン */}
             <button
-              onClick={() =>
-                handleDelete(tbodyData.id, tbodyData.data.category)
-              }
+              onClick={() => handleDelete(tbodyData.id, tbodyData)}
               className="bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-red-600 transition-all transform hover:scale-105 flex items-center"
             >
               <svg

@@ -1,14 +1,17 @@
 import React from "react";
-import { SpendingIndexList, IndexListTbody } from "../types";
+import {
+  SpendingIndexList,
+  IndexListTbody,
+  CommonResponseData,
+  SpendingResponse,
+} from "../types";
 
-export default function SpendingIndexListMobile<T extends SpendingIndexList[]>({
-  tbodyList,
-  handleEdit,
-  handleDelete,
-}: IndexListTbody<T>) {
+export default function SpendingIndexListMobile<
+  T extends CommonResponseData<SpendingResponse>
+>({ tbodyList, handleEdit, handleDelete }: IndexListTbody<T>) {
   return (
     <div className="block md:hidden">
-      {tbodyList.map((fixedCost, index) => (
+      {tbodyList.map((spendingData, index) => (
         <div
           key={index}
           className="border rounded-lg p-6 bg-white shadow-lg hover:shadow-xl mb-6 transition-all duration-300 ease-in-out"
@@ -16,7 +19,7 @@ export default function SpendingIndexListMobile<T extends SpendingIndexList[]>({
           <div className="flex justify-between mb-3">
             <span className="font-medium text-gray-700 text-lg">金額</span>
             <span className="text-xl font-semibold text-gray-900">
-              {fixedCost.amount}
+              {spendingData.data.amount}
             </span>
           </div>
           <div className="flex justify-between mb-3">
@@ -24,13 +27,13 @@ export default function SpendingIndexListMobile<T extends SpendingIndexList[]>({
               カテゴリー
             </span>
             <span className="text-xl font-semibold text-gray-900">
-              {fixedCost.category}
+              {spendingData.data.category}
             </span>
           </div>
           <div className="flex justify-end mt-4 space-x-4">
             {/* 編集ボタン */}
             <button
-              onClick={() => handleEdit(index)}
+              onClick={() => handleEdit(spendingData.id)}
               className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all transform hover:scale-105 flex items-center space-x-2"
             >
               <svg
@@ -51,7 +54,7 @@ export default function SpendingIndexListMobile<T extends SpendingIndexList[]>({
             </button>
             {/* 削除ボタン */}
             <button
-              onClick={() => handleDelete(index)}
+              onClick={() => handleDelete(spendingData.id, spendingData)}
               className="bg-red-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 transition-all transform hover:scale-105 flex items-center space-x-2"
             >
               <svg

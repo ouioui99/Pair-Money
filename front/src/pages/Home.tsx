@@ -9,7 +9,7 @@ import { UserContext } from "../contexts/UserContextProvider";
 import { insertData, realtimeGetter } from "../firebase/firestore";
 import { FieldValue, serverTimestamp } from "firebase/firestore";
 import {
-  CategoryData,
+  CategoryIndexList,
   CategoryResponse,
   CreateSpendingRequest,
   SpendingFormValue,
@@ -17,7 +17,9 @@ import {
 
 export default function Home() {
   const userContext = useContext(UserContext);
-  const [categoryDataList, setCategoryDataList] = useState<CategoryData[]>([]);
+  const [categoryDataList, setCategoryDataList] = useState<CategoryIndexList[]>(
+    []
+  );
   const handleOnSubmit = (data: SpendingFormValue) => {
     if (userContext?.user?.uid) {
       const spendingFormValue: CreateSpendingRequest = {

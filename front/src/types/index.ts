@@ -6,9 +6,9 @@ export interface IndexLisHeader {
 }
 
 export interface IndexListTbody<T> {
-  tbodyList: T;
+  tbodyList: T[];
   handleEdit: (index: string) => void;
-  handleDelete: (documentID: string, categoryName: string) => void;
+  handleDelete: (documentID: string, item: T) => void;
 }
 
 export interface CommonResponseData<T> {
@@ -16,12 +16,21 @@ export interface CommonResponseData<T> {
   id: string;
 }
 
-//spending
-export interface SpendingIndexList {
-  amount: number;
-  date: string;
-  category: string;
+export interface HandleDeleteArgs<T> {
+  documentID: string;
+  selectedItem: T;
+  selectedDocumentIDSetter: (
+    value: React.SetStateAction<string | null>
+  ) => void;
+  selectedItemSetter: (value: React.SetStateAction<T | null>) => void;
+  showModalSetter: (value: React.SetStateAction<boolean>) => void;
 }
+
+//spending
+export type SpendingIndexList = {
+  data: SpendingResponse;
+  id: string;
+};
 
 export interface CreateSpendingRequest {
   amount: number;
@@ -38,6 +47,15 @@ export interface SpendingFormValue {
   category: string;
 }
 
+export interface SpendingResponse {
+  amount: string;
+  category: string;
+  createdAt: FieldValue;
+  date: string;
+  uid: string;
+  updatedAt: FieldValue;
+}
+
 //category
 export interface CategoryResponse {
   category: string;
@@ -47,11 +65,6 @@ export interface CategoryResponse {
 }
 
 export interface CategoryIndexList {
-  data: { category: string; uid: string };
-  id: string;
-}
-
-export interface CategoryData {
   data: CategoryResponse;
   id: string;
 }

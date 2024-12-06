@@ -19,19 +19,13 @@ import {
   SpendingIndexList,
 } from "../types";
 import IndexListTHeader from "../components/IndexListTHeader";
-import SpendingIndexListTBody from "../components/SpendingIndexListTBody";
 import MoneyTypeIndexListTbody from "../components/MoneyTypeIndexListTBody";
 import MoneyTypeIndexListMobile from "../components/MoneyTypeIndexListMobile";
-
-interface Data {
-  category: string;
-}
 
 export default function SpendingCategory() {
   const userContext = useContext(UserContext);
   const [showModal, setShowModal] = useState(false);
   const [showFormModal, setShowFormModal] = useState(false);
-  const [isUpdate, setIsUpdate] = useState(false);
   const [categoryDataList, setCategoryDataList] = useState<
     CommonResponseData<CategoryResponse>[]
   >([]);
@@ -41,31 +35,28 @@ export default function SpendingCategory() {
   const [selectedDocumentID, setSelectedDocumentID] = useState<string | null>(
     null
   );
-
   const [selectedCategoryName, setSelectedCategoryName] = useState<
     string | null
   >(null);
 
-  const handleOnSubmit = (data: Data) => {
-    console.log(data);
+  const handleOnSubmit = (data: { category: string }) => {
+    if (userContext?.user?.uid) {
+      if (typeof categoryData === "undefined") {
+        const categoryInputValue: CategoryResponse = {
+          category: data.category,
+          uid: userContext.user.uid,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        };
 
-    // if (userContext?.user?.uid) {
-    //   if (typeof categoryData === "undefined") {
-    //     const categoryInputValue: CategoryResponse = {
-    //       category: data.category,
-    //       uid: userContext.user.uid,
-    //       createdAt: serverTimestamp(),
-    //       updatedAt: serverTimestamp(),
-    //     };
-
-    //     insertData("spendingCategories", categoryInputValue);
-    //   } else {
-    //     updateCategoryData(categoryData.id, data.category);
-    //   }
-    // } else {
-    //   //ユーザIDなしのエラー処理
-    //   console.log("");
-    // }
+        insertData("spendingCategories", categoryInputValue);
+      } else {
+        updateCategoryData(categoryData.id, data.category);
+      }
+    } else {
+      //ユーザIDなしのエラー処理
+      console.log("");
+    }
     setCategoryData(undefined);
   };
   const handleEdit = (index: string) => {
@@ -89,9 +80,9 @@ export default function SpendingCategory() {
     setSelectedDocumentID(null);
   };
 
-  const handleDelete = (documentID: string, categoryName: string) => {
+  const handleDelete = (documentID: string, item: CategoryIndexList) => {
     setSelectedDocumentID(documentID);
-    setSelectedCategoryName(categoryName);
+    setSelectedCategoryName(item.data.category);
     setShowModal(true);
   };
 
@@ -122,7 +113,7 @@ export default function SpendingCategory() {
       <div className="overflow-hidden">
         <table className="min-w-full hidden md:table table-auto">
           <IndexListTHeader tHeaders={["カテゴリー", "操作"]} />
-          <MoneyTypeIndexListTbody<CategoryIndexList[]>
+          <MoneyTypeIndexListTbody<CommonResponseData<CategoryResponse>>
             tbodyList={categoryDataList}
             handleEdit={handleEdit}
             handleDelete={handleDelete}
@@ -159,7 +150,7 @@ export default function SpendingCategory() {
         }
       />
 
-      <MoneyTypeIndexListMobile<CategoryIndexList[]>
+      <MoneyTypeIndexListMobile<CommonResponseData<CategoryResponse>>
         tbodyList={categoryDataList}
         handleEdit={handleEdit}
         handleDelete={handleDelete}

@@ -1,7 +1,7 @@
 import React from "react";
 import { CategoryIndexList, IndexListTbody } from "../types";
 
-const MoneyTypeIndexListMobile = <T extends CategoryIndexList[]>({
+const MoneyTypeIndexListMobile = <T extends CategoryIndexList>({
   tbodyList,
   handleEdit,
   handleDelete,
@@ -45,9 +45,7 @@ const MoneyTypeIndexListMobile = <T extends CategoryIndexList[]>({
             </button>
             {/* 削除ボタン */}
             <button
-              onClick={() =>
-                handleDelete(tbodyData.id, tbodyData.data.category)
-              }
+              onClick={() => handleDelete(tbodyData.id, tbodyList[index])}
               className="bg-red-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 transition-all transform hover:scale-105 flex items-center space-x-2"
             >
               <svg
