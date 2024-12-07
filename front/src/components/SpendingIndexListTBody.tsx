@@ -16,7 +16,7 @@ const SpendingIndexListTBody = <T extends SpendingIndexList>({
           <td className="p-4">
             {/* 編集ボタン */}
             <button
-              onClick={() => handleEdit("aa")}
+              onClick={() => handleEdit(spendingData.id)}
               className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition mr-2"
             >
               編集

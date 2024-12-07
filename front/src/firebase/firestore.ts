@@ -13,6 +13,11 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db } from "./config";
+import {
+  SpendingIndexList,
+  SpendingResponse,
+  SpendingUpdataRequest,
+} from "../types";
 
 export const insertData = async (table: string, data: Object) => {
   try {
@@ -29,6 +34,22 @@ export const updateCategoryData = async (id: string, category: string) => {
   await updateDoc(targetDB, {
     category: category,
     updateAt: serverTimestamp(),
+  });
+};
+
+export const updateSpendingData = async (
+  id: string,
+  data: SpendingUpdataRequest
+) => {
+  const targetDB = doc(db, "spendings", id);
+  console.log(id);
+  console.log(targetDB);
+  console.log(data);
+
+  await updateDoc(targetDB, {
+    amount: data.amount,
+    date: data.date,
+    category: data.category,
   });
 };
 

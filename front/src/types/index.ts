@@ -33,7 +33,7 @@ export type SpendingIndexList = {
 };
 
 export interface CreateSpendingRequest {
-  amount: number;
+  amount: string;
   date: string;
   category: string;
   uid: string;
@@ -42,7 +42,7 @@ export interface CreateSpendingRequest {
 }
 
 export interface SpendingFormValue {
-  amount: number;
+  amount: string;
   date: string;
   category: string;
 }
@@ -54,6 +54,12 @@ export interface SpendingResponse {
   date: string;
   uid: string;
   updatedAt: FieldValue;
+}
+
+export interface SpendingUpdataRequest {
+  amount: string;
+  category: string;
+  date: string;
 }
 
 //category

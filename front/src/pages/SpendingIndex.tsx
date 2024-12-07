@@ -2,23 +2,28 @@ import React, { useContext, useEffect, useState } from "react";
 import IndexListTHeader from "../components/IndexListTHeader";
 import SpendingIndexListTBody from "../components/SpendingIndexListTBody";
 import {
+  CategoryIndexList,
   CategoryResponse,
   CommonResponseData,
   CreateSpendingRequest,
   SpendingFormValue,
   SpendingIndexList,
   SpendingResponse,
+  SpendingUpdataRequest,
 } from "../types";
 import SpendingIndexListMobile from "../components/SpendingIndexListMobile";
 import {
   deleteDocument,
   insertData,
   realtimeGetter,
+  updateSpendingData,
 } from "../firebase/firestore";
 import { UserContext } from "../contexts/UserContextProvider";
 import { serverTimestamp } from "firebase/firestore";
 import { findTargetIDObject } from "../util/calculateUtils";
 import DeleteConfirmModal from "../components/DeleteConfirmModal";
+import ExpenseForm from "../components/ExpenseForm";
+import { useLocation } from "react-router-dom";
 
 export default function SpendingIndex() {
   const userContext = useContext(UserContext);
@@ -36,32 +41,34 @@ export default function SpendingIndex() {
   const [selectedSpendingData, setSelectedSpendingData] =
     useState<SpendingIndexList | null>(null);
 
-  const handleOnSubmit = (data: SpendingFormValue) => {
-    if (userContext?.user?.uid) {
-      const spendingFormValue: CreateSpendingRequest = {
-        amount: data.amount,
-        date: data.date,
-        category: data.category,
-        uid: userContext.user.uid,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      };
+  const [categoryDataList, setCategoryDataList] = useState<CategoryIndexList[]>(
+    []
+  );
 
-      insertData("spendings", spendingFormValue);
-    } else {
-      //ユーザIDなしのエラー処理
-      console.log("");
+  const handleOnSubmit = (data: SpendingFormValue) => {
+    const spendingFormValue: SpendingUpdataRequest = {
+      amount: data.amount,
+      date: data.date,
+      category: data.category,
+    };
+
+    if (selectedSpendingData) {
+      console.log(selectedSpendingData.id);
+
+      updateSpendingData(selectedSpendingData.id, spendingFormValue);
+      setShowFormModal(false);
     }
   };
   const handleEdit = (index: string) => {
     setShowFormModal(true);
+    console.log(index);
+
     const targetObject = findTargetIDObject<SpendingResponse>(
       spendingDataList,
       index
     );
     if (typeof targetObject !== "undefined") {
-      //setCategory(targetObject.data.category);
-      setSpendingData(targetObject);
+      setSelectedSpendingData(targetObject);
     }
   };
 
@@ -83,10 +90,21 @@ export default function SpendingIndex() {
     setShowModal(true);
   };
 
+  const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      setShowFormModal(false);
+    }
+  };
+
   useEffect(() => {
     const initialProcessing = async () => {
       if (userContext?.user?.uid) {
         realtimeGetter("spendings", setSpendingDataList, {
+          subDoc: "uid",
+          is: "==",
+          subDocCondition: userContext.user.uid,
+        });
+        realtimeGetter("spendingCategories", setCategoryDataList, {
           subDoc: "uid",
           is: "==",
           subDocCondition: userContext.user.uid,
@@ -99,12 +117,6 @@ export default function SpendingIndex() {
     <>
       <header className="p-4 border-b flex items-center justify-between">
         <h1 className="text-xl font-semibold">支出一覧</h1>
-        {/* <button
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          onClick={() => console.log("新規作成ボタンがクリックされました")}
-        >
-          新規作成
-        </button> */}
       </header>
       <div className="overflow-hidden">
         <table className="min-w-full hidden md:table table-auto">
@@ -121,6 +133,21 @@ export default function SpendingIndex() {
           handleEdit={handleEdit}
           handleDelete={handleDelete}
         />
+        {showFormModal ? (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60"
+            onClick={handleBackgroundClick}
+          >
+            <ExpenseForm
+              onSubmit={handleOnSubmit}
+              spendingInitialValues={
+                selectedSpendingData ? selectedSpendingData : undefined
+              }
+              categoryDataList={categoryDataList}
+            />
+          </div>
+        ) : null}
+
         <DeleteConfirmModal
           isOpen={showModal}
           onClose={() => setShowModal(false)}

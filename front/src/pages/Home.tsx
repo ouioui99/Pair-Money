@@ -51,9 +51,6 @@ export default function Home() {
     initialProcessing();
   }, []);
 
-  const location = useLocation();
-  const { totalAmount } = location.state || {}; // stateが存在しない場合を考慮
-
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100 p-4">
       <div className="w-full max-w-lg">
@@ -61,7 +58,7 @@ export default function Home() {
 
         <ExpenseForm
           onSubmit={handleOnSubmit}
-          totalAmount={totalAmount}
+          spendingInitialValues={undefined}
           categoryDataList={categoryDataList}
         />
       </div>

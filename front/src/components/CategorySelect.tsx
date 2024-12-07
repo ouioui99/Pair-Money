@@ -21,8 +21,10 @@ export const CategorySelect: React.FC<CategorySelect> = ({
 }) => {
   // categoryDataListが空でない場合に初期値を設定
   useEffect(() => {
-    if (categoryDataList.length > 0) {
+    if (categoryDataList.length > 0 && category === "") {
       setCategory(categoryDataList[0].data.category);
+    } else {
+      setCategory(category);
     }
   }, [categoryDataList, setCategory]);
 

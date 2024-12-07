@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CategorySelect } from "./CategorySelect";
 import { FieldValue } from "firebase/firestore";
-import { SpendingFormValue } from "../types";
+import { SpendingFormValue, SpendingIndexList } from "../types";
 
 interface TransformResult {
   totalAmount?: number;
@@ -21,13 +21,13 @@ interface CategoryData {
 
 type ExpenseFormProps = {
   onSubmit: (data: SpendingFormValue) => void;
-  totalAmount?: number;
+  spendingInitialValues?: SpendingIndexList;
   categoryDataList: CategoryData[];
 };
 
 const ExpenseForm: React.FC<ExpenseFormProps> = ({
   onSubmit,
-  totalAmount,
+  spendingInitialValues,
   categoryDataList,
 }) => {
   const navigate = useNavigate();
@@ -37,17 +37,27 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
     today.getMonth() + 1
   ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
   // transformResult.totalAmountが定義されていればその値を初期値とし、なければ空文字を設定
-  const [amount, setAmount] = useState<number | "">(
-    totalAmount !== undefined ? totalAmount : ""
+  const [amount, setAmount] = useState<string | "">(
+    spendingInitialValues?.data.amount !== undefined
+      ? spendingInitialValues?.data.amount
+      : ""
   );
-  const [date, setDate] = useState<string>(formattedToday); // 初期状態として今日の日付を設定
-  const [category, setCategory] = useState<string>("");
+  const [date, setDate] = useState<string>(
+    spendingInitialValues?.data.date !== undefined
+      ? spendingInitialValues?.data.date
+      : formattedToday
+  ); // 初期状態として今日の日付を設定
+  const [category, setCategory] = useState<string>(
+    spendingInitialValues?.data.category !== undefined
+      ? spendingInitialValues?.data.category
+      : ""
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (amount && date && category) {
-      onSubmit({ amount: Number(amount), date, category });
+      onSubmit({ amount: amount, date, category });
       setAmount("");
       setDate(formattedToday); // フォーム送信後も日付を今日にリセット
       setCategory("");
@@ -76,7 +86,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
           type="number"
           id="amount"
           value={amount}
-          onChange={(e) => setAmount(e.target.valueAsNumber || "")}
+          onChange={(e) => setAmount(e.target.value || "")}
           className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
           placeholder="例: 1000"
           required
