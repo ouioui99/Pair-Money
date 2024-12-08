@@ -1,17 +1,25 @@
 import React, { useState } from "react";
+import { CategoryIndexList, FixedCostFormValue, FixedCostList } from "../types";
 
 type FixedCostsForm = {
-  onSubmit: (data: { amount: number; category: string }) => void;
+  onSubmit: (data: FixedCostFormValue) => void;
+  initialValues?: FixedCostList;
+  categoryDataList: CategoryIndexList[];
 };
 
-const FixedCostsInputForm: React.FC<FixedCostsForm> = ({ onSubmit }) => {
-  const [amount, setAmount] = useState<number | "">("");
+const FixedCostsInputForm: React.FC<FixedCostsForm> = ({
+  onSubmit,
+  initialValues,
+  categoryDataList,
+}) => {
+  const [amount, setAmount] = useState<string>("");
   const [category, setCategory] = useState<string>("");
+  const [title, setTitle] = useState<string>("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (amount && category) {
-      onSubmit({ amount: Number(amount), category });
+      onSubmit({ title: title, amount: amount, category: category });
       setAmount("");
       setCategory("");
     }
@@ -27,13 +35,30 @@ const FixedCostsInputForm: React.FC<FixedCostsForm> = ({ onSubmit }) => {
           htmlFor="amount"
           className="block text-gray-700 font-medium mb-2"
         >
+          タイトル
+        </label>
+        <input
+          type="number"
+          id="amount"
+          value={title}
+          onChange={(e) => setTitle(e.target.value || "")}
+          className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
+          placeholder="例: 光熱費"
+          required
+        />
+      </div>
+      <div className="mb-4">
+        <label
+          htmlFor="amount"
+          className="block text-gray-700 font-medium mb-2"
+        >
           金額
         </label>
         <input
           type="number"
           id="amount"
           value={amount}
-          onChange={(e) => setAmount(e.target.valueAsNumber || "")}
+          onChange={(e) => setAmount(e.target.value || "")}
           className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
           placeholder="例: 1000"
           required

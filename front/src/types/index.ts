@@ -74,3 +74,24 @@ export interface CategoryIndexList {
   data: CategoryResponse;
   id: string;
 }
+
+//fixedCost
+export interface FixedCostList {
+  data: FixedCostsResponse;
+  id: string;
+}
+
+export interface FixedCostsResponse {
+  title: string;
+  amount: string;
+  category: string;
+  createdAt: FieldValue;
+  uid: string;
+  updatedAt: FieldValue;
+}
+
+export interface FixedCostFormValue {
+  title: string;
+  amount: string;
+  category: string;
+}

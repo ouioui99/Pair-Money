@@ -2,7 +2,11 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CategorySelect } from "./CategorySelect";
 import { FieldValue } from "firebase/firestore";
-import { SpendingFormValue, SpendingIndexList } from "../types";
+import {
+  CategoryIndexList,
+  SpendingFormValue,
+  SpendingIndexList,
+} from "../types";
 
 interface TransformResult {
   totalAmount?: number;
@@ -22,7 +26,7 @@ interface CategoryData {
 type ExpenseFormProps = {
   onSubmit: (data: SpendingFormValue) => void;
   spendingInitialValues?: SpendingIndexList;
-  categoryDataList: CategoryData[];
+  categoryDataList: CategoryIndexList[];
 };
 
 const ExpenseForm: React.FC<ExpenseFormProps> = ({
