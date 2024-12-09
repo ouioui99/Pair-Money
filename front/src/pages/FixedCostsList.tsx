@@ -83,9 +83,7 @@ export default function FixedCostsList() {
       </header>
       <div className="overflow-hidden">
         <table className="min-w-full hidden md:table table-auto">
-          <IndexListTHeader
-            tHeaders={["タイトル", "金額", "カテゴリー", "操作"]}
-          />
+          <IndexListTHeader tHeaders={["金額", "カテゴリー", "操作"]} />
           {/* <MoneyTypeIndexListTbody<CommonResponseData<CategoryResponse>>
             tbodyList={categoryDataList}
             handleEdit={handleEdit}
@@ -99,6 +97,8 @@ export default function FixedCostsList() {
             onClick={handleBackgroundClick}
           >
             <FixedCostsInputForm
+              isOpen={showFormModal}
+              onClose={() => setShowFormModal(false)}
               onSubmit={handleOnSubmit}
               initialValues={
                 selectedFixedCostData ? selectedFixedCostData : undefined
