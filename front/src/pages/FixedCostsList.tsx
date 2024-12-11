@@ -11,13 +11,21 @@ import SpendingIndexListMobile from "../components/SpendingIndexListMobile";
 import SpendingIndexListTBody from "../components/SpendingIndexListTBody";
 import {
   CategoryIndexList,
+  CategoryResponse,
   CommonResponseData,
   FixedCostFormValue,
-  FixedCostList,
+  FixedCostIndexList,
+  FixedCostsResponse,
   SpendingResponse,
 } from "../types";
-import { deleteDocument, realtimeGetter } from "../firebase/firestore";
+import {
+  deleteDocument,
+  insertData,
+  realtimeGetter,
+} from "../firebase/firestore";
 import { UserContext } from "../contexts/UserContextProvider";
+import FixedCostIndexListTBody from "../components/FixedCostIndexListTBody";
+import { serverTimestamp } from "firebase/firestore";
 
 export default function FixedCostsList() {
   const userContext = useContext(UserContext);
@@ -27,14 +35,37 @@ export default function FixedCostsList() {
     null
   );
   const [selectedFixedCostData, setSelectedFixedCostData] =
-    useState<FixedCostList | null>(null);
+    useState<FixedCostIndexList | null>(null);
 
-  const [fixedDataList, setFixedDataList] = useState<FixedCostList[]>([]);
+  const [fixedDataList, setFixedDataList] = useState<FixedCostIndexList[]>([]);
   const [categoryDataList, setCategoryDataList] = useState<CategoryIndexList[]>(
     []
   );
-  const handleOnSubmit = (data: FixedCostFormValue) => {
-    console.log(data);
+  const [category, setCategory] = useState<string>("");
+  const [categoryData, setCategoryData] =
+    useState<CommonResponseData<CategoryResponse>>();
+
+  const handleOnSubmit = (fixedFormData: FixedCostFormValue) => {
+    if (userContext?.user?.uid) {
+      if (typeof categoryData === "undefined") {
+        const fixedCostFormValue: FixedCostsResponse = {
+          category: fixedFormData.category,
+          amount: fixedFormData.amount,
+          uid: userContext.user.uid,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        };
+
+        insertData("fixedCosts", fixedCostFormValue);
+      }
+      // else {
+      //   updateCategoryData(categoryData.id, fixedFormData.category);
+      // }
+    } else {
+      //ユーザIDなしのエラー処理
+      console.log("");
+    }
+    setCategoryData(undefined);
   };
   const handleEdit = (index: number) => {
     console.log(index);
@@ -66,6 +97,11 @@ export default function FixedCostsList() {
           is: "==",
           subDocCondition: userContext.user.uid,
         });
+        // realtimeGetter("fixedCosts", setFixedDataList, {
+        //   subDoc: "uid",
+        //   is: "==",
+        //   subDocCondition: userContext.user.uid,
+        // });
       }
     };
     initialProcessing();
@@ -84,7 +120,7 @@ export default function FixedCostsList() {
       <div className="overflow-hidden">
         <table className="min-w-full hidden md:table table-auto">
           <IndexListTHeader tHeaders={["金額", "カテゴリー", "操作"]} />
-          {/* <MoneyTypeIndexListTbody<CommonResponseData<CategoryResponse>>
+          {/* <FixedCostIndexListTBody<CommonResponseData<CategoryResponse>>
             tbodyList={categoryDataList}
             handleEdit={handleEdit}
             handleDelete={handleDelete}

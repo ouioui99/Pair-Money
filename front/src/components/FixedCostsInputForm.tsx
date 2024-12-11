@@ -1,11 +1,15 @@
 import React, { useState } from "react";
-import { CategoryIndexList, FixedCostFormValue, FixedCostList } from "../types";
+import {
+  CategoryIndexList,
+  FixedCostFormValue,
+  FixedCostIndexList,
+} from "../types";
 
 type FixedCostsForm = {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: FixedCostFormValue) => void;
-  initialValues?: FixedCostList;
+  initialValues?: FixedCostIndexList;
   categoryDataList: CategoryIndexList[];
 };
 
@@ -22,15 +26,13 @@ const FixedCostsInputForm: React.FC<FixedCostsForm> = ({
   const [category, setCategory] = useState<string>(
     initialValues?.data.category || ""
   );
-  const [title, setTitle] = useState<string>(initialValues?.data.title || "");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (amount && category) {
-      onSubmit({ title: title, amount: amount, category: category });
+      onSubmit({ amount: amount, category: category });
       setAmount("");
       setCategory("");
-      setTitle("");
       onClose();
     }
   };
