@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { logout } from "../firebase/api/user/user";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../contexts/UserContextProvider";
+import CustomBottomNavigation from "../components/CustomBottomNavigation";
 
 export default function Mypage() {
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ export default function Mypage() {
         Click Me
       </button>
       <div>マイページ</div>
+      <CustomBottomNavigation />
     </>
   );
 }

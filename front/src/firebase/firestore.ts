@@ -14,6 +14,7 @@ import {
 } from "firebase/firestore";
 import { db } from "./config";
 import {
+  FixedCostUpdataRequest,
   SpendingIndexList,
   SpendingResponse,
   SpendingUpdataRequest,
@@ -49,6 +50,20 @@ export const updateSpendingData = async (
   await updateDoc(targetDB, {
     amount: data.amount,
     date: data.date,
+    category: data.category,
+  });
+};
+
+export const updateFixedCostData = async (
+  id: string,
+  data: FixedCostUpdataRequest
+) => {
+  const targetDB = doc(db, "fixedCosts", id);
+  console.log(id);
+  console.log(data);
+
+  await updateDoc(targetDB, {
+    amount: data.amount,
     category: data.category,
   });
 };

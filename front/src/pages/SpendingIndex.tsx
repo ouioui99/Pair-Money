@@ -24,6 +24,7 @@ import { findTargetIDObject } from "../util/calculateUtils";
 import DeleteConfirmModal from "../components/DeleteConfirmModal";
 import ExpenseForm from "../components/ExpenseForm";
 import { useLocation } from "react-router-dom";
+import CustomBottomNavigation from "../components/CustomBottomNavigation";
 
 export default function SpendingIndex() {
   const userContext = useContext(UserContext);
@@ -169,6 +170,7 @@ export default function SpendingIndex() {
           }
         />
       </div>
+      <CustomBottomNavigation />
     </>
   );
 }

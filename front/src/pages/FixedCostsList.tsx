@@ -1,17 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import FixedCostsInputForm from "../components/FixedCostsInputForm";
-import IndexList from "../components/IndexList";
-import FixedCostsPage from "../components/FixedCostsInputForm";
 
-import FixedCostsIndexList from "../components/FixedCostsIndexList";
 import DeleteConfirmModal from "../components/DeleteConfirmModal";
-import ExpenseForm from "../components/ExpenseForm";
 import IndexListTHeader from "../components/IndexListTHeader";
-import SpendingIndexListMobile from "../components/SpendingIndexListMobile";
-import SpendingIndexListTBody from "../components/SpendingIndexListTBody";
 import {
   CategoryIndexList,
-  CategoryResponse,
   CommonResponseData,
   FixedCostFormValue,
   FixedCostIndexList,
@@ -22,10 +15,13 @@ import {
   deleteDocument,
   insertData,
   realtimeGetter,
+  updateFixedCostData,
 } from "../firebase/firestore";
 import { UserContext } from "../contexts/UserContextProvider";
 import FixedCostIndexListTBody from "../components/FixedCostIndexListTBody";
 import { serverTimestamp } from "firebase/firestore";
+import { findTargetIDObject } from "../util/calculateUtils";
+import CustomBottomNavigation from "../components/CustomBottomNavigation";
 
 export default function FixedCostsList() {
   const userContext = useContext(UserContext);
@@ -37,17 +33,19 @@ export default function FixedCostsList() {
   const [selectedFixedCostData, setSelectedFixedCostData] =
     useState<FixedCostIndexList | null>(null);
 
-  const [fixedDataList, setFixedDataList] = useState<FixedCostIndexList[]>([]);
+  const [fixedDataList, setFixedDataList] = useState<
+    CommonResponseData<SpendingResponse>[]
+  >([]);
+
   const [categoryDataList, setCategoryDataList] = useState<CategoryIndexList[]>(
     []
   );
-  const [category, setCategory] = useState<string>("");
-  const [categoryData, setCategoryData] =
-    useState<CommonResponseData<CategoryResponse>>();
+
+  const [isEdit, setIsEdit] = useState(false);
 
   const handleOnSubmit = (fixedFormData: FixedCostFormValue) => {
     if (userContext?.user?.uid) {
-      if (typeof categoryData === "undefined") {
+      if (!isEdit) {
         const fixedCostFormValue: FixedCostsResponse = {
           category: fixedFormData.category,
           amount: fixedFormData.amount,
@@ -57,23 +55,42 @@ export default function FixedCostsList() {
         };
 
         insertData("fixedCosts", fixedCostFormValue);
+      } else {
+        if (selectedDocumentID) {
+          updateFixedCostData(selectedDocumentID, fixedFormData);
+          setIsEdit(false);
+        }
       }
-      // else {
-      //   updateCategoryData(categoryData.id, fixedFormData.category);
-      // }
     } else {
       //ユーザIDなしのエラー処理
       console.log("");
     }
-    setCategoryData(undefined);
   };
-  const handleEdit = (index: number) => {
+  const handleEdit = (index: string) => {
+    setShowFormModal(true);
+    setIsEdit(true);
+    setSelectedDocumentID(index);
+
     console.log(index);
+
+    const targetObject = findTargetIDObject<FixedCostsResponse>(
+      fixedDataList,
+      index
+    );
+    if (typeof targetObject !== "undefined") {
+      setSelectedFixedCostData(targetObject);
+    }
   };
 
-  const handleDelete = (index: number) => {
-    console.log(index);
+  const handleDelete = (
+    documentID: string,
+    spendingIndexList: FixedCostIndexList
+  ) => {
+    setSelectedDocumentID(documentID);
+    setSelectedFixedCostData(spendingIndexList);
+    setShowModal(true);
   };
+
   const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
       setShowFormModal(false);
@@ -97,11 +114,11 @@ export default function FixedCostsList() {
           is: "==",
           subDocCondition: userContext.user.uid,
         });
-        // realtimeGetter("fixedCosts", setFixedDataList, {
-        //   subDoc: "uid",
-        //   is: "==",
-        //   subDocCondition: userContext.user.uid,
-        // });
+        realtimeGetter("fixedCosts", setFixedDataList, {
+          subDoc: "uid",
+          is: "==",
+          subDocCondition: userContext.user.uid,
+        });
       }
     };
     initialProcessing();
@@ -120,11 +137,11 @@ export default function FixedCostsList() {
       <div className="overflow-hidden">
         <table className="min-w-full hidden md:table table-auto">
           <IndexListTHeader tHeaders={["金額", "カテゴリー", "操作"]} />
-          {/* <FixedCostIndexListTBody<CommonResponseData<CategoryResponse>>
-            tbodyList={categoryDataList}
+          <FixedCostIndexListTBody<CommonResponseData<FixedCostsResponse>>
+            tbodyList={fixedDataList}
             handleEdit={handleEdit}
             handleDelete={handleDelete}
-          /> */}
+          />
         </table>
 
         {showFormModal ? (
@@ -149,12 +166,12 @@ export default function FixedCostsList() {
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         onConfirm={confirmDelete}
-        title="このカテゴリーを削除しますか？"
+        title="この固定費を削除しますか？"
         description={
           selectedFixedCostData ? (
             <>
               <p className="text-sm text-center text-gray-600 mb-4">
-                以下のカテゴリーを削除すると元に戻せません。
+                以下の固定費を削除すると元に戻せません。
               </p>
               <p className="text-lg font-bold text-black bg-gray-100 px-4 py-2 rounded-md text-center">
                 {/* 「{selectedFixedCostData}」 */}
@@ -165,28 +182,7 @@ export default function FixedCostsList() {
           )
         }
       />
-
-      {/* <MoneyTypeIndexListMobile<CommonResponseData<CategoryResponse>>
-        tbodyList={categoryDataList}
-        handleEdit={handleEdit}
-        handleDelete={handleDelete}
-      /> */}
-
-      {/* <div className="font-bold text-gray-700 flex flex-col items-center justify-start">
-        <div className="w-full max-w-lg">
-          <div className="w-full p-1">
-            <h1 className="text-2xl font-bold text-center mb-6">固定費管理</h1>
-            <div className="sticky top-0 z-10 w-full rounded-md"></div>
-          </div>
-        </div>
-      </div>
-      <div className="flex flex-col w-full p-1 rounded-md">
-        <FixedCostsIndexList
-          fixedCosts={[{ amount: 1000, category: "string" }]}
-          handleEdit={handleEdit}
-          handleDelete={handleDelete}
-        ></FixedCostsIndexList>
-      </div> */}
+      <CustomBottomNavigation />
     </>
   );
 }

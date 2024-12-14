@@ -21,6 +21,7 @@ import {
 import IndexListTHeader from "../components/IndexListTHeader";
 import MoneyTypeIndexListTbody from "../components/MoneyTypeIndexListTBody";
 import MoneyTypeIndexListMobile from "../components/MoneyTypeIndexListMobile";
+import CustomBottomNavigation from "../components/CustomBottomNavigation";
 
 export default function SpendingCategory() {
   const userContext = useContext(UserContext);
@@ -100,7 +101,7 @@ export default function SpendingCategory() {
   }, []);
 
   return (
-    <>
+    <div className="h-[100dvh]">
       <header className="p-4 border-b flex items-center justify-between">
         <h1 className="text-xl font-semibold">カテゴリー一覧</h1>
         <button
@@ -110,7 +111,7 @@ export default function SpendingCategory() {
           新規作成
         </button>
       </header>
-      <div className="overflow-hidden">
+      <div className="flex-grow">
         <table className="min-w-full hidden md:table table-auto">
           <IndexListTHeader tHeaders={["カテゴリー", "操作"]} />
           <MoneyTypeIndexListTbody<CommonResponseData<CategoryResponse>>
@@ -155,6 +156,7 @@ export default function SpendingCategory() {
         handleEdit={handleEdit}
         handleDelete={handleDelete}
       />
-    </>
+      <CustomBottomNavigation />
+    </div>
   );
 }

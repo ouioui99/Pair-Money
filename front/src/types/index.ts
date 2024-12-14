@@ -93,3 +93,8 @@ export interface FixedCostFormValue {
   amount: string;
   category: string;
 }
+
+export interface FixedCostUpdataRequest {
+  amount: string;
+  category: string;
+}

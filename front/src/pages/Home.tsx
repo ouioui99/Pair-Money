@@ -52,7 +52,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100 p-4">
+    <div className="flex items-center justify-center h-[100dvh] bg-gray-100 overflow-hidden">
       <div className="w-full max-w-lg">
         <h1 className="text-2xl font-bold text-center mb-6">ホーム画面</h1>
 
