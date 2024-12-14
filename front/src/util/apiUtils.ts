@@ -1,12 +1,27 @@
-import { List } from "postcss/lib/list";
+interface transformResult {
+  totalAmount?: number;
+  error?: { title: string; message: string };
+}
 
-export const transformApiData = (apiData: any) => {
+export const transformApiData = (apiData: any): transformResult => {
   const textAnnotations = apiData.textAnnotations;
   const numberAndConmaReg = /[0-9,]+/g;
   const totalAmountNumbersAndConmaList = [];
 
+  const result: transformResult = {};
+
+  console.log(textAnnotations);
+  if (typeof textAnnotations == "undefined") {
+    result.error = {
+      title: "文字の認識に失敗しました。",
+      message: "再撮影を実施するか手入力してください",
+    };
+    return result;
+  }
+
   for (let i = 0; i < textAnnotations.length; i++) {
     const description = textAnnotations[i].description;
+
     if (description.match("合計")) {
       if (textAnnotations[i + 1].description === "¥") {
         for (let s = 2; s < 10; s++) {
@@ -22,33 +37,25 @@ export const transformApiData = (apiData: any) => {
     }
   }
 
-  const totalAmount = getTotalAmount(totalAmountNumbersAndConmaList);
-  console.log(totalAmount);
+  const totalIntAmount = getIntAmount(totalAmountNumbersAndConmaList);
 
-  return totalAmount;
+  addResult(totalIntAmount, result);
+
+  return result;
 };
 
-const getTotalAmount = (totalAmountNumbersAndConmaList: any[]) => {
-  const intAmountList = getIntAmountList(totalAmountNumbersAndConmaList);
-  switch (intAmountList.length) {
-    case 1:
-      return intAmountList[0];
-
-    case 0:
-      return "合計の抽出に失敗しました。";
-
-    default:
-      break;
-  }
-  console.log(totalAmountNumbersAndConmaList);
+const getIntAmount = (amountList: any[]) => {
+  const intAmount = parseInt(amountList.join("").replace(",", ""), 10);
+  return intAmount;
 };
 
-const getIntAmountList = (amountList: any[]) => {
-  const intAmountList = [];
-  for (let i = 0; i < amountList.length; i++) {
-    const totalAmountStr = amountList[i].replace(/,/g, "");
-    const totalAmountInt = parseInt(totalAmountStr, 10);
-    intAmountList.push(totalAmountInt);
+const addResult = (intAmount: number, result: transformResult): void => {
+  if (isNaN(intAmount)) {
+    result.error = {
+      title: "合計の抽出に失敗しました。",
+      message: "再撮影を実施するか手入力してください",
+    };
+  } else if (typeof intAmount) {
+    result.totalAmount = intAmount;
   }
-  return intAmountList;
 };

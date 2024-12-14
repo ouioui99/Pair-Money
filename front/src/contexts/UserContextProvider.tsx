@@ -36,7 +36,7 @@ const UserContextProvider: React.FC<Props> = ({ children }) => {
     initialAuthentication().then((user) => {
       setUser(user);
       setLoading(false);
-      console.log("aaa");
+      // console.log(user?.uid);
     });
   }, []);
 

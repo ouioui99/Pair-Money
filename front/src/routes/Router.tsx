@@ -6,10 +6,11 @@ import Signup from "../pages/Signup";
 import PrivateRouter from "./PrivateRouter";
 import PublicRouter from "./PublicRouter";
 import CustomBottomNavigation from "../components/CustomBottomNavigation";
-import SpendingSummary from "../pages/SpendingSummary";
 import FixedCostsList from "../pages/FixedCostsList";
 import Mypage from "../pages/Mypage";
 import ReceiptScanning from "../pages/ReceiptScanning";
+import SpendingIndex from "../pages/SpendingIndex";
+import SpendingType from "../pages/SpendingType";
 
 export default function Router() {
   return (
@@ -20,7 +21,6 @@ export default function Router() {
           element={
             <PrivateRouter>
               <Home />
-              <CustomBottomNavigation />
             </PrivateRouter>
           }
         />
@@ -28,7 +28,7 @@ export default function Router() {
           path="/spending-summary"
           element={
             <PrivateRouter>
-              <SpendingSummary />
+              <SpendingType />
               <CustomBottomNavigation />
             </PrivateRouter>
           }
@@ -48,6 +48,15 @@ export default function Router() {
             <PrivateRouter>
               <ReceiptScanning />
               {/* <CustomBottomNavigation /> */}
+            </PrivateRouter>
+          }
+        />
+        <Route
+          path="/spending-index"
+          element={
+            <PrivateRouter>
+              <SpendingIndex />
+              <CustomBottomNavigation />
             </PrivateRouter>
           }
         />
