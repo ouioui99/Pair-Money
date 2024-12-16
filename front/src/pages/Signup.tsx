@@ -10,16 +10,37 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [errorMessages, setErrorMessages] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
+    general: "",
+  });
   const userContext = useContext(UserContext);
   const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setErrorMessages({
+      email: "",
+      password: "",
+      confirmPassword: "",
+      general: "",
+    }); // Reset error messages
+
+    // Check if passwords match
+    if (password !== confirmPassword) {
+      setErrorMessages((prev) => ({
+        ...prev,
+        confirmPassword: "パスワードが一致しません",
+      }));
+      return;
+    }
+
     if (userContext) {
       singup(email, password)
         .then((result) => {
           const user = {
-            //name: result?.name,
             uid: result.uid,
             created_at: firebase.firestore.FieldValue.serverTimestamp(),
           };
@@ -29,12 +50,47 @@ export default function Signup() {
           userContext.setUser(result);
           navigate("/");
         })
-        .catch((error) => {
-          console.log(error.errorCode);
+        .catch((e) => {
+          console.log(e);
+
+          // Handle specific error codes
+          switch (e.errorCode) {
+            case "auth/email-already-in-use":
+              setErrorMessages((prev) => ({
+                ...prev,
+                email: "指定したメールアドレスは登録済みです",
+              }));
+              break;
+            case "auth/invalid-email":
+              setErrorMessages((prev) => ({
+                ...prev,
+                email: "メールアドレスのフォーマットが正しくありません",
+              }));
+              break;
+            case "auth/operation-not-allowed":
+              setErrorMessages((prev) => ({
+                ...prev,
+                general:
+                  "指定したメールアドレス・パスワードは現在使用できません",
+              }));
+              break;
+            case "auth/weak-password":
+              setErrorMessages((prev) => ({
+                ...prev,
+                password: "パスワードは6文字以上にしてください",
+              }));
+              break;
+            default:
+              setErrorMessages((prev) => ({
+                ...prev,
+                general: "サインアップに失敗しました。もう一度お試しください。",
+              }));
+              break;
+          }
         });
     }
-    e.preventDefault();
   };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded shadow-md">
@@ -55,7 +111,11 @@ export default function Signup() {
               required={true}
               value={email}
               onChange={setEmail}
+              error={!!errorMessages.email}
             />
+            {errorMessages.email && (
+              <p className="mt-1 text-sm text-red-500">{errorMessages.email}</p>
+            )}
           </div>
           <div>
             <label
@@ -72,7 +132,13 @@ export default function Signup() {
               required={true}
               value={password}
               onChange={setPassword}
+              error={!!errorMessages.password}
             />
+            {errorMessages.password && (
+              <p className="mt-1 text-sm text-red-500">
+                {errorMessages.password}
+              </p>
+            )}
           </div>
           <div>
             <label
@@ -89,8 +155,17 @@ export default function Signup() {
               required={true}
               value={confirmPassword}
               onChange={setConfirmPassword}
+              error={!!errorMessages.confirmPassword}
             />
+            {errorMessages.confirmPassword && (
+              <p className="mt-1 text-sm text-red-500">
+                {errorMessages.confirmPassword}
+              </p>
+            )}
           </div>
+          {errorMessages.general && (
+            <p className="mt-1 text-sm text-red-500">{errorMessages.general}</p>
+          )}
           <div>
             <button
               type="submit"
