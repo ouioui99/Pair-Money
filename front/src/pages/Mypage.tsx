@@ -5,10 +5,12 @@ import { UserContext } from "../contexts/UserContextProvider";
 import CustomBottomNavigation from "../components/CustomBottomNavigation";
 import NavBar from "../components/NavBar";
 import { FiLogOut, FiUserPlus } from "react-icons/fi";
+import { AiOutlineEdit, AiOutlineFolderAdd } from "react-icons/ai";
 
 export default function Mypage() {
   const navigate = useNavigate();
   const userContext = useContext(UserContext);
+
   const handleLogout = () => {
     logout().then((result) => {
       if (result === "") {
@@ -19,31 +21,50 @@ export default function Mypage() {
       }
     });
   };
+
   return (
     <div>
       {/* ヘッダーセクション */}
       <header className="p-4 border-b flex items-center justify-between">
         <h1 className="text-xl font-semibold">マイページ</h1>
+        <button
+          className="flex items-center bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          onClick={handleLogout}
+        >
+          <FiLogOut className="mr-2" />
+          ログアウト
+        </button>
       </header>
 
       {/* メインコンテンツ */}
-      <main className="flex flex-col items-center justify-center flex-grow space-y-6 bg-gray-100 min-h-screen flex flex-col items-center">
+      <main className="flex flex-col items-center justify-center space-y-6 bg-gray-100 min-h-screen py-8">
         {/* ボタン群 */}
-        <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4">
+        <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6">
+          {/* メンバー作成ボタン */}
           <button
-            onClick={handleLogout}
-            className="flex items-center px-6 py-3 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 shadow-md"
+            onClick={() => navigate("/member-create")}
+            className="flex items-center justify-center w-48 px-6 py-3 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 shadow-md"
           >
-            <FiUserPlus className="mr-2" />
+            <FiUserPlus className="mr-2" size={20} />
             メンバー作成
           </button>
 
+          {/* 固定費一覧画面遷移ボタン */}
           <button
-            onClick={handleLogout}
-            className="flex items-center px-6 py-3 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md"
+            onClick={() => navigate("/fixed-costs-list")}
+            className="flex items-center justify-center w-48 px-6 py-3 bg-purple-500 text-white rounded hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-400 shadow-md"
           >
-            <FiLogOut className="mr-2" />
-            ログアウト
+            <AiOutlineEdit className="mr-2" size={20} />
+            固定費一覧
+          </button>
+
+          {/* カテゴリ一覧画面遷移ボタン */}
+          <button
+            onClick={() => navigate("/spending-summary")}
+            className="flex items-center justify-center w-48 px-6 py-3 bg-yellow-500 text-white rounded hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-400 shadow-md"
+          >
+            <AiOutlineFolderAdd className="mr-2" size={20} />
+            カテゴリ一覧
           </button>
         </div>
       </main>
