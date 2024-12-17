@@ -22,6 +22,7 @@ import FixedCostIndexListTBody from "../components/FixedCostIndexListTBody";
 import { serverTimestamp } from "firebase/firestore";
 import { findTargetIDObject } from "../util/calculateUtils";
 import CustomBottomNavigation from "../components/CustomBottomNavigation";
+import FixedCostIndexListMobile from "../components/FixedCostIndexListMobile";
 
 export default function FixedCostsList() {
   const userContext = useContext(UserContext);
@@ -71,8 +72,6 @@ export default function FixedCostsList() {
     setIsEdit(true);
     setSelectedDocumentID(index);
 
-    console.log(index);
-
     const targetObject = findTargetIDObject<FixedCostsResponse>(
       fixedDataList,
       index
@@ -121,6 +120,7 @@ export default function FixedCostsList() {
         });
       }
     };
+
     initialProcessing();
   }, []);
   return (
@@ -181,6 +181,12 @@ export default function FixedCostsList() {
             "削除すると元に戻せません。本当に削除してよろしいですか？"
           )
         }
+      />
+
+      <FixedCostIndexListMobile<CommonResponseData<FixedCostsResponse>>
+        tbodyList={fixedDataList}
+        handleEdit={handleEdit}
+        handleDelete={handleDelete}
       />
       <CustomBottomNavigation />
     </>

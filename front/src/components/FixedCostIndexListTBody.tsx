@@ -10,9 +10,7 @@ const FixedCostIndexListTBody = <T extends FixedCostIndexList>({
     <tbody>
       {tbodyList.map((fixedCostData, index) => (
         <tr key={index} className="border-t hover:bg-gray-200">
-          <td className="p-4">
-            ￥{fixedCostData.data.amount.toLocaleString()}
-          </td>
+          <td className="p-4">￥{fixedCostData.data.amount}</td>
           <td className="p-4">{fixedCostData.data.category}</td>
           <td className="p-4">
             {/* 編集ボタン */}
