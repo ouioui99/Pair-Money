@@ -14,21 +14,25 @@ const MemberInputForm: React.FC<FixedCostsForm> = ({
   onSubmit,
   initialValues,
 }) => {
-  const [memberName, setMembarName] = useState<string>(
-    initialValues?.data.memberName || ""
-  );
+  const [name, setName] = useState<string>(initialValues?.data.name || "");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (memberName) {
-      onSubmit({ memberName: memberName });
-      setMembarName("");
+    if (name) {
+      onSubmit({ name: name });
+      setName("");
       onClose();
     }
   };
 
+  const handleCancel = () => {
+    setName("");
+    onClose();
+  };
+
   const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
+      setName("");
       onClose();
     }
   };
@@ -51,16 +55,16 @@ const MemberInputForm: React.FC<FixedCostsForm> = ({
           {/* メンバー名入力 */}
           <div>
             <label
-              htmlFor="memberName"
+              htmlFor="name"
               className="block text-gray-800 font-medium mb-2 text-sm"
             >
               メンバー名
             </label>
             <input
               type="text"
-              id="memberName"
-              value={memberName}
-              onChange={(e) => setMembarName(e.target.value || "")}
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value || "")}
               className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent text-base"
               placeholder="例: 太郎"
               required
@@ -78,7 +82,7 @@ const MemberInputForm: React.FC<FixedCostsForm> = ({
           {/* キャンセルボタン */}
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleCancel}
             className="w-full py-3 text-base font-semibold text-gray-700 bg-gray-200 rounded-md shadow hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400"
           >
             キャンセル

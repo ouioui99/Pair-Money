@@ -1,32 +1,23 @@
 import React, { useContext, useEffect, useState } from "react";
-import FixedCostsInputForm from "../components/MemberInputForm";
 
 import DeleteConfirmModal from "../components/DeleteConfirmModal";
 import IndexListTHeader from "../components/IndexListTHeader";
 import {
-  CategoryIndexList,
   CommonResponseData,
-  FixedCostFormValue,
-  FixedCostIndexList,
-  FixedCostsResponse,
   MemberFormValue,
   MemberIndexList,
   MembersResponse,
-  SpendingResponse,
 } from "../types";
 import {
   deleteDocument,
   insertData,
   realtimeGetter,
-  updateFixedCostData,
   updateMemberData,
 } from "../firebase/firestore";
 import { UserContext } from "../contexts/UserContextProvider";
-import FixedCostIndexListTBody from "../components/FixedCostIndexListTBody";
 import { serverTimestamp } from "firebase/firestore";
 import { findTargetIDObject } from "../util/calculateUtils";
 import CustomBottomNavigation from "../components/CustomBottomNavigation";
-import FixedCostIndexListMobile from "../components/FixedCostIndexListMobile";
 import MemberIndexListTBody from "../components/MemberIndexListTBody";
 import MemberInputForm from "../components/MemberInputForm";
 import MemberIndexListMobile from "../components/MemberIndexListMobile";
@@ -45,17 +36,13 @@ export default function MemberList() {
     CommonResponseData<MembersResponse>[]
   >([]);
 
-  const [categoryDataList, setCategoryDataList] = useState<CategoryIndexList[]>(
-    []
-  );
-
   const [isEdit, setIsEdit] = useState(false);
 
   const handleOnSubmit = (memberFormData: MemberFormValue) => {
     if (userContext?.user?.uid) {
       if (!isEdit) {
         const membarFormValue: MembersResponse = {
-          memberName: memberFormData.memberName,
+          name: memberFormData.name,
           uid: userContext.user.uid,
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
@@ -102,8 +89,13 @@ export default function MemberList() {
     }
   };
 
+  const handleCancelClick = () => {
+    setSelectedMemberData(null);
+    setShowFormModal(false);
+  };
+
   const confirmDelete = () => {
-    const collectionName = "fixedCosts";
+    const collectionName = "members";
     if (selectedDocumentID) {
       deleteDocument(collectionName, selectedDocumentID);
     }
@@ -152,7 +144,7 @@ export default function MemberList() {
           >
             <MemberInputForm
               isOpen={showFormModal}
-              onClose={() => setShowFormModal(false)}
+              onClose={handleCancelClick}
               onSubmit={handleOnSubmit}
               initialValues={
                 selectedMemberData ? selectedMemberData : undefined
@@ -174,7 +166,7 @@ export default function MemberList() {
                 以下のメンバーを削除すると元に戻せません。
               </p>
               <p className="text-lg font-bold text-black bg-gray-100 px-4 py-2 rounded-md text-center">
-                「{selectedMemberData.data.memberName}」
+                「{selectedMemberData.data.name}」
               </p>
             </>
           ) : (

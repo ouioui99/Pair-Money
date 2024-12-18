@@ -9,7 +9,7 @@ const MemberIndexListTBody = <T extends MemberIndexList>({
     <tbody>
       {tbodyList.map((membersData, index) => (
         <tr key={index} className="border-t hover:bg-gray-200">
-          <td className="p-4">{membersData.data.memberName}</td>
+          <td className="p-4">{membersData.data.name}</td>
           <td className="p-4">
             {/* 編集ボタン */}
             <button

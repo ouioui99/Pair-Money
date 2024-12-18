@@ -36,6 +36,7 @@ export interface CreateSpendingRequest {
   amount: string;
   date: string;
   category: string;
+  member: string;
   uid: string;
   createdAt: FieldValue;
   updatedAt: FieldValue;
@@ -44,12 +45,14 @@ export interface CreateSpendingRequest {
 export interface SpendingFormValue {
   amount: string;
   date: string;
+  member: string;
   category: string;
 }
 
 export interface SpendingResponse {
   amount: string;
   category: string;
+  member: string;
   createdAt: FieldValue;
   date: string;
   uid: string;
@@ -106,12 +109,12 @@ export interface MemberIndexList {
 }
 
 export interface MembersResponse {
-  memberName: string;
+  name: string;
   createdAt: FieldValue;
   uid: string;
   updatedAt: FieldValue;
 }
 
 export interface MemberFormValue {
-  memberName: string;
+  name: string;
 }

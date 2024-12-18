@@ -81,6 +81,12 @@ export default function SpendingCategory() {
     setSelectedDocumentID(null);
   };
 
+  const handleCancelClick = () => {
+    setSelectedCategoryName(null);
+    setCategory("");
+    setShowFormModal(false);
+  };
+
   const handleDelete = (documentID: string, item: CategoryIndexList) => {
     setSelectedDocumentID(documentID);
     setSelectedCategoryName(item.data.category);
@@ -123,7 +129,7 @@ export default function SpendingCategory() {
 
         <SpendingCategoriesInputFormModal
           isOpen={showFormModal}
-          onClose={() => setShowFormModal(false)}
+          onClose={handleCancelClick}
           onSubmit={handleOnSubmit}
           category={category}
           setCategory={setCategory}

@@ -4,35 +4,24 @@ import { CategorySelect } from "./CategorySelect";
 import { FieldValue } from "firebase/firestore";
 import {
   CategoryIndexList,
+  MemberIndexList,
   SpendingFormValue,
   SpendingIndexList,
 } from "../types";
-
-interface TransformResult {
-  totalAmount?: number;
-  error?: { title: string; message: string };
-}
-
-interface CategoryData {
-  data: {
-    category: string;
-    uid: string;
-    createdAt: FieldValue;
-    updatedAt: FieldValue;
-  };
-  id: string;
-}
+import { MemberSelect } from "./MemberSelect";
 
 type ExpenseFormProps = {
   onSubmit: (data: SpendingFormValue) => void;
   spendingInitialValues?: SpendingIndexList;
   categoryDataList: CategoryIndexList[];
+  memberDataList: MemberIndexList[];
 };
 
 const ExpenseForm: React.FC<ExpenseFormProps> = ({
   onSubmit,
   spendingInitialValues,
   categoryDataList,
+  memberDataList,
 }) => {
   const navigate = useNavigate();
 
@@ -56,12 +45,17 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
       ? spendingInitialValues?.data.category
       : ""
   );
+  const [member, setMember] = useState<string>(
+    spendingInitialValues?.data.member !== undefined
+      ? spendingInitialValues?.data.member
+      : ""
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (amount && date && category) {
-      onSubmit({ amount: amount, date, category });
+      onSubmit({ amount, date, category, member });
       setAmount("");
       setDate(formattedToday); // フォーム送信後も日付を今日にリセット
       setCategory("");
@@ -110,6 +104,12 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
           required
         />
       </div>
+
+      <MemberSelect
+        member={member}
+        setMember={setMember}
+        memberDataList={memberDataList}
+      ></MemberSelect>
 
       <CategorySelect
         category={category}

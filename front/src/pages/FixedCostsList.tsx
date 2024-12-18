@@ -90,6 +90,11 @@ export default function FixedCostsList() {
     setShowModal(true);
   };
 
+  const handleCancelClick = () => {
+    setSelectedFixedCostData(null);
+    setShowFormModal(false);
+  };
+
   const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
       setShowFormModal(false);
@@ -151,7 +156,7 @@ export default function FixedCostsList() {
           >
             <FixedCostsInputForm
               isOpen={showFormModal}
-              onClose={() => setShowFormModal(false)}
+              onClose={handleCancelClick}
               onSubmit={handleOnSubmit}
               initialValues={
                 selectedFixedCostData ? selectedFixedCostData : undefined

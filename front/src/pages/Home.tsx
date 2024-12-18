@@ -12,6 +12,7 @@ import {
   CategoryIndexList,
   CategoryResponse,
   CreateSpendingRequest,
+  MemberIndexList,
   SpendingFormValue,
 } from "../types";
 
@@ -20,11 +21,15 @@ export default function Home() {
   const [categoryDataList, setCategoryDataList] = useState<CategoryIndexList[]>(
     []
   );
+  const [membersDataList, setMemebersDataList] = useState<MemberIndexList[]>(
+    []
+  );
   const handleOnSubmit = (data: SpendingFormValue) => {
     if (userContext?.user?.uid) {
       const spendingFormValue: CreateSpendingRequest = {
         amount: data.amount,
         date: data.date,
+        member: data.member,
         category: data.category,
         uid: userContext.user.uid,
         createdAt: serverTimestamp(),
@@ -46,6 +51,11 @@ export default function Home() {
           is: "==",
           subDocCondition: userContext.user.uid,
         });
+        realtimeGetter("members", setMemebersDataList, {
+          subDoc: "uid",
+          is: "==",
+          subDocCondition: userContext.user.uid,
+        });
       }
     };
     initialProcessing();
@@ -60,6 +70,7 @@ export default function Home() {
           onSubmit={handleOnSubmit}
           spendingInitialValues={undefined}
           categoryDataList={categoryDataList}
+          memberDataList={membersDataList}
         />
       </div>
       <CustomBottomNavigation />

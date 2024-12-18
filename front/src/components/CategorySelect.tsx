@@ -1,17 +1,11 @@
 import { FieldValue } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-
-interface CategoryData {
-  category: string;
-  uid: string;
-  createdAt: FieldValue;
-  updatedAt: FieldValue;
-}
+import { CategoryResponse } from "../types";
 
 interface CategorySelect {
   category: string;
   setCategory: (e: string) => void;
-  categoryDataList: { data: CategoryData; id: string }[];
+  categoryDataList: { data: CategoryResponse; id: string }[];
 }
 
 export const CategorySelect: React.FC<CategorySelect> = ({

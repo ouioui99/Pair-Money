@@ -23,7 +23,7 @@ export default function FixedCostIndexListMobile<
               メンバー名
             </span>
             <span className="text-xl font-semibold text-gray-900">
-              {memberData.data.memberName}
+              {memberData.data.name}
             </span>
           </div>
           <div className="flex justify-end mt-4 space-x-4">

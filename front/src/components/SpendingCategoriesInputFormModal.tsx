@@ -27,6 +27,7 @@ const SpendingCategoriesInputFormModal: React.FC<FixedCostsForm> = ({
 
   const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
+      setCategory("");
       onClose();
     }
   };
