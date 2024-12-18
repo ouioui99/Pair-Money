@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import FixedCostsInputForm from "../components/FixedCostsInputForm";
+import FixedCostsInputForm from "../components/MemberInputForm";
 import ExpenseFormPopup from "../components/ExpenseFormPopup";
 import ExpenseForm from "../components/ExpenseForm";
 import IndexList from "../components/IndexList";

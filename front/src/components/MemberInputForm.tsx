@@ -1,38 +1,28 @@
 import React, { useState } from "react";
-import {
-  CategoryIndexList,
-  FixedCostFormValue,
-  FixedCostIndexList,
-} from "../types";
+import { MemberFormValue, MemberIndexList } from "../types";
 
 type FixedCostsForm = {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: FixedCostFormValue) => void;
-  initialValues?: FixedCostIndexList;
-  categoryDataList: CategoryIndexList[];
+  onSubmit: (data: MemberFormValue) => void;
+  initialValues?: MemberIndexList;
 };
 
-const FixedCostsInputForm: React.FC<FixedCostsForm> = ({
+const MemberInputForm: React.FC<FixedCostsForm> = ({
   isOpen,
   onClose,
   onSubmit,
   initialValues,
-  categoryDataList,
 }) => {
-  const [amount, setAmount] = useState<string>(
-    initialValues?.data.amount || ""
-  );
-  const [category, setCategory] = useState<string>(
-    initialValues?.data.category || ""
+  const [memberName, setMembarName] = useState<string>(
+    initialValues?.data.memberName || ""
   );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (amount && category) {
-      onSubmit({ amount: amount, category: category });
-      setAmount("");
-      setCategory("");
+    if (memberName) {
+      onSubmit({ memberName: memberName });
+      setMembarName("");
       onClose();
     }
   };
@@ -54,51 +44,27 @@ const FixedCostsInputForm: React.FC<FixedCostsForm> = ({
         className="w-full max-w-md mx-auto p-6 bg-gradient-to-b from-white via-gray-50 to-gray-100 rounded-xl shadow-2xl max-h-[80vh] overflow-auto"
         onClick={(e) => e.stopPropagation()} // 背景クリック時の閉じ動作を無効化
       >
-        <h2 className="text-xl font-semibold text-gray-800 mb-6 text-center">
-          金額登録
+        <h2 className="text-xl font-semibold text-gray-800 mb-4 text-center">
+          メンバー登録
         </h2>
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* 金額入力 */}
+          {/* メンバー名入力 */}
           <div>
             <label
-              htmlFor="amount"
+              htmlFor="memberName"
               className="block text-gray-800 font-medium mb-2 text-sm"
             >
-              金額
+              メンバー名
             </label>
             <input
-              type="number"
-              id="amount"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value || "")}
+              type="text"
+              id="memberName"
+              value={memberName}
+              onChange={(e) => setMembarName(e.target.value || "")}
               className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent text-base"
-              placeholder="例: 1000"
+              placeholder="例: 太郎"
               required
             />
-          </div>
-
-          {/* カテゴリー選択 */}
-          <div>
-            <label
-              htmlFor="category"
-              className="block text-gray-800 font-medium mb-2 text-sm"
-            >
-              カテゴリー
-            </label>
-            <select
-              id="category"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent text-base"
-              required
-            >
-              <option value="">選択してください</option>
-              {categoryDataList.map((item) => (
-                <option key={item.id} value={item.data.category}>
-                  {item.data.category}
-                </option>
-              ))}
-            </select>
           </div>
 
           {/* 登録ボタン */}
@@ -123,4 +89,4 @@ const FixedCostsInputForm: React.FC<FixedCostsForm> = ({
   );
 };
 
-export default FixedCostsInputForm;
+export default MemberInputForm;

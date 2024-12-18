@@ -15,6 +15,7 @@ import {
 import { db } from "./config";
 import {
   FixedCostUpdataRequest,
+  MemberFormValue,
   SpendingIndexList,
   SpendingResponse,
   SpendingUpdataRequest,
@@ -59,12 +60,18 @@ export const updateFixedCostData = async (
   data: FixedCostUpdataRequest
 ) => {
   const targetDB = doc(db, "fixedCosts", id);
-  console.log(id);
-  console.log(data);
 
   await updateDoc(targetDB, {
     amount: data.amount,
     category: data.category,
+  });
+};
+
+export const updateMemberData = async (id: string, data: MemberFormValue) => {
+  const targetDB = doc(db, "members", id);
+
+  await updateDoc(targetDB, {
+    amount: data.memberName,
   });
 };
 

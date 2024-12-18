@@ -98,3 +98,20 @@ export interface FixedCostUpdataRequest {
   amount: string;
   category: string;
 }
+
+//member
+export interface MemberIndexList {
+  data: MembersResponse;
+  id: string;
+}
+
+export interface MembersResponse {
+  memberName: string;
+  createdAt: FieldValue;
+  uid: string;
+  updatedAt: FieldValue;
+}
+
+export interface MemberFormValue {
+  memberName: string;
+}
