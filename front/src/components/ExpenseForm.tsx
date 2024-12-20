@@ -9,7 +9,7 @@ import {
   SpendingIndexList,
 } from "../types";
 import { MemberSelect } from "./MemberSelect";
-import { formattedToday } from "../util/dateUtils";
+import dayjs, { Dayjs } from "dayjs";
 
 type ExpenseFormProps = {
   onSubmit: (data: SpendingFormValue) => void;
@@ -32,10 +32,10 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
       ? spendingInitialValues?.data.amount
       : ""
   );
-  const [date, setDate] = useState<string>(
-    spendingInitialValues?.data.date !== undefined
-      ? spendingInitialValues?.data.date
-      : formattedToday
+  const [date, setDate] = useState<Dayjs>(
+    spendingInitialValues?.data.date
+      ? dayjs(spendingInitialValues?.data.date) // 初期値があれば day.js オブジェクトに変換
+      : dayjs() // 今日の日付を初期値として設定
   ); // 初期状態として今日の日付を設定
   const [category, setCategory] = useState<string>(
     spendingInitialValues?.data.category !== undefined
@@ -54,7 +54,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
     if (amount && date && category) {
       onSubmit({ amount, date, category, member });
       setAmount("");
-      setDate(formattedToday); // フォーム送信後も日付を今日にリセット
+      setDate(dayjs()); // フォーム送信後も日付を今日にリセット
       setCategory("");
     }
   };
@@ -95,8 +95,8 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
         <input
           type="date"
           id="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
+          value={date.format("YYYY-MM-DD")}
+          onChange={(e) => setDate(dayjs(e.target.value))}
           className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
           required
         />

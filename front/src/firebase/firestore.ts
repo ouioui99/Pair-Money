@@ -23,6 +23,8 @@ import {
 
 export const insertData = async (table: string, data: Object) => {
   try {
+    console.log(data);
+
     const docRef = await addDoc(collection(db, table), data);
     console.log("success");
   } catch (e) {
@@ -120,6 +122,7 @@ export const realtimeGetter = <T>(
       results.push({ data: doc.data(), id: doc.id } as T);
     });
     setter(results);
+    console.log(results);
 
     return results;
   });

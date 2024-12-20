@@ -25,10 +25,12 @@ export default function Home() {
     []
   );
   const handleOnSubmit = (data: SpendingFormValue) => {
+    console.log(data.date);
+
     if (userContext?.user?.uid) {
       const spendingFormValue: CreateSpendingRequest = {
         amount: data.amount,
-        date: data.date,
+        date: data.date.toDate(),
         member: data.member,
         category: data.category,
         uid: userContext.user.uid,

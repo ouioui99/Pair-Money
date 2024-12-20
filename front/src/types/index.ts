@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { FieldValue } from "firebase/firestore";
 
 //common
@@ -40,7 +41,7 @@ export type SpendingIndexList = {
 
 export interface CreateSpendingRequest {
   amount: string;
-  date: string;
+  date: Date;
   category: string;
   member: string;
   uid: string;
@@ -50,7 +51,7 @@ export interface CreateSpendingRequest {
 
 export interface SpendingFormValue {
   amount: string;
-  date: string;
+  date: dayjs.Dayjs;
   member: string;
   category: string;
 }
@@ -60,7 +61,7 @@ export interface SpendingResponse {
   category: string;
   member: string;
   createdAt: FieldValue;
-  date: string;
+  date: dayjs.Dayjs;
   uid: string;
   updatedAt: FieldValue;
 }
@@ -68,7 +69,7 @@ export interface SpendingResponse {
 export interface SpendingUpdataRequest {
   amount: string;
   category: string;
-  date: string;
+  date: Date;
 }
 
 //category

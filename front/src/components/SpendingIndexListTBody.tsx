@@ -1,5 +1,6 @@
 import React from "react";
 import { SpendingIndexList, IndexListTbody } from "../types";
+import dayjs from "dayjs";
 
 const SpendingIndexListTBody = <T extends SpendingIndexList>({
   tbodyList,
@@ -10,7 +11,9 @@ const SpendingIndexListTBody = <T extends SpendingIndexList>({
     <tbody>
       {tbodyList.map((spendingData, index) => (
         <tr key={index} className="border-t hover:bg-gray-200">
-          <td className="p-4 whitespace-nowrap">{spendingData.data.date}</td>
+          <td className="p-4 whitespace-nowrap">
+            {dayjs(spendingData.data.date.toDate()).format("YYYY-MM-DD")}
+          </td>
           <td className="p-4">￥{spendingData.data.amount.toLocaleString()}</td>
           <td className="p-4">{spendingData.data.member}</td>
           <td className="p-4">{spendingData.data.category}</td>
