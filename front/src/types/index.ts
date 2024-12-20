@@ -26,6 +26,12 @@ export interface HandleDeleteArgs<T> {
   showModalSetter: (value: React.SetStateAction<boolean>) => void;
 }
 
+export interface paymentType {
+  payer: string;
+  receiver: string;
+  amount: number;
+}
+
 //spending
 export type SpendingIndexList = {
   data: SpendingResponse;
@@ -117,4 +123,15 @@ export interface MembersResponse {
 
 export interface MemberFormValue {
   name: string;
+}
+
+//util
+export interface PaymentSummary {
+  [member: string]: number; // メンバー名をキーとして、その支払い合計金額を格納
+}
+
+export interface SplitResult {
+  payer: string; // 支払う人
+  receiver: string; // 支払われる人
+  amount: number; // 支払う金額
 }

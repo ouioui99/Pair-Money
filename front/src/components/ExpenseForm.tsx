@@ -9,6 +9,7 @@ import {
   SpendingIndexList,
 } from "../types";
 import { MemberSelect } from "./MemberSelect";
+import { formattedToday } from "../util/dateUtils";
 
 type ExpenseFormProps = {
   onSubmit: (data: SpendingFormValue) => void;
@@ -25,10 +26,6 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
 }) => {
   const navigate = useNavigate();
 
-  const today = new Date();
-  const formattedToday = `${today.getFullYear()}-${String(
-    today.getMonth() + 1
-  ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
   // transformResult.totalAmountが定義されていればその値を初期値とし、なければ空文字を設定
   const [amount, setAmount] = useState<string | "">(
     spendingInitialValues?.data.amount !== undefined

@@ -6,6 +6,7 @@ import {
   CategoryResponse,
   CommonResponseData,
   CreateSpendingRequest,
+  MemberIndexList,
   SpendingFormValue,
   SpendingIndexList,
   SpendingResponse,
@@ -20,11 +21,16 @@ import {
 } from "../firebase/firestore";
 import { UserContext } from "../contexts/UserContextProvider";
 import { serverTimestamp } from "firebase/firestore";
-import { findTargetIDObject } from "../util/calculateUtils";
+import {
+  calculatePaymentAmount,
+  findTargetIDObject,
+} from "../util/calculateUtils";
 import DeleteConfirmModal from "../components/DeleteConfirmModal";
 import ExpenseForm from "../components/ExpenseForm";
 import { useLocation } from "react-router-dom";
 import CustomBottomNavigation from "../components/CustomBottomNavigation";
+import PaymentPerPerson from "../components/PaymentPerPerson";
+import PaymentScreen from "../components/PaymentScreen";
 
 export default function SpendingIndex() {
   const userContext = useContext(UserContext);
@@ -32,10 +38,7 @@ export default function SpendingIndex() {
     CommonResponseData<SpendingResponse>[]
   >([]);
   const [showModal, setShowModal] = useState(false);
-  const [spending, setSpendig] = useState<string>("");
   const [showFormModal, setShowFormModal] = useState(false);
-  const [spendingData, setSpendingData] =
-    useState<CommonResponseData<SpendingResponse>>();
   const [selectedDocumentID, setSelectedDocumentID] = useState<string | null>(
     null
   );
@@ -46,6 +49,12 @@ export default function SpendingIndex() {
     []
   );
 
+  const [membersDataList, setMemebersDataList] = useState<MemberIndexList[]>(
+    []
+  );
+
+  const [settlementMonth, useSettlementMonth] = useState<string>("");
+
   const handleOnSubmit = (data: SpendingFormValue) => {
     const spendingFormValue: SpendingUpdataRequest = {
       amount: data.amount,
@@ -54,15 +63,12 @@ export default function SpendingIndex() {
     };
 
     if (selectedSpendingData) {
-      console.log(selectedSpendingData.id);
-
       updateSpendingData(selectedSpendingData.id, spendingFormValue);
       setShowFormModal(false);
     }
   };
   const handleEdit = (index: string) => {
     setShowFormModal(true);
-    console.log(index);
 
     const targetObject = findTargetIDObject<SpendingResponse>(
       spendingDataList,
@@ -110,18 +116,39 @@ export default function SpendingIndex() {
           is: "==",
           subDocCondition: userContext.user.uid,
         });
+        realtimeGetter("members", setMemebersDataList, {
+          subDoc: "uid",
+          is: "==",
+          subDocCondition: userContext.user.uid,
+        });
       }
     };
+
     initialProcessing();
   }, []);
+
+  const payments = calculatePaymentAmount(spendingDataList, membersDataList);
   return (
     <>
       <header className="p-4 border-b flex items-center justify-between">
-        <h1 className="text-xl font-semibold">支出一覧</h1>
+        <h1 className="text-xl font-semibold">支出情報</h1>
       </header>
+
+      <PaymentScreen
+        spendingDataList={spendingDataList}
+        membersDataList={membersDataList}
+        payments={payments}
+      />
+
       <div className="overflow-hidden">
+        <div className="p-4 border-b flex items-center justify-between bg-gray-50">
+          <h2 className="text-lg font-semibold">支出一覧</h2>
+        </div>
+
         <table className="min-w-full hidden md:table table-auto">
-          <IndexListTHeader tHeaders={["日付", "金額", "カテゴリー", "操作"]} />
+          <IndexListTHeader
+            tHeaders={["日付", "金額", "支払い者", "カテゴリー", "操作"]}
+          />
           <SpendingIndexListTBody<CommonResponseData<SpendingResponse>>
             tbodyList={spendingDataList}
             handleEdit={handleEdit}
@@ -145,6 +172,7 @@ export default function SpendingIndex() {
                 selectedSpendingData ? selectedSpendingData : undefined
               }
               categoryDataList={categoryDataList}
+              memberDataList={membersDataList}
             />
           </div>
         ) : null}

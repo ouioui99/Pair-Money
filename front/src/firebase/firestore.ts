@@ -71,7 +71,7 @@ export const updateMemberData = async (id: string, data: MemberFormValue) => {
   const targetDB = doc(db, "members", id);
 
   await updateDoc(targetDB, {
-    amount: data.memberName,
+    amount: data.name,
   });
 };
 
@@ -121,7 +121,7 @@ export const realtimeGetter = <T>(
     });
     setter(results);
 
-    return unsubscribe;
+    return results;
   });
 };
 
