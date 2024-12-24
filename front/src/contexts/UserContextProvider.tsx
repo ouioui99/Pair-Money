@@ -1,11 +1,5 @@
 import { User } from "firebase/auth";
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useEffect, useState } from "react";
 import { initialAuthentication } from "../firebase/api/user/user";
 
 type Props = {

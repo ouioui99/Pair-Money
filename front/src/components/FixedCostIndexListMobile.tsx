@@ -1,9 +1,6 @@
-import React from "react";
 import {
-  SpendingIndexList,
   IndexListTbody,
   CommonResponseData,
-  SpendingResponse,
   FixedCostsResponse,
 } from "../types";
 

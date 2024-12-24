@@ -5,11 +5,6 @@ interface NavBarProps {
   memberName: string;
 }
 
-type HeaderProps = {
-  username: string;
-  onLogout: () => void;
-};
-
 const NavBar: React.FC<NavBarProps> = ({ memberName }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();

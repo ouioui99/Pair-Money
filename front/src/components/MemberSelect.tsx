@@ -1,5 +1,4 @@
-import { FieldValue } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { MemberIndexList } from "../types";
 
 interface MemberSelect {
@@ -15,8 +14,6 @@ export const MemberSelect: React.FC<MemberSelect> = ({
 }) => {
   // memberDataListが空でない場合に初期値を設定
   useEffect(() => {
-    console.log(memberDataList);
-
     if (memberDataList.length > 0 && member === "") {
       setMember(memberDataList[0].data.name);
     } else {

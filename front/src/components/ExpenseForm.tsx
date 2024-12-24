@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CategorySelect } from "./CategorySelect";
-import { FieldValue } from "firebase/firestore";
 import {
   CategoryIndexList,
   MemberIndexList,
@@ -34,7 +33,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
   );
   const [date, setDate] = useState<Dayjs>(
     spendingInitialValues?.data.date
-      ? dayjs(spendingInitialValues?.data.date) // 初期値があれば day.js オブジェクトに変換
+      ? dayjs(spendingInitialValues?.data.date.toDate()) // 初期値があれば day.js オブジェクトに変換
       : dayjs() // 今日の日付を初期値として設定
   ); // 初期状態として今日の日付を設定
   const [category, setCategory] = useState<string>(

@@ -16,17 +16,12 @@ import { db } from "./config";
 import {
   FixedCostUpdataRequest,
   MemberFormValue,
-  SpendingIndexList,
-  SpendingResponse,
   SpendingUpdataRequest,
 } from "../types";
 
 export const insertData = async (table: string, data: Object) => {
   try {
-    console.log(data);
-
-    const docRef = await addDoc(collection(db, table), data);
-    console.log("success");
+    await addDoc(collection(db, table), data);
   } catch (e) {
     console.error("Error adding document: ", e);
   }
@@ -37,7 +32,7 @@ export const updateCategoryData = async (id: string, category: string) => {
 
   await updateDoc(targetDB, {
     category: category,
-    updateAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
   });
 };
 
@@ -46,14 +41,12 @@ export const updateSpendingData = async (
   data: SpendingUpdataRequest
 ) => {
   const targetDB = doc(db, "spendings", id);
-  console.log(id);
-  console.log(targetDB);
-  console.log(data);
 
   await updateDoc(targetDB, {
     amount: data.amount,
     date: data.date,
     category: data.category,
+    updatedAt: serverTimestamp(),
   });
 };
 
@@ -66,6 +59,7 @@ export const updateFixedCostData = async (
   await updateDoc(targetDB, {
     amount: data.amount,
     category: data.category,
+    updatedAt: serverTimestamp(),
   });
 };
 
@@ -73,7 +67,8 @@ export const updateMemberData = async (id: string, data: MemberFormValue) => {
   const targetDB = doc(db, "members", id);
 
   await updateDoc(targetDB, {
-    amount: data.name,
+    name: data.name,
+    updatedAt: serverTimestamp(),
   });
 };
 
@@ -116,13 +111,12 @@ export const realtimeGetter = <T>(
     where(conditions.subDoc, conditions.is, conditions.subDocCondition),
     orderBy("updatedAt", "asc")
   );
-  const unsubscribe = onSnapshot(q, (querySnapshot) => {
+  onSnapshot(q, (querySnapshot) => {
     const results: T[] = [];
     querySnapshot.forEach((doc) => {
       results.push({ data: doc.data(), id: doc.id } as T);
     });
     setter(results);
-    console.log(results);
 
     return results;
   });
@@ -134,7 +128,6 @@ export const deleteDocument = async (
 ) => {
   try {
     await deleteDoc(doc(db, collectionName, documentID));
-    console.log("Document successfully deleted!");
   } catch (e) {
     console.error("Error deleting document: ", e);
   }

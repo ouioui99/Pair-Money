@@ -1,9 +1,8 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { logout } from "../firebase/api/user/user";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../contexts/UserContextProvider";
 import CustomBottomNavigation from "../components/CustomBottomNavigation";
-import NavBar from "../components/NavBar";
 import { FiLogOut, FiUserPlus } from "react-icons/fi";
 import { AiOutlineEdit, AiOutlineFolderAdd } from "react-icons/ai";
 

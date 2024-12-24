@@ -1,5 +1,3 @@
-import React from "react";
-
 //可変の型にする
 interface thead {
   date: string;

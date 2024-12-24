@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { CommonResponseData, CategoryResponse } from "../types";
+import React from "react";
 
 type FixedCostsForm = {
   isOpen: boolean;

@@ -1,16 +1,11 @@
-import React, { useContext, useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import FixedCostsInputForm from "../components/MemberInputForm";
-import ExpenseFormPopup from "../components/ExpenseFormPopup";
+import { useContext, useEffect, useState } from "react";
 import ExpenseForm from "../components/ExpenseForm";
-import IndexList from "../components/IndexList";
 import CustomBottomNavigation from "../components/CustomBottomNavigation";
 import { UserContext } from "../contexts/UserContextProvider";
 import { insertData, realtimeGetter } from "../firebase/firestore";
-import { FieldValue, serverTimestamp } from "firebase/firestore";
+import { serverTimestamp } from "firebase/firestore";
 import {
   CategoryIndexList,
-  CategoryResponse,
   CreateSpendingRequest,
   MemberIndexList,
   SpendingFormValue,

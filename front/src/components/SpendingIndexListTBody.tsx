@@ -1,4 +1,3 @@
-import React from "react";
 import { SpendingIndexList, IndexListTbody } from "../types";
 import dayjs from "dayjs";
 

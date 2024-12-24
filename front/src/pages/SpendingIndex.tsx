@@ -3,9 +3,7 @@ import IndexListTHeader from "../components/IndexListTHeader";
 import SpendingIndexListTBody from "../components/SpendingIndexListTBody";
 import {
   CategoryIndexList,
-  CategoryResponse,
   CommonResponseData,
-  CreateSpendingRequest,
   MemberIndexList,
   SpendingFormValue,
   SpendingIndexList,
@@ -15,21 +13,17 @@ import {
 import SpendingIndexListMobile from "../components/SpendingIndexListMobile";
 import {
   deleteDocument,
-  insertData,
   realtimeGetter,
   updateSpendingData,
 } from "../firebase/firestore";
 import { UserContext } from "../contexts/UserContextProvider";
-import { serverTimestamp } from "firebase/firestore";
 import {
   calculatePaymentAmount,
   findTargetIDObject,
 } from "../util/calculateUtils";
 import DeleteConfirmModal from "../components/DeleteConfirmModal";
 import ExpenseForm from "../components/ExpenseForm";
-import { useLocation } from "react-router-dom";
 import CustomBottomNavigation from "../components/CustomBottomNavigation";
-import PaymentPerPerson from "../components/PaymentPerPerson";
 import PaymentScreen from "../components/PaymentScreen";
 
 export default function SpendingIndex() {
@@ -52,8 +46,6 @@ export default function SpendingIndex() {
   const [membersDataList, setMemebersDataList] = useState<MemberIndexList[]>(
     []
   );
-
-  const [settlementMonth, useSettlementMonth] = useState<string>("");
 
   const handleOnSubmit = (data: SpendingFormValue) => {
     const spendingFormValue: SpendingUpdataRequest = {
@@ -198,6 +190,7 @@ export default function SpendingIndex() {
           }
         />
       </div>
+      <div className="mb-20"></div>
       <CustomBottomNavigation />
     </>
   );

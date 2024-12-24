@@ -1,14 +1,4 @@
-import React from "react";
 import { CategoryIndexList, IndexListTbody } from "../types";
-
-// interface Props {
-//   fixedCosts: { data: CategoryData; id: string }[];
-//   handleEdit: (index: string) => void;
-//   handleDelete: (
-//     selectedDocumentID: string,
-//     selectedCategoryName: string
-//   ) => void;
-// }
 
 const MoneyTypeIndexListTbody = <T extends CategoryIndexList>({
   tbodyList,
@@ -22,7 +12,7 @@ const MoneyTypeIndexListTbody = <T extends CategoryIndexList>({
           <td className="p-4 whitespace-nowrap text-gray-800 flex-grow">
             {tbodyData.data.category}
           </td>
-          <td className="p-4 flex justify-end space-x-1">
+          <td className="p-4 flex space-x-1">
             {/* 編集ボタン */}
             <button
               onClick={() => handleEdit(tbodyData.id)}

@@ -1,22 +1,19 @@
-import React, { useContext, useEffect, useState } from "react";
-import MoneyTypeIndexList from "../components/MoneyTypeIndexListTBody";
+import { useContext, useEffect, useState } from "react";
 import SpendingCategoriesInputFormModal from "../components/SpendingCategoriesInputFormModal";
 import {
   deleteDocument,
-  getData,
   insertData,
   realtimeGetter,
   updateCategoryData,
 } from "../firebase/firestore";
 import { UserContext } from "../contexts/UserContextProvider";
-import { FieldValue, serverTimestamp } from "firebase/firestore";
+import { serverTimestamp } from "firebase/firestore";
 import DeleteConfirmModal from "../components/DeleteConfirmModal";
 import { findTargetIDObject } from "../util/calculateUtils";
 import {
   CategoryIndexList,
   CategoryResponse,
   CommonResponseData,
-  SpendingIndexList,
 } from "../types";
 import IndexListTHeader from "../components/IndexListTHeader";
 import MoneyTypeIndexListTbody from "../components/MoneyTypeIndexListTBody";

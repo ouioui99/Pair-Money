@@ -1,5 +1,4 @@
-import { FieldValue } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { CategoryResponse } from "../types";
 
 interface CategorySelect {

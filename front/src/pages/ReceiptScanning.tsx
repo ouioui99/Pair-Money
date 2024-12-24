@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Camera, CameraType } from "react-camera-pro";
 import { IoCamera } from "react-icons/io5";
 import PhotoResult from "../components/PhotoResult";

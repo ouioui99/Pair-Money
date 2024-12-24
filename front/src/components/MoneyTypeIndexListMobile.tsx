@@ -1,4 +1,3 @@
-import React from "react";
 import { CategoryIndexList, IndexListTbody } from "../types";
 
 const MoneyTypeIndexListMobile = <T extends CategoryIndexList>({

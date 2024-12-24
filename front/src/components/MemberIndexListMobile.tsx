@@ -1,12 +1,4 @@
-import React from "react";
-import {
-  SpendingIndexList,
-  IndexListTbody,
-  CommonResponseData,
-  SpendingResponse,
-  FixedCostsResponse,
-  MembersResponse,
-} from "../types";
+import { IndexListTbody, CommonResponseData, MembersResponse } from "../types";
 
 export default function FixedCostIndexListMobile<
   T extends CommonResponseData<MembersResponse>

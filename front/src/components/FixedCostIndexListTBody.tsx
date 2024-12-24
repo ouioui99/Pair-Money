@@ -1,4 +1,3 @@
-import React from "react";
 import { FixedCostIndexList, IndexListTbody } from "../types";
 
 const FixedCostIndexListTBody = <T extends FixedCostIndexList>({
