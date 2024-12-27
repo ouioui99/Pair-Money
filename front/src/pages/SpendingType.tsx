@@ -19,6 +19,8 @@ import IndexListTHeader from "../components/IndexListTHeader";
 import MoneyTypeIndexListTbody from "../components/MoneyTypeIndexListTBody";
 import MoneyTypeIndexListMobile from "../components/MoneyTypeIndexListMobile";
 import CustomBottomNavigation from "../components/CustomBottomNavigation";
+import { FiPlus } from "react-icons/fi";
+import Header from "../components/Header";
 
 export default function SpendingCategory() {
   const userContext = useContext(UserContext);
@@ -105,15 +107,10 @@ export default function SpendingCategory() {
 
   return (
     <div className="h-[100dvh]">
-      <header className="p-4 border-b flex items-center justify-between">
-        <h1 className="text-xl font-semibold">カテゴリー一覧</h1>
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          onClick={() => setShowFormModal(true)}
-        >
-          新規作成
-        </button>
-      </header>
+      <Header
+        title={"カテゴリ一覧"}
+        onClick={() => setShowFormModal(true)}
+      ></Header>
       <div className="flex-grow">
         <table className="min-w-full hidden md:table table-auto">
           <IndexListTHeader tHeaders={["カテゴリー", "操作"]} />

@@ -50,11 +50,13 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (amount && date && category) {
+    if (amount && date && category && member) {
       onSubmit({ amount, date, category, member });
       setAmount("");
       setDate(dayjs()); // フォーム送信後も日付を今日にリセット
-      setCategory("");
+
+      setCategory(categoryDataList[0].data.category);
+      setMember(memberDataList[0].data.name);
     }
   };
 
@@ -69,6 +71,15 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
       onSubmit={handleSubmit}
       className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md"
     >
+      {spendingInitialValues ? (
+        <h2 className="text-xl font-semibold text-gray-800 mb-6 text-center">
+          支出編集
+        </h2>
+      ) : (
+        <h2 className="text-xl font-semibold text-gray-800 mb-6 text-center">
+          支出登録
+        </h2>
+      )}
       <div className="mb-4 font-bold">
         <label
           htmlFor="amount"

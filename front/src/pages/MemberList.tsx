@@ -21,6 +21,8 @@ import CustomBottomNavigation from "../components/CustomBottomNavigation";
 import MemberIndexListTBody from "../components/MemberIndexListTBody";
 import MemberInputForm from "../components/MemberInputForm";
 import MemberIndexListMobile from "../components/MemberIndexListMobile";
+import { FiPlus } from "react-icons/fi";
+import Header from "../components/Header";
 
 export default function MemberList() {
   const userContext = useContext(UserContext);
@@ -118,15 +120,11 @@ export default function MemberList() {
   }, []);
   return (
     <>
-      <header className="p-4 border-b flex items-center justify-between">
-        <h1 className="text-xl font-semibold">メンバー一覧</h1>
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          onClick={() => setShowFormModal(true)}
-        >
-          新規作成
-        </button>
-      </header>
+      <Header
+        title={"メンバー一覧"}
+        onClick={() => setShowFormModal(true)}
+      ></Header>
+
       <div className="overflow-hidden">
         <table className="min-w-full hidden md:table table-auto">
           <IndexListTHeader tHeaders={["メンバー名", "操作"]} />

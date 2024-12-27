@@ -5,6 +5,7 @@ import { UserContext } from "../contexts/UserContextProvider";
 import CustomBottomNavigation from "../components/CustomBottomNavigation";
 import { FiLogOut, FiUserPlus } from "react-icons/fi";
 import { AiOutlineEdit, AiOutlineFolderAdd } from "react-icons/ai";
+import Header from "../components/Header";
 
 export default function Mypage() {
   const navigate = useNavigate();
@@ -24,16 +25,7 @@ export default function Mypage() {
   return (
     <div>
       {/* ヘッダーセクション */}
-      <header className="p-4 border-b flex items-center justify-between">
-        <h1 className="text-xl font-semibold">マイページ</h1>
-        <button
-          className="flex items-center bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          onClick={handleLogout}
-        >
-          <FiLogOut className="mr-2" />
-          ログアウト
-        </button>
-      </header>
+      <Header title={"マイページ"}></Header>
 
       {/* メインコンテンツ */}
       <main className="flex flex-col items-center justify-center space-y-6 bg-gray-100 min-h-screen py-8">

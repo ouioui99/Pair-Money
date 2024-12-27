@@ -33,6 +33,11 @@ export interface paymentType {
   amount: number;
 }
 
+export interface headerProp {
+  title: string;
+  onClick?: () => void;
+}
+
 //spending
 export type SpendingIndexList = {
   data: SpendingResponse;

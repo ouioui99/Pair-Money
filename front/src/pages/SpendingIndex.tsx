@@ -25,9 +25,14 @@ import DeleteConfirmModal from "../components/DeleteConfirmModal";
 import ExpenseForm from "../components/ExpenseForm";
 import CustomBottomNavigation from "../components/CustomBottomNavigation";
 import PaymentScreen from "../components/PaymentScreen";
+import { FiLogOut } from "react-icons/fi";
+import { logout } from "../firebase/api/user/user";
+import { useNavigate } from "react-router-dom";
+import Header from "../components/Header";
 
 export default function SpendingIndex() {
   const userContext = useContext(UserContext);
+  const navigate = useNavigate();
   const [spendingDataList, setSpendingDataList] = useState<
     CommonResponseData<SpendingResponse>[]
   >([]);
@@ -94,6 +99,16 @@ export default function SpendingIndex() {
       setShowFormModal(false);
     }
   };
+  const handleLogout = () => {
+    logout().then((result) => {
+      if (result === "") {
+        userContext?.setUser(null);
+        navigate("/login");
+      } else {
+        console.log(result);
+      }
+    });
+  };
 
   useEffect(() => {
     const initialProcessing = async () => {
@@ -122,9 +137,7 @@ export default function SpendingIndex() {
   const payments = calculatePaymentAmount(spendingDataList, membersDataList);
   return (
     <>
-      <header className="p-4 border-b flex items-center justify-between">
-        <h1 className="text-xl font-semibold">支出情報</h1>
-      </header>
+      <Header title={"支出情報"}></Header>
 
       <PaymentScreen
         spendingDataList={spendingDataList}

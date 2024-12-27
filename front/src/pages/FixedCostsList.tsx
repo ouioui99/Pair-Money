@@ -23,6 +23,8 @@ import { serverTimestamp } from "firebase/firestore";
 import { findTargetIDObject } from "../util/calculateUtils";
 import CustomBottomNavigation from "../components/CustomBottomNavigation";
 import FixedCostIndexListMobile from "../components/FixedCostIndexListMobile";
+import { FiPlus } from "react-icons/fi";
+import Header from "../components/Header";
 
 export default function FixedCostsList() {
   const userContext = useContext(UserContext);
@@ -130,15 +132,10 @@ export default function FixedCostsList() {
   }, []);
   return (
     <>
-      <header className="p-4 border-b flex items-center justify-between">
-        <h1 className="text-xl font-semibold">固定費一覧</h1>
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          onClick={() => setShowFormModal(true)}
-        >
-          新規作成
-        </button>
-      </header>
+      <Header
+        title={"固定費一覧"}
+        onClick={() => setShowFormModal(true)}
+      ></Header>
       <div className="overflow-hidden">
         <table className="min-w-full hidden md:table table-auto">
           <IndexListTHeader tHeaders={["金額", "カテゴリー", "操作"]} />

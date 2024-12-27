@@ -30,7 +30,7 @@ export const MemberSelect: React.FC<MemberSelect> = ({
   return (
     <div className="mb-4">
       <label htmlFor="member" className="block text-gray-700 font-medium mb-2">
-        支払い者
+        支払ったメンバー
       </label>
       <select
         id="member"

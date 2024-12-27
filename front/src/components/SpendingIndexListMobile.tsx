@@ -24,6 +24,12 @@ export default function SpendingIndexListMobile<
               {spendingData.data.category}
             </span>
           </div>
+          <div className="flex justify-between mb-3">
+            <span className="font-medium text-gray-700 text-lg">支払い者</span>
+            <span className="text-xl font-semibold text-gray-900">
+              {spendingData.data.member}
+            </span>
+          </div>
           <div className="flex justify-end mt-4 space-x-4">
             {/* 編集ボタン */}
             <button
