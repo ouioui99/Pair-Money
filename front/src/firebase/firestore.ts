@@ -11,6 +11,7 @@ import {
   deleteDoc,
   doc,
   updateDoc,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "./config";
 import {
@@ -18,6 +19,8 @@ import {
   MemberFormValue,
   SpendingUpdataRequest,
 } from "../types";
+import { spendingCategoriesSeedingData } from "./data/spendingCategoriesSeedingData";
+import { membersSeedingData } from "./data/membersSeedingData";
 
 export const insertData = async (table: string, data: Object) => {
   try {
@@ -130,5 +133,40 @@ export const deleteDocument = async (
     await deleteDoc(doc(db, collectionName, documentID));
   } catch (e) {
     console.error("Error deleting document: ", e);
+  }
+};
+
+export const seedingData = async (userId: string) => {
+  const batch = writeBatch(db);
+
+  for (const data of spendingCategoriesSeedingData) {
+    const spendingCategoriesRef = doc(collection(db, "spendingCategories"));
+
+    // 各ドキュメントにデータを設定
+    batch.set(spendingCategoriesRef, {
+      ...data,
+      uid: userId,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+  }
+
+  for (const data of membersSeedingData) {
+    const spendingCategoriesRef = doc(collection(db, "members"));
+
+    // 各ドキュメントにデータを設定
+    batch.set(spendingCategoriesRef, {
+      ...data,
+      uid: userId,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+  }
+
+  // バッチを書き込む
+  try {
+    await batch.commit();
+  } catch (error) {
+    console.error("ドキュメントの書き込み中にエラーが発生しました: ", error);
   }
 };

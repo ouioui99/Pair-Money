@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../contexts/UserContextProvider";
 import { singup } from "../firebase/api/user/user";
 import { serverTimestamp } from "firebase/firestore";
-import { insertData } from "../firebase/firestore";
+import { insertData, seedingData } from "../firebase/firestore";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
@@ -47,6 +47,7 @@ export default function Signup() {
           };
 
           insertData("users", user);
+          seedingData(result.uid);
 
           userContext.setUser(result);
           navigate("/");
