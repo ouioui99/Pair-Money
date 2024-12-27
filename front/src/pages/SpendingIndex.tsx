@@ -29,10 +29,11 @@ import { FiLogOut } from "react-icons/fi";
 import { logout } from "../firebase/api/user/user";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
+import { useFirestoreListeners } from "../util/hooks/useFirestoreListeners";
 
 export default function SpendingIndex() {
   const userContext = useContext(UserContext);
-  const navigate = useNavigate();
+  const { addListener } = useFirestoreListeners();
   const [spendingDataList, setSpendingDataList] = useState<
     CommonResponseData<SpendingResponse>[]
   >([]);
@@ -99,40 +100,44 @@ export default function SpendingIndex() {
       setShowFormModal(false);
     }
   };
-  const handleLogout = () => {
-    logout().then((result) => {
-      if (result === "") {
-        userContext?.setUser(null);
-        navigate("/login");
-      } else {
-        console.log(result);
-      }
-    });
-  };
-
   useEffect(() => {
     const initialProcessing = async () => {
       if (userContext?.user?.uid) {
-        realtimeGetter("spendings", setSpendingDataList, {
-          subDoc: "uid",
-          is: "==",
-          subDocCondition: userContext.user.uid,
-        });
-        realtimeGetter("spendingCategories", setCategoryDataList, {
-          subDoc: "uid",
-          is: "==",
-          subDocCondition: userContext.user.uid,
-        });
-        realtimeGetter("members", setMemebersDataList, {
-          subDoc: "uid",
-          is: "==",
-          subDocCondition: userContext.user.uid,
-        });
+        const unsubscribeSpendings = realtimeGetter(
+          "spendings",
+          setSpendingDataList,
+          {
+            subDoc: "uid",
+            is: "==",
+            subDocCondition: userContext.user.uid,
+          }
+        );
+        const unsubscribeSpendingCategories = realtimeGetter(
+          "spendingCategories",
+          setCategoryDataList,
+          {
+            subDoc: "uid",
+            is: "==",
+            subDocCondition: userContext.user.uid,
+          }
+        );
+        const unsubscribeMembers = realtimeGetter(
+          "members",
+          setMemebersDataList,
+          {
+            subDoc: "uid",
+            is: "==",
+            subDocCondition: userContext.user.uid,
+          }
+        );
+        addListener(unsubscribeSpendings);
+        addListener(unsubscribeSpendingCategories);
+        addListener(unsubscribeMembers);
       }
     };
 
     initialProcessing();
-  }, []);
+  }, [addListener]);
 
   const payments = calculatePaymentAmount(spendingDataList, membersDataList);
   return (

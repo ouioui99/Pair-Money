@@ -9,18 +9,6 @@ import Header from "../components/Header";
 
 export default function Mypage() {
   const navigate = useNavigate();
-  const userContext = useContext(UserContext);
-
-  const handleLogout = () => {
-    logout().then((result) => {
-      if (result === "") {
-        userContext?.setUser(null);
-        navigate("/login");
-      } else {
-        console.log(result);
-      }
-    });
-  };
 
   return (
     <div>

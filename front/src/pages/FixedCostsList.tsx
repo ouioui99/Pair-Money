@@ -23,10 +23,12 @@ import { serverTimestamp } from "firebase/firestore";
 import { findTargetIDObject } from "../util/calculateUtils";
 import CustomBottomNavigation from "../components/CustomBottomNavigation";
 import FixedCostIndexListMobile from "../components/FixedCostIndexListMobile";
-import { FiPlus } from "react-icons/fi";
+
 import Header from "../components/Header";
+import { useFirestoreListeners } from "../util/hooks/useFirestoreListeners";
 
 export default function FixedCostsList() {
+  const { addListener } = useFirestoreListeners();
   const userContext = useContext(UserContext);
   const [showModal, setShowModal] = useState(false);
   const [showFormModal, setShowFormModal] = useState(false);
@@ -115,21 +117,31 @@ export default function FixedCostsList() {
   useEffect(() => {
     const initialProcessing = async () => {
       if (userContext?.user?.uid) {
-        realtimeGetter("spendingCategories", setCategoryDataList, {
-          subDoc: "uid",
-          is: "==",
-          subDocCondition: userContext.user.uid,
-        });
-        realtimeGetter("fixedCosts", setFixedDataList, {
-          subDoc: "uid",
-          is: "==",
-          subDocCondition: userContext.user.uid,
-        });
+        const unsubscribeSpendingCategories = realtimeGetter(
+          "spendingCategories",
+          setCategoryDataList,
+          {
+            subDoc: "uid",
+            is: "==",
+            subDocCondition: userContext.user.uid,
+          }
+        );
+        const unsubscribeFixedCosts = realtimeGetter(
+          "fixedCosts",
+          setFixedDataList,
+          {
+            subDoc: "uid",
+            is: "==",
+            subDocCondition: userContext.user.uid,
+          }
+        );
+        addListener(unsubscribeSpendingCategories);
+        addListener(unsubscribeFixedCosts);
       }
     };
 
     initialProcessing();
-  }, []);
+  }, [addListener]);
   return (
     <>
       <Header

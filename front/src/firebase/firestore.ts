@@ -114,15 +114,17 @@ export const realtimeGetter = <T>(
     where(conditions.subDoc, conditions.is, conditions.subDocCondition),
     orderBy("updatedAt", "asc")
   );
-  onSnapshot(q, (querySnapshot) => {
+
+  const unsubscribe = onSnapshot(q, (querySnapshot) => {
     const results: T[] = [];
     querySnapshot.forEach((doc) => {
       results.push({ data: doc.data(), id: doc.id } as T);
     });
     setter(results);
-
-    return results;
   });
+
+  // `unsubscribe` を返して呼び出し元で解除可能にする
+  return unsubscribe;
 };
 
 export const deleteDocument = async (

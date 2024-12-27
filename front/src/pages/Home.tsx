@@ -15,20 +15,11 @@ import { useNavigate } from "react-router-dom";
 import { FiLogOut } from "react-icons/fi";
 import { logout } from "../firebase/api/user/user";
 import Header from "../components/Header";
+import { useFirestoreListeners } from "../util/hooks/useFirestoreListeners";
 
 export default function Home() {
   const userContext = useContext(UserContext);
-  const navigate = useNavigate();
-  const handleLogout = () => {
-    logout().then((result) => {
-      if (result === "") {
-        userContext?.setUser(null);
-        navigate("/login");
-      } else {
-        console.log(result);
-      }
-    });
-  };
+  const { addListener } = useFirestoreListeners();
   const [categoryDataList, setCategoryDataList] = useState<CategoryIndexList[]>(
     []
   );
@@ -78,20 +69,30 @@ export default function Home() {
   useEffect(() => {
     const initialProcessing = async () => {
       if (userContext?.user?.uid) {
-        realtimeGetter("spendingCategories", setCategoryDataList, {
-          subDoc: "uid",
-          is: "==",
-          subDocCondition: userContext.user.uid,
-        });
-        realtimeGetter("members", setMemebersDataList, {
-          subDoc: "uid",
-          is: "==",
-          subDocCondition: userContext.user.uid,
-        });
+        const unsubscribeSpendingCategories = realtimeGetter(
+          "spendingCategories",
+          setCategoryDataList,
+          {
+            subDoc: "uid",
+            is: "==",
+            subDocCondition: userContext.user.uid,
+          }
+        );
+        const unsubscribeMembers = realtimeGetter(
+          "members",
+          setMemebersDataList,
+          {
+            subDoc: "uid",
+            is: "==",
+            subDocCondition: userContext.user.uid,
+          }
+        );
+        addListener(unsubscribeSpendingCategories);
+        addListener(unsubscribeMembers);
       }
     };
     initialProcessing();
-  }, []);
+  }, [addListener]);
 
   return (
     <div className="min-h-screen flex flex-col">

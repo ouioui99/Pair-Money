@@ -23,9 +23,11 @@ import MemberInputForm from "../components/MemberInputForm";
 import MemberIndexListMobile from "../components/MemberIndexListMobile";
 import { FiPlus } from "react-icons/fi";
 import Header from "../components/Header";
+import { useFirestoreListeners } from "../util/hooks/useFirestoreListeners";
 
 export default function MemberList() {
   const userContext = useContext(UserContext);
+  const { addListener } = useFirestoreListeners();
   const [showModal, setShowModal] = useState(false);
   const [showFormModal, setShowFormModal] = useState(false);
   const [selectedDocumentID, setSelectedDocumentID] = useState<string | null>(
@@ -108,16 +110,21 @@ export default function MemberList() {
   useEffect(() => {
     const initialProcessing = async () => {
       if (userContext?.user?.uid) {
-        realtimeGetter("members", setMemberDataList, {
-          subDoc: "uid",
-          is: "==",
-          subDocCondition: userContext.user.uid,
-        });
+        const unsubscribeMembers = realtimeGetter(
+          "members",
+          setMemberDataList,
+          {
+            subDoc: "uid",
+            is: "==",
+            subDocCondition: userContext.user.uid,
+          }
+        );
+        addListener(unsubscribeMembers);
       }
     };
 
     initialProcessing();
-  }, []);
+  }, [addListener]);
   return (
     <>
       <Header
