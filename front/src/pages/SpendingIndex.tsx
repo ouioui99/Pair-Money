@@ -25,15 +25,14 @@ import DeleteConfirmModal from "../components/DeleteConfirmModal";
 import ExpenseForm from "../components/ExpenseForm";
 import CustomBottomNavigation from "../components/CustomBottomNavigation";
 import PaymentScreen from "../components/PaymentScreen";
-import { FiLogOut } from "react-icons/fi";
-import { logout } from "../firebase/api/user/user";
-import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import { useFirestoreListeners } from "../util/hooks/useFirestoreListeners";
+import dayjs, { Dayjs } from "dayjs";
 
 export default function SpendingIndex() {
   const userContext = useContext(UserContext);
   const { addListener } = useFirestoreListeners();
+
   const [spendingDataList, setSpendingDataList] = useState<
     CommonResponseData<SpendingResponse>[]
   >([]);
@@ -44,14 +43,13 @@ export default function SpendingIndex() {
   );
   const [selectedSpendingData, setSelectedSpendingData] =
     useState<SpendingIndexList | null>(null);
-
   const [categoryDataList, setCategoryDataList] = useState<CategoryIndexList[]>(
     []
   );
-
   const [membersDataList, setMemebersDataList] = useState<MemberIndexList[]>(
     []
   );
+  const [selectMonth, setSelectMonth] = useState<Dayjs | string>("all");
 
   const handleOnSubmit = (data: SpendingFormValue) => {
     const spendingFormValue: SpendingUpdataRequest = {
@@ -65,6 +63,7 @@ export default function SpendingIndex() {
       setShowFormModal(false);
     }
   };
+
   const handleEdit = (index: string) => {
     setShowFormModal(true);
 
@@ -100,6 +99,7 @@ export default function SpendingIndex() {
       setShowFormModal(false);
     }
   };
+
   useEffect(() => {
     const initialProcessing = async () => {
       if (userContext?.user?.uid) {
@@ -139,7 +139,24 @@ export default function SpendingIndex() {
     initialProcessing();
   }, [addListener]);
 
-  const payments = calculatePaymentAmount(spendingDataList, membersDataList);
+  // 清算月で spendingDataList をフィルタリング
+  const filteredSpendingDataList =
+    typeof selectMonth === "string"
+      ? spendingDataList
+      : spendingDataList.filter((spendingData) => {
+          const date = dayjs(spendingData.data.date.toDate());
+          const yearMonth = `${date.year()}-${date.month() + 1}`; // YYYY-MM形式
+          return (
+            yearMonth === `${selectMonth.year()}-${selectMonth.month() + 1}`
+          );
+        });
+
+  // フィルタリングした spendingDataList を基に payments を再計算
+  const payments = calculatePaymentAmount(
+    filteredSpendingDataList,
+    membersDataList
+  );
+
   return (
     <>
       <Header title={"支出情報"}></Header>
@@ -148,6 +165,8 @@ export default function SpendingIndex() {
         spendingDataList={spendingDataList}
         membersDataList={membersDataList}
         payments={payments}
+        selectMonth={selectMonth}
+        setSelectMonth={setSelectMonth}
       />
 
       <div className="overflow-hidden">
@@ -160,14 +179,15 @@ export default function SpendingIndex() {
             tHeaders={["日付", "金額", "支払い者", "カテゴリー", "操作"]}
           />
           <SpendingIndexListTBody<CommonResponseData<SpendingResponse>>
-            tbodyList={spendingDataList}
+            tbodyList={filteredSpendingDataList} // フィルタリング後のデータを渡す
             handleEdit={handleEdit}
             handleDelete={handleDelete}
           />
         </table>
+
         {/* モバイルビュー */}
         <SpendingIndexListMobile<CommonResponseData<SpendingResponse>>
-          tbodyList={spendingDataList}
+          tbodyList={filteredSpendingDataList} // フィルタリング後のデータを渡す
           handleEdit={handleEdit}
           handleDelete={handleDelete}
         />

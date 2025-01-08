@@ -19,7 +19,6 @@ import IndexListTHeader from "../components/IndexListTHeader";
 import MoneyTypeIndexListTbody from "../components/MoneyTypeIndexListTBody";
 import MoneyTypeIndexListMobile from "../components/MoneyTypeIndexListMobile";
 import CustomBottomNavigation from "../components/CustomBottomNavigation";
-import { FiPlus } from "react-icons/fi";
 import Header from "../components/Header";
 import { useFirestoreListeners } from "../util/hooks/useFirestoreListeners";
 

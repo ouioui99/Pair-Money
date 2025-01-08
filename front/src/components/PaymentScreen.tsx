@@ -8,6 +8,7 @@ import {
   calculateAllMembersTotalPaid,
   calculateTotalPaidByPerson,
 } from "../util/calculateUtils";
+import dayjs, { Dayjs } from "dayjs";
 
 interface Payment {
   payer: string; // 支払う人
@@ -19,18 +20,51 @@ interface PaymentScreenProps {
   spendingDataList: CommonResponseData<SpendingResponse>[];
   membersDataList: MemberIndexList[];
   payments: Payment[]; // 支払いリスト
+  selectMonth: Dayjs | string;
+  setSelectMonth: React.Dispatch<React.SetStateAction<string | dayjs.Dayjs>>;
 }
 
 const PaymentScreen: React.FC<PaymentScreenProps> = ({
   spendingDataList,
   membersDataList,
   payments,
+  selectMonth,
+  setSelectMonth,
 }) => {
   // メンバーの名前をリストに格納
   const memberNames = membersDataList.map((member) => member.data.name);
 
-  // 支払額を集計する
-  const totalPaidByPerson = calculateTotalPaidByPerson(spendingDataList);
+  // データのある月のみを抽出（重複を排除）
+  const uniqueMonths = Array.from(
+    new Set(
+      spendingDataList.map((spendingData) => {
+        const date = spendingData.data.date.toDate();
+        return dayjs(date).format("YYYY-MM"); // "YYYY-MM"形式
+      })
+    )
+  );
+
+  const filteredSpendingDataList =
+    selectMonth === "all"
+      ? spendingDataList
+      : spendingDataList.filter((spendingData) => {
+          const date =
+            spendingData.data.date instanceof Date
+              ? spendingData.data.date
+              : spendingData.data.date.toDate();
+          const yearMonth = `${date.getFullYear()}-${String(
+            date.getMonth() + 1
+          ).padStart(2, "0")}`;
+          const selectedYearMonth =
+            typeof selectMonth === "string"
+              ? selectMonth
+              : selectMonth.format("YYYY-MM");
+          return yearMonth === selectedYearMonth;
+        });
+
+  const totalPaidByPerson = calculateTotalPaidByPerson(
+    filteredSpendingDataList
+  );
 
   // メンバーリストのすべてのメンバーを含める（支払額がないメンバーには0を設定）
   const allMembersTotalPaid = calculateAllMembersTotalPaid(
@@ -41,6 +75,40 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({
   return (
     <div className="bg-gray-100 p-6">
       <div className="max-w-lg mx-auto bg-white shadow-md rounded-lg p-6">
+        {/* 清算月選択 */}
+        <div className="mb-6">
+          <label
+            htmlFor="settlement-month"
+            className="block text-gray-700 text-lg font-medium mb-2"
+          >
+            清算月を選択
+          </label>
+          <select
+            id="settlement-month"
+            className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            value={selectMonth.toString()}
+            onChange={(e) => {
+              const value = e.target.value;
+
+              setSelectMonth(
+                value === "all" ? "all" : dayjs(value).format("YYYY-MM")
+              );
+            }}
+          >
+            {/* 初期値: 全期間 */}
+            <option value="all">全期間</option>
+            {/* データのある月のみ表示 */}
+            {uniqueMonths.map((month) => {
+              const [year, monthNum] = month.split("-");
+              return (
+                <option key={month} value={month}>
+                  {`${year}年${parseInt(monthNum, 10)}月`}
+                </option>
+              );
+            })}
+          </select>
+        </div>
+
         {/* 支払い関係 */}
         <h2 className="text-3xl font-semibold mb-12 text-center text-gray-800">
           清算方法

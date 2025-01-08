@@ -11,9 +11,6 @@ import {
   SpendingFormValue,
 } from "../types";
 import Alert from "../components/Alert";
-import { useNavigate } from "react-router-dom";
-import { FiLogOut } from "react-icons/fi";
-import { logout } from "../firebase/api/user/user";
 import Header from "../components/Header";
 import { useFirestoreListeners } from "../util/hooks/useFirestoreListeners";
 

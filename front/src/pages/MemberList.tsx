@@ -21,7 +21,6 @@ import CustomBottomNavigation from "../components/CustomBottomNavigation";
 import MemberIndexListTBody from "../components/MemberIndexListTBody";
 import MemberInputForm from "../components/MemberInputForm";
 import MemberIndexListMobile from "../components/MemberIndexListMobile";
-import { FiPlus } from "react-icons/fi";
 import Header from "../components/Header";
 import { useFirestoreListeners } from "../util/hooks/useFirestoreListeners";
 

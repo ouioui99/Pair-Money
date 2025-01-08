@@ -19,23 +19,23 @@ const Header = ({ title, onClick }: headerProp) => {
     });
   };
   return (
-    <header className="p-4 border-b flex items-center justify-between">
-      <h1 className="text-xl font-semibold">{title}</h1>
-      <div className="flex gap-4">
+    <header className="p-4 border-b flex items-center justify-between gap-4 flex-nowrap">
+      <h1 className="text-lg font-semibold truncate">{title}</h1>
+      <div className="flex gap-2 flex-nowrap">
         {onClick && (
           <button
-            className="flex items-center bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 focus:outline-none"
+            className="flex items-center bg-green-500 text-white px-3 py-1.5 text-sm rounded hover:bg-green-600 focus:outline-none"
             onClick={onClick}
           >
-            <FiPlus className="mr-2" /> {/* 新規作成アイコン */}
+            <FiPlus className="mr-1" />
             新規作成
           </button>
         )}
         <button
-          className="flex items-center bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 focus:outline-none"
+          className="flex items-center bg-red-500 text-white px-3 py-1.5 text-sm rounded hover:bg-red-600 focus:outline-none"
           onClick={handleLogout}
         >
-          <FiLogOut className="mr-2" />
+          <FiLogOut className="mr-1" />
           ログアウト
         </button>
       </div>
