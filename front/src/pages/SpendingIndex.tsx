@@ -49,7 +49,7 @@ export default function SpendingIndex() {
   const [membersDataList, setMemebersDataList] = useState<MemberIndexList[]>(
     []
   );
-  const [selectMonth, setSelectMonth] = useState<Dayjs | string>("all");
+  const [selectMonth, setSelectMonth] = useState<string>("all");
 
   const handleOnSubmit = (data: SpendingFormValue) => {
     const spendingFormValue: SpendingUpdataRequest = {
@@ -140,16 +140,17 @@ export default function SpendingIndex() {
   }, [addListener]);
 
   // 清算月で spendingDataList をフィルタリング
-  const filteredSpendingDataList =
-    typeof selectMonth === "string"
-      ? spendingDataList
-      : spendingDataList.filter((spendingData) => {
-          const date = dayjs(spendingData.data.date.toDate());
-          const yearMonth = `${date.year()}-${date.month() + 1}`; // YYYY-MM形式
-          return (
-            yearMonth === `${selectMonth.year()}-${selectMonth.month() + 1}`
-          );
-        });
+  const filteredSpendingDataList = !dayjs(selectMonth).isValid()
+    ? spendingDataList
+    : spendingDataList.filter((spendingData) => {
+        const date = dayjs(spendingData.data.date.toDate());
+        const yearMonth = `${date.year()}-${date.month() + 1}`; // YYYY-MM形式
+        const selectMonthDayjs = dayjs(selectMonth);
+        return (
+          yearMonth ===
+          `${selectMonthDayjs.year()}-${selectMonthDayjs.month() + 1}`
+        );
+      });
 
   // フィルタリングした spendingDataList を基に payments を再計算
   const payments = calculatePaymentAmount(

@@ -20,8 +20,8 @@ interface PaymentScreenProps {
   spendingDataList: CommonResponseData<SpendingResponse>[];
   membersDataList: MemberIndexList[];
   payments: Payment[]; // 支払いリスト
-  selectMonth: Dayjs | string;
-  setSelectMonth: React.Dispatch<React.SetStateAction<string | dayjs.Dayjs>>;
+  selectMonth: string;
+  setSelectMonth: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const PaymentScreen: React.FC<PaymentScreenProps> = ({
@@ -55,10 +55,8 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({
           const yearMonth = `${date.getFullYear()}-${String(
             date.getMonth() + 1
           ).padStart(2, "0")}`;
-          const selectedYearMonth =
-            typeof selectMonth === "string"
-              ? selectMonth
-              : selectMonth.format("YYYY-MM");
+          const selectedYearMonth = dayjs(selectMonth).format("YYYY-MM");
+
           return yearMonth === selectedYearMonth;
         });
 
@@ -89,10 +87,7 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({
             value={selectMonth.toString()}
             onChange={(e) => {
               const value = e.target.value;
-
-              setSelectMonth(
-                value === "all" ? "all" : dayjs(value).format("YYYY-MM")
-              );
+              setSelectMonth(value === "all" ? "all" : value);
             }}
           >
             {/* 初期値: 全期間 */}
