@@ -61,6 +61,7 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({
         });
 
   const totalPaidByPerson = calculateTotalPaidByPerson(
+    membersDataList,
     filteredSpendingDataList
   );
 

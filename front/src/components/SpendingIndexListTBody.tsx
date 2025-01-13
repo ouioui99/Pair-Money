@@ -1,10 +1,12 @@
 import { SpendingIndexList, IndexListTbody } from "../types";
 import dayjs from "dayjs";
+import { convetMemberIdToMemberName } from "../util/commonFunc";
 
 const SpendingIndexListTBody = <T extends SpendingIndexList>({
   tbodyList,
   handleEdit,
   handleDelete,
+  membersDataList,
 }: IndexListTbody<T>) => {
   return (
     <tbody>
@@ -14,7 +16,12 @@ const SpendingIndexListTBody = <T extends SpendingIndexList>({
             {dayjs(spendingData.data.date.toDate()).format("YYYY-MM-DD")}
           </td>
           <td className="p-4">￥{spendingData.data.amount.toLocaleString()}</td>
-          <td className="p-4">{spendingData.data.member}</td>
+          <td className="p-4">
+            {convetMemberIdToMemberName(
+              membersDataList,
+              spendingData.data.member
+            )}
+          </td>
           <td className="p-4">{spendingData.data.category}</td>
           <td className="p-4">
             {/* 編集ボタン */}

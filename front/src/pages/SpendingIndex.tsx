@@ -183,6 +183,7 @@ export default function SpendingIndex() {
             tbodyList={filteredSpendingDataList} // フィルタリング後のデータを渡す
             handleEdit={handleEdit}
             handleDelete={handleDelete}
+            membersDataList={membersDataList}
           />
         </table>
 
@@ -191,6 +192,7 @@ export default function SpendingIndex() {
           tbodyList={filteredSpendingDataList} // フィルタリング後のデータを渡す
           handleEdit={handleEdit}
           handleDelete={handleDelete}
+          membersDataList={membersDataList}
         />
         {showFormModal ? (
           <div

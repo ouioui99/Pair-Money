@@ -15,14 +15,14 @@ export const MemberSelect: React.FC<MemberSelect> = ({
   // memberDataListが空でない場合に初期値を設定
   useEffect(() => {
     if (memberDataList.length > 0 && member === "") {
-      setMember(memberDataList[0].data.name);
+      setMember(memberDataList[0].id);
     } else {
       setMember(member);
     }
   }, [memberDataList, setMember]);
 
   const option = memberDataList.map((data, index) => (
-    <option key={index} value={data.data.name}>
+    <option key={index} value={data.id}>
       {data.data.name}
     </option>
   ));

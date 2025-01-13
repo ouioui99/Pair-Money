@@ -5,6 +5,7 @@ import {
   SpendingResponse,
   SplitResult,
 } from "../types";
+import { convetMemberIdToMemberName } from "./commonFunc";
 
 export const findTargetIDObject = <T>(
   List: CommonResponseData<T>[],
@@ -23,25 +24,31 @@ export const calculatePaymentAmount = (
   spendingDataList: CommonResponseData<SpendingResponse>[],
   memberList: MemberIndexList[]
 ): SplitResult[] => {
-  const totalAmountObjct = calculateTotalPayAmount(spendingDataList);
+  const totalAmountObjct = calculateTotalPayAmount(
+    spendingDataList,
+    memberList
+  );
   const paymentAmount = calculateSplit(totalAmountObjct, memberList);
 
   return paymentAmount;
 };
 
 const calculateTotalPayAmount = (
-  spendingDataList: CommonResponseData<SpendingResponse>[]
+  spendingDataList: CommonResponseData<SpendingResponse>[],
+  memberList: MemberIndexList[]
 ): PaymentSummary => {
   const paymentSummary: PaymentSummary = spendingDataList.reduce(
     (acc, item) => {
-      const member = item.data.member;
+      const member = convetMemberIdToMemberName(memberList, item.data.member);
       const amount = parseInt(item.data.amount, 10);
 
       // メンバーがすでに存在する場合は金額を加算、存在しない場合は初期化
-      if (acc[member]) {
-        acc[member] += amount;
-      } else {
-        acc[member] = amount;
+      if (member) {
+        if (acc[member]) {
+          acc[member] += amount;
+        } else {
+          acc[member] = amount;
+        }
       }
 
       return acc;
@@ -68,6 +75,7 @@ const calculateSplit = (
   members.forEach((member) => {
     const memberName = member.data.name;
     const paidAmount = payments[memberName] || 0;
+
     balances[memberName] = paidAmount - equalShare; // 支払った金額と均等分の差
   });
 
@@ -109,15 +117,21 @@ const calculateSplit = (
 };
 
 export const calculateTotalPaidByPerson = (
+  membersDataList: MemberIndexList[],
   spendingDataList: CommonResponseData<SpendingResponse>[]
 ) => {
   const result = spendingDataList.reduce<Record<string, number>>(
     (totals, payment) => {
-      const payer = payment.data.member;
+      const payer = convetMemberIdToMemberName(
+        membersDataList,
+        payment.data.member
+      );
       const amount = parseInt(payment.data.amount, 10); // amountは文字列なので数値に変換
+      if (payer) {
+        // 支払者がすでに存在する場合、金額を加算、ない場合は初期化
+        totals[payer] = (totals[payer] || 0) + amount;
+      }
 
-      // 支払者がすでに存在する場合、金額を加算、ない場合は初期化
-      totals[payer] = (totals[payer] || 0) + amount;
       return totals;
     },
     {}
@@ -130,6 +144,9 @@ export const calculateAllMembersTotalPaid = (
   totalPaidByPerson: Record<string, number>,
   memberNames: string[]
 ) => {
+  console.log(totalPaidByPerson);
+  console.log(memberNames);
+
   const result = memberNames.reduce((result, name) => {
     // すでに支払額がある場合はそのまま、それ以外は0で初期化
     result[name] = totalPaidByPerson[name] || 0;

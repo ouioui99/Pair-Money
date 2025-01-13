@@ -51,12 +51,14 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
     e.preventDefault();
 
     if (amount && date && category && member) {
+      console.log(member);
+
       onSubmit({ amount, date, category, member });
       setAmount("");
       setDate(dayjs()); // フォーム送信後も日付を今日にリセット
 
       setCategory(categoryDataList[0].data.category);
-      setMember(memberDataList[0].data.name);
+      setMember(memberDataList[0].id);
     }
   };
 
