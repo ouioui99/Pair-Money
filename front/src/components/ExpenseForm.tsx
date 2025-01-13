@@ -81,6 +81,22 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
         </h2>
       )}
       <div className="mb-4 font-bold">
+        <div className="mb-4">
+          <label
+            htmlFor="date"
+            className="block text-gray-700 font-medium mb-2"
+          >
+            日付
+          </label>
+          <input
+            type="date"
+            id="date"
+            value={date.format("YYYY-MM-DD")}
+            onChange={(e) => setDate(dayjs(e.target.value))}
+            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
+            required
+          />
+        </div>
         <label
           htmlFor="amount"
           className="block text-gray-700 font-medium mb-2"
@@ -94,20 +110,6 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
           onChange={(e) => setAmount(e.target.value || "")}
           className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
           placeholder="例: 1000"
-          required
-        />
-      </div>
-
-      <div className="mb-4">
-        <label htmlFor="date" className="block text-gray-700 font-medium mb-2">
-          日付
-        </label>
-        <input
-          type="date"
-          id="date"
-          value={date.format("YYYY-MM-DD")}
-          onChange={(e) => setDate(dayjs(e.target.value))}
-          className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
           required
         />
       </div>
