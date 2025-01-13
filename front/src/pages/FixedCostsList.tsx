@@ -155,6 +155,7 @@ export default function FixedCostsList() {
             tbodyList={fixedDataList}
             handleEdit={handleEdit}
             handleDelete={handleDelete}
+            membersDataList={[]}
           />
         </table>
 
@@ -201,6 +202,7 @@ export default function FixedCostsList() {
         tbodyList={fixedDataList}
         handleEdit={handleEdit}
         handleDelete={handleDelete}
+        membersDataList={[]}
       />
       <CustomBottomNavigation />
     </>

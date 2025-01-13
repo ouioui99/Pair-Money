@@ -1,8 +1,9 @@
 import { IndexListTbody, CommonResponseData, SpendingResponse } from "../types";
+import { convetMemberIdToMemberName } from "../util/commonFunc";
 
 export default function SpendingIndexListMobile<
   T extends CommonResponseData<SpendingResponse>
->({ tbodyList, handleEdit, handleDelete }: IndexListTbody<T>) {
+>({ tbodyList, handleEdit, handleDelete, membersDataList }: IndexListTbody<T>) {
   return (
     <div className="block md:hidden">
       {tbodyList.map((spendingData, index) => (
@@ -27,7 +28,10 @@ export default function SpendingIndexListMobile<
           <div className="flex justify-between mb-3">
             <span className="font-medium text-gray-700 text-lg">支払い者</span>
             <span className="text-xl font-semibold text-gray-900">
-              {spendingData.data.member}
+              {convetMemberIdToMemberName(
+                spendingData.data.member,
+                membersDataList
+              )}
             </span>
           </div>
           <div className="flex justify-end mt-4 space-x-4">

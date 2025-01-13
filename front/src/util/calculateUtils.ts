@@ -39,7 +39,7 @@ const calculateTotalPayAmount = (
 ): PaymentSummary => {
   const paymentSummary: PaymentSummary = spendingDataList.reduce(
     (acc, item) => {
-      const member = convetMemberIdToMemberName(memberList, item.data.member);
+      const member = convetMemberIdToMemberName(item.data.member, memberList);
       const amount = parseInt(item.data.amount, 10);
 
       // メンバーがすでに存在する場合は金額を加算、存在しない場合は初期化
@@ -123,8 +123,8 @@ export const calculateTotalPaidByPerson = (
   const result = spendingDataList.reduce<Record<string, number>>(
     (totals, payment) => {
       const payer = convetMemberIdToMemberName(
-        membersDataList,
-        payment.data.member
+        payment.data.member,
+        membersDataList
       );
       const amount = parseInt(payment.data.amount, 10); // amountは文字列なので数値に変換
       if (payer) {
@@ -144,9 +144,6 @@ export const calculateAllMembersTotalPaid = (
   totalPaidByPerson: Record<string, number>,
   memberNames: string[]
 ) => {
-  console.log(totalPaidByPerson);
-  console.log(memberNames);
-
   const result = memberNames.reduce((result, name) => {
     // すでに支払額がある場合はそのまま、それ以外は0で初期化
     result[name] = totalPaidByPerson[name] || 0;

@@ -27,7 +27,7 @@ import CustomBottomNavigation from "../components/CustomBottomNavigation";
 import PaymentScreen from "../components/PaymentScreen";
 import Header from "../components/Header";
 import { useFirestoreListeners } from "../util/hooks/useFirestoreListeners";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 
 export default function SpendingIndex() {
   const userContext = useContext(UserContext);

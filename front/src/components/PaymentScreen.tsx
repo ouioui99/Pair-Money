@@ -8,7 +8,7 @@ import {
   calculateAllMembersTotalPaid,
   calculateTotalPaidByPerson,
 } from "../util/calculateUtils";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 
 interface Payment {
   payer: string; // 支払う人

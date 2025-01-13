@@ -18,8 +18,8 @@ const SpendingIndexListTBody = <T extends SpendingIndexList>({
           <td className="p-4">￥{spendingData.data.amount.toLocaleString()}</td>
           <td className="p-4">
             {convetMemberIdToMemberName(
-              membersDataList,
-              spendingData.data.member
+              spendingData.data.member,
+              membersDataList
             )}
           </td>
           <td className="p-4">{spendingData.data.category}</td>

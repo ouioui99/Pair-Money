@@ -20,8 +20,6 @@ export default function PhotoResult(props: Props) {
   >();
 
   const togglePopup = () => {
-    console.log(isOpen);
-
     setIsOpen(!isOpen);
   };
   const navigate = useNavigate();
