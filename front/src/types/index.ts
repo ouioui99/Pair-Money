@@ -74,6 +74,7 @@ export interface SpendingResponse {
 
 export interface SpendingUpdataRequest {
   amount: string;
+  member: string;
   category: string;
   date: Date;
 }

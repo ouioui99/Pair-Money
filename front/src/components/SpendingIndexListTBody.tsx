@@ -15,7 +15,9 @@ const SpendingIndexListTBody = <T extends SpendingIndexList>({
           <td className="p-4 whitespace-nowrap">
             {dayjs(spendingData.data.date.toDate()).format("YYYY-MM-DD")}
           </td>
-          <td className="p-4">￥{spendingData.data.amount.toLocaleString()}</td>
+          <td className="p-4">
+            ￥{Number(spendingData.data.amount).toLocaleString()}
+          </td>
           <td className="p-4">
             {convetMemberIdToMemberName(
               spendingData.data.member,
