@@ -18,6 +18,14 @@ export default function Mypage() {
         <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6">
           {/* メンバー作成ボタン */}
           <button
+            onClick={() => navigate("/group")}
+            className="flex items-center justify-center w-48 px-6 py-3 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 shadow-md"
+          >
+            <FiUserPlus className="mr-2" size={20} />
+            グループ作成
+          </button>
+
+          <button
             onClick={() => navigate("/member-list")}
             className="flex items-center justify-center w-48 px-6 py-3 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 shadow-md"
           >

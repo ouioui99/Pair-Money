@@ -10,6 +10,7 @@ import ReceiptScanning from "../pages/ReceiptScanning";
 import SpendingIndex from "../pages/SpendingIndex";
 import SpendingType from "../pages/SpendingType";
 import MemberList from "../pages/MemberList";
+import Group from "../pages/Group";
 
 export default function Router() {
   return (
@@ -68,6 +69,14 @@ export default function Router() {
           element={
             <PrivateRouter>
               <MemberList />
+            </PrivateRouter>
+          }
+        />
+        <Route
+          path="/group"
+          element={
+            <PrivateRouter>
+              <Group />
             </PrivateRouter>
           }
         />
