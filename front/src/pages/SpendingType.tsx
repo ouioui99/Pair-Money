@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import SpendingCategoriesInputFormModal from "../components/SpendingCategoriesInputFormModal";
 import {
   deleteDocument,
-  insertData,
+  createData,
   realtimeGetter,
   updateCategoryData,
 } from "../firebase/firestore";
@@ -50,7 +50,7 @@ export default function SpendingCategory() {
           updatedAt: serverTimestamp(),
         };
 
-        insertData("spendingCategories", categoryInputValue);
+        createData("spendingCategories", categoryInputValue);
       } else {
         updateCategoryData(categoryData.id, data.category);
       }

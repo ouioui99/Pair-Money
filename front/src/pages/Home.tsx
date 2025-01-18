@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import ExpenseForm from "../components/ExpenseForm";
 import CustomBottomNavigation from "../components/CustomBottomNavigation";
 import { UserContext } from "../contexts/UserContextProvider";
-import { insertData, realtimeGetter } from "../firebase/firestore";
+import { createData, realtimeGetter } from "../firebase/firestore";
 import { serverTimestamp } from "firebase/firestore";
 import {
   CategoryIndexList,
@@ -40,7 +40,7 @@ export default function Home() {
         updatedAt: serverTimestamp(),
       };
       try {
-        await insertData("spendings", spendingFormValue);
+        await createData("spendings", spendingFormValue);
         // 成功した場合のアラート
         setAlert({
           message: "支出の作成が成功しました！",

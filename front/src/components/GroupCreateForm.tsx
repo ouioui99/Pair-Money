@@ -17,6 +17,7 @@ const GroupCreateForm: React.FC<GroupCreateFormProps> = ({
     }
     // グループ作成処理を実行
     handleGroupCreate(groupName);
+    setGroupName("");
   };
 
   return (

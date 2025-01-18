@@ -22,11 +22,11 @@ import {
 import { spendingCategoriesSeedingData } from "./data/spendingCategoriesSeedingData";
 import { membersSeedingData } from "./data/membersSeedingData";
 
-export const insertData = async (table: string, data: Object) => {
+export const createData = async (table: string, data: Object) => {
   try {
     await addDoc(collection(db, table), data);
   } catch (e) {
-    console.error("Error adding document: ", e);
+    throw new Error((e as Error).message || "An unknown error occurred");
   }
 };
 

@@ -10,7 +10,7 @@ import {
 } from "../types";
 import {
   deleteDocument,
-  insertData,
+  createData,
   realtimeGetter,
   updateMemberData,
 } from "../firebase/firestore";
@@ -51,7 +51,7 @@ export default function MemberList() {
           updatedAt: serverTimestamp(),
         };
 
-        insertData("members", membarFormValue);
+        createData("members", membarFormValue);
       } else {
         if (selectedDocumentID) {
           updateMemberData(selectedDocumentID, memberFormData);

@@ -13,7 +13,7 @@ import {
 } from "../types";
 import {
   deleteDocument,
-  insertData,
+  createData,
   realtimeGetter,
   updateFixedCostData,
 } from "../firebase/firestore";
@@ -59,7 +59,7 @@ export default function FixedCostsList() {
           updatedAt: serverTimestamp(),
         };
 
-        insertData("fixedCosts", fixedCostFormValue);
+        createData("fixedCosts", fixedCostFormValue);
       } else {
         if (selectedDocumentID) {
           updateFixedCostData(selectedDocumentID, fixedFormData);

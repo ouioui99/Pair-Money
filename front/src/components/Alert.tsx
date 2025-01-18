@@ -14,23 +14,38 @@ const Alert: React.FC<AlertProps> = ({ message, type, onClose }) => {
   const alertClasses = type === "success" ? "bg-green-500" : "bg-red-500";
 
   // アラートが表示される際にフェードインし、5秒後にフェードアウトするためのクラス
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsVisible(false); // 5秒後に非表示にする
-    }, 5000); // 5秒後に非表示
+    if (!message) return;
 
-    return () => clearTimeout(timer); // クリーンアップ
-  }, []);
+    // アラートを表示する
+    setIsVisible(true);
+
+    // 4.5秒後にフェードアウト開始
+    const fadeOutTimer = setTimeout(() => {
+      setIsVisible(false);
+    }, 4500);
+
+    // 5秒後にコンポーネントを閉じる
+    const closeTimer = setTimeout(() => {
+      onClose();
+    }, 5000);
+
+    return () => {
+      clearTimeout(fadeOutTimer);
+      clearTimeout(closeTimer);
+    };
+  }, [message, onClose]);
+
+  if (!message) return null;
 
   return (
     <div
       className={`fixed top-4 left-1/2 transform -translate-x-1/2 p-4 w-full max-w-md text-white rounded shadow-lg ${alertClasses} 
-        transition-all duration-1000 ease-out opacity-${
-          isVisible ? "100" : "0"
-        } scale-${isVisible ? "100" : "95"} 
-        ${isVisible ? "" : "pointer-events-none"}`} // フェードイン・フェードアウト
+        transition-all duration-500 ease-out ${
+          isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
+        }`}
     >
       <div className="flex items-center">
         <div className="flex-1">{message}</div>
