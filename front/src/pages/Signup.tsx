@@ -5,6 +5,8 @@ import { UserContext } from "../contexts/UserContextProvider";
 import { singup } from "../firebase/api/user/user";
 import { serverTimestamp } from "firebase/firestore";
 import { createData, seedingData } from "../firebase/firestore";
+import { fnv1a32, sha256 } from "../util/commonFunc";
+import dayjs from "dayjs";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
@@ -40,8 +42,11 @@ export default function Signup() {
     if (userContext) {
       singup(email, password)
         .then((result) => {
+          const hashedValue = fnv1a32(result.uid + dayjs().format());
+
           const user = {
             uid: result.uid,
+            fid: hashedValue,
             updatedAt: serverTimestamp(),
             createdAt: serverTimestamp(),
           };
