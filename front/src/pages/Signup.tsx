@@ -9,10 +9,12 @@ import { fnv1a32, sha256 } from "../util/commonFunc";
 import dayjs from "dayjs";
 
 export default function Signup() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMessages, setErrorMessages] = useState({
+    name: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -24,6 +26,7 @@ export default function Signup() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrorMessages({
+      name: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -45,6 +48,7 @@ export default function Signup() {
           const hashedValue = fnv1a32(result.uid + dayjs().format());
 
           const user = {
+            name: name,
             uid: result.uid,
             fid: hashedValue,
             updatedAt: serverTimestamp(),
@@ -103,6 +107,27 @@ export default function Signup() {
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded shadow-md">
         <h2 className="text-2xl font-bold text-center">サインアップ</h2>
         <form className="space-y-6" onSubmit={handleSubmit}>
+          <div>
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700"
+            >
+              名前
+            </label>
+            <TextFormInput
+              id="name"
+              name="name"
+              type="name"
+              autoComplete="name"
+              required={true}
+              value={name}
+              onChange={setName}
+              error={!!errorMessages.name}
+            />
+            {errorMessages.name && (
+              <p className="mt-1 text-sm text-red-500">{errorMessages.name}</p>
+            )}
+          </div>
           <div>
             <label
               htmlFor="email"

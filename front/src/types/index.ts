@@ -37,6 +37,7 @@ export interface paymentType {
 export interface headerProp {
   title: string;
   onClick?: () => void;
+  buttonTitle?: string;
 }
 
 //spending
@@ -142,4 +143,22 @@ export interface SplitResult {
   payer: string; // 支払う人
   receiver: string; // 支払われる人
   amount: number; // 支払う金額
+}
+
+export interface GroupResponse {
+  members: {};
+  name: string;
+}
+
+export interface Timestamp {
+  seconds: number;
+  nanoseconds: number;
+}
+
+export interface Member {
+  createdAt: Timestamp;
+  fid: string;
+  name: string;
+  updatedAt: Timestamp;
+  uid: string;
 }

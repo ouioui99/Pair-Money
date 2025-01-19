@@ -5,7 +5,7 @@ import { logout } from "../firebase/api/user/user";
 import { UserContext } from "../contexts/UserContextProvider";
 import { headerProp } from "../types";
 
-const Header = ({ title, onClick }: headerProp) => {
+const Header = ({ title, onClick, buttonTitle = "新規作成" }: headerProp) => {
   const userContext = useContext(UserContext);
   const navigate = useNavigate();
   const handleLogout = () => {
@@ -28,7 +28,7 @@ const Header = ({ title, onClick }: headerProp) => {
             onClick={onClick}
           >
             <FiPlus className="mr-1" />
-            新規作成
+            {buttonTitle}
           </button>
         )}
         <button

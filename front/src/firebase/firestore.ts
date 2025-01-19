@@ -122,6 +122,7 @@ export const realtimeGetter = <T>(
       results.push({ data: doc.data(), id: doc.id } as T);
     });
     setter(results);
+    console.log(results);
   });
 
   // `unsubscribe` を返して呼び出し元で解除可能にする
@@ -154,17 +155,17 @@ export const seedingData = async (userId: string) => {
     });
   }
 
-  for (const data of membersSeedingData) {
-    const spendingCategoriesRef = doc(collection(db, "members"));
+  // for (const data of membersSeedingData) {
+  //   const spendingCategoriesRef = doc(collection(db, "members"));
 
-    // 各ドキュメントにデータを設定
-    batch.set(spendingCategoriesRef, {
-      ...data,
-      uid: userId,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    });
-  }
+  //   // 各ドキュメントにデータを設定
+  //   batch.set(spendingCategoriesRef, {
+  //     ...data,
+  //     uid: userId,
+  //     createdAt: serverTimestamp(),
+  //     updatedAt: serverTimestamp(),
+  //   });
+  // }
 
   // バッチを書き込む
   try {
