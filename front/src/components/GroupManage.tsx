@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { CommonResponseData, FUser, GroupResponse, Member } from "../types";
 import { UserContext } from "../contexts/UserContextProvider";
-import { getData } from "../firebase/firestore";
+import { addData, getData } from "../firebase/firestore";
 
 interface GroupManegeProps {
   group: CommonResponseData<GroupResponse>[];
@@ -18,30 +18,54 @@ const GroupManage: React.FC<GroupManegeProps> = ({ group }) => {
       if (userContext?.user?.uid) {
         const groupMemberUidList = group[0].data.memberUids;
 
-        for (let index = 0; index < groupMemberUidList.length; index++) {
-          const groupMemberUid = groupMemberUidList[index];
+        const userDataList = await Promise.all(
+          groupMemberUidList.map((groupMemberUid) =>
+            getData<FUser>("users", {
+              subDoc: "uid",
+              is: "==",
+              subDocCondition: groupMemberUid,
+            })
+          )
+        );
 
-          const userData = await getData<FUser>("users", {
-            subDoc: "uid",
-            is: "==",
-            subDocCondition: groupMemberUid,
-          });
-          setMembers([...members, userData[0]]);
-        }
+        // 重複を防ぐために直接新しいメンバーリストで上書き
+        const newMembers = userDataList.map((userData) => userData[0]);
+        setMembers(newMembers);
       }
     };
     initialProcessing();
   }, [group]);
 
-  const handleDelete = (id: string) => {};
+  // 削除ボタンが押されたときの処理
+  const handleDelete = (uid: string) => {
+    const memberToDelete = members.find((member) => member.uid === uid);
+    if (memberToDelete) {
+      setSelectedMember(memberToDelete); // 削除対象のメンバーを設定
+      setShowDeleteModal(true); // モーダルを表示
+    }
+  };
 
-  const confirmDelete = () => {
+  // モーダルで「削除」ボタンが押されたときの処理
+  const confirmDelete = async () => {
     if (selectedMember) {
-      setMembers((prev) =>
-        prev.filter((member) => member.name !== selectedMember.uid)
-      );
-      setShowDeleteModal(false);
-      setSelectedMember(null);
+      try {
+        // メンバーリストを更新
+        setMembers((prev) =>
+          prev.filter((member) => member.uid !== selectedMember.uid)
+        );
+
+        // Firestore の memberUids を更新
+        const updatedMembers = group[0].data.memberUids.filter(
+          (uid: string) => uid !== selectedMember.uid
+        );
+
+        await addData("groups", group[0].id, "memberUids", updatedMembers);
+
+        setShowDeleteModal(false); // モーダルを非表示
+        setSelectedMember(null); // 選択されたメンバーをリセット
+      } catch (error) {
+        console.error("Error updating Firestore:", error);
+      }
     }
   };
 
@@ -61,12 +85,14 @@ const GroupManage: React.FC<GroupManegeProps> = ({ group }) => {
             <tr key={index} className="border-t hover:bg-gray-200">
               <td className="p-4 text-gray-800">{member.name}</td>
               <td className="p-4">
-                <button
-                  onClick={() => handleDelete(member.uid)}
-                  className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
-                >
-                  グループから削除
-                </button>
+                {member.uid != userContext?.user?.uid && (
+                  <button
+                    onClick={() => handleDelete(member.uid)}
+                    className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
+                  >
+                    グループから削除
+                  </button>
+                )}
               </td>
             </tr>
           ))}
@@ -87,13 +113,16 @@ const GroupManage: React.FC<GroupManegeProps> = ({ group }) => {
                 {member.name}
               </span>
             </div>
+
             <div className="flex justify-end mt-4 space-x-4">
-              <button
-                onClick={() => handleDelete(member.uid)}
-                className="bg-red-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 transition-all transform hover:scale-105 flex items-center space-x-2"
-              >
-                削除
-              </button>
+              {member.uid != userContext?.user?.uid && (
+                <button
+                  onClick={() => handleDelete(member.uid)}
+                  className="bg-red-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 transition-all transform hover:scale-105 flex items-center space-x-2"
+                >
+                  削除
+                </button>
+              )}
             </div>
           </div>
         ))}
