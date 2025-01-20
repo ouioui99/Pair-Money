@@ -1,39 +1,44 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { CommonResponseData, FUser, GroupResponse, Member } from "../types";
+import { UserContext } from "../contexts/UserContextProvider";
+import { getData } from "../firebase/firestore";
 
-interface Member {
-  id: string;
-  name: string;
+interface GroupManegeProps {
+  group: CommonResponseData<GroupResponse>[];
 }
 
-const GroupManage: React.FC = () => {
-  const [members, setMembers] = useState<Member[]>([
-    { id: "1", name: "Alice" },
-    { id: "2", name: "Bob" },
-  ]);
-  const [showFormModal, setShowFormModal] = useState(false);
+const GroupManage: React.FC<GroupManegeProps> = ({ group }) => {
+  const userContext = useContext(UserContext);
+  const [members, setMembers] = useState<FUser[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
 
-  const handleEdit = (id: string) => {
-    const memberToEdit = members.find((member) => member.id === id);
-    if (memberToEdit) {
-      setSelectedMember(memberToEdit);
-      setShowFormModal(true);
-    }
-  };
+  useEffect(() => {
+    const initialProcessing = async () => {
+      if (userContext?.user?.uid) {
+        const groupMemberUidList = group[0].data.memberUids;
 
-  const handleDelete = (id: string) => {
-    const memberToDelete = members.find((member) => member.id === id);
-    if (memberToDelete) {
-      setSelectedMember(memberToDelete);
-      setShowDeleteModal(true);
-    }
-  };
+        for (let index = 0; index < groupMemberUidList.length; index++) {
+          const groupMemberUid = groupMemberUidList[index];
+
+          const userData = await getData<FUser>("users", {
+            subDoc: "uid",
+            is: "==",
+            subDocCondition: groupMemberUid,
+          });
+          setMembers([...members, userData[0]]);
+        }
+      }
+    };
+    initialProcessing();
+  }, [group]);
+
+  const handleDelete = (id: string) => {};
 
   const confirmDelete = () => {
     if (selectedMember) {
       setMembers((prev) =>
-        prev.filter((member) => member.id !== selectedMember.id)
+        prev.filter((member) => member.name !== selectedMember.uid)
       );
       setShowDeleteModal(false);
       setSelectedMember(null);
@@ -57,16 +62,10 @@ const GroupManage: React.FC = () => {
               <td className="p-4 text-gray-800">{member.name}</td>
               <td className="p-4">
                 <button
-                  onClick={() => handleEdit(member.id)}
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition mr-2"
-                >
-                  編集
-                </button>
-                <button
-                  onClick={() => handleDelete(member.id)}
+                  onClick={() => handleDelete(member.uid)}
                   className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
                 >
-                  削除
+                  グループから削除
                 </button>
               </td>
             </tr>
@@ -90,13 +89,7 @@ const GroupManage: React.FC = () => {
             </div>
             <div className="flex justify-end mt-4 space-x-4">
               <button
-                onClick={() => handleEdit(member.id)}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all transform hover:scale-105 flex items-center space-x-2"
-              >
-                編集
-              </button>
-              <button
-                onClick={() => handleDelete(member.id)}
+                onClick={() => handleDelete(member.uid)}
                 className="bg-red-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 transition-all transform hover:scale-105 flex items-center space-x-2"
               >
                 削除
@@ -105,39 +98,6 @@ const GroupManage: React.FC = () => {
           </div>
         ))}
       </div>
-
-      {showFormModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60"
-          onClick={() => setShowFormModal(false)}
-        >
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-xl font-bold mb-4">メンバー編集</h2>
-            <form>
-              <input
-                type="text"
-                className="border p-2 w-full rounded mb-4"
-                defaultValue={selectedMember?.name}
-              />
-              <div className="flex justify-end space-x-4">
-                <button
-                  type="button"
-                  className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
-                  onClick={() => setShowFormModal(false)}
-                >
-                  キャンセル
-                </button>
-                <button
-                  type="submit"
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                >
-                  保存
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
 
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">

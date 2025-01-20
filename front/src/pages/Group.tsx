@@ -4,17 +4,18 @@ import GroupCreateForm from "../components/GroupCreateForm";
 import Header from "../components/Header";
 import { createData, getData, realtimeGetter } from "../firebase/firestore";
 import { UserContext } from "../contexts/UserContextProvider";
-import { serverTimestamp } from "firebase/firestore";
+import { arrayUnion, serverTimestamp } from "firebase/firestore";
 import Alert from "../components/Alert";
 import { useFirestoreListeners } from "../util/hooks/useFirestoreListeners";
-import { GroupResponse } from "../types";
+import { CommonResponseData, GroupResponse, Member } from "../types";
 import GroupManage from "../components/GroupManage";
 import MemberInviteForm from "../components/MemberInviteForm";
 
 export default function Group() {
   const userContext = useContext(UserContext);
   const { addListener } = useFirestoreListeners();
-  const [group, setGroup] = useState<GroupResponse[]>([]);
+  const [group, setGroup] = useState<CommonResponseData<GroupResponse>[]>([]);
+  const [members, setMembers] = useState<Member[]>([]);
   const [alert, setAlert] = useState<{
     message: string;
     type: "success" | "error";
@@ -25,7 +26,7 @@ export default function Group() {
     if (userContext?.user?.uid) {
       const groupData = {
         name: groupName,
-        members: { memberUid: userContext.user.uid, role: "1" },
+        memberUids: arrayUnion(userContext.user.uid),
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       };
@@ -78,16 +79,18 @@ export default function Group() {
           "groups",
           setGroup,
           {
-            subDoc: "members.memberUid",
-            is: "==",
+            subDoc: "memberUids",
+            is: "array-contains",
             subDocCondition: userContext.user.uid,
           }
         );
+
         addListener(unsubscribeSpendingCategories);
       }
     };
     initialProcessing();
   }, [addListener]);
+
   return (
     <div>
       <Header
@@ -117,7 +120,7 @@ export default function Group() {
           </div>
         </div>
       ) : (
-        <GroupManage></GroupManage>
+        <GroupManage group={group}></GroupManage>
       )}
 
       {showFormModal ? (
@@ -129,6 +132,7 @@ export default function Group() {
             isOpen={showFormModal}
             onClose={handleCancelClick}
             onSubmit={handleOnSubmit}
+            group={group}
           />
         </div>
       ) : null}

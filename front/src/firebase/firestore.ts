@@ -12,6 +12,8 @@ import {
   doc,
   updateDoc,
   writeBatch,
+  setDoc,
+  arrayUnion,
 } from "firebase/firestore";
 import { db } from "./config";
 import {
@@ -28,6 +30,20 @@ export const createData = async (table: string, data: Object) => {
   } catch (e) {
     throw new Error((e as Error).message || "An unknown error occurred");
   }
+};
+
+export const addData = async (
+  table: string,
+  docId: string,
+  fieldName: string,
+  data: any
+) => {
+  const targetDB = doc(db, table, docId);
+
+  console.log(data);
+  await updateDoc(targetDB, {
+    [fieldName]: data,
+  });
 };
 
 export const updateCategoryData = async (id: string, category: string) => {
@@ -81,10 +97,10 @@ type CategoryData = {
   uid: string;
 };
 
-export const getData = async (
+export const getData = async <T>(
   table: string,
   conditions: { subDoc: string; is: WhereFilterOp; subDocCondition: string }
-): Promise<CategoryData[]> => {
+): Promise<T[]> => {
   return new Promise(async (resolve, reject) => {
     try {
       const q = query(
@@ -93,9 +109,9 @@ export const getData = async (
       );
       const querySnapshot = await getDocs(q);
 
-      const results: CategoryData[] = [];
+      const results: T[] = [];
       querySnapshot.forEach((doc) => {
-        results.push(doc.data() as CategoryData);
+        results.push(doc.data() as T);
       });
 
       resolve(results);
@@ -108,7 +124,11 @@ export const getData = async (
 export const realtimeGetter = <T>(
   table: string,
   setter: React.Dispatch<React.SetStateAction<T[]>>,
-  conditions: { subDoc: string; is: WhereFilterOp; subDocCondition: string }
+  conditions: {
+    subDoc: string;
+    is: WhereFilterOp;
+    subDocCondition: string | {};
+  }
 ) => {
   const q = query(
     collection(db, table),
@@ -122,7 +142,6 @@ export const realtimeGetter = <T>(
       results.push({ data: doc.data(), id: doc.id } as T);
     });
     setter(results);
-    console.log(results);
   });
 
   // `unsubscribe` を返して呼び出し元で解除可能にする

@@ -146,8 +146,10 @@ export interface SplitResult {
 }
 
 export interface GroupResponse {
-  members: {};
+  memberUids: [];
   name: string;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
 }
 
 export interface Timestamp {
@@ -161,4 +163,12 @@ export interface Member {
   name: string;
   updatedAt: Timestamp;
   uid: string;
+}
+
+export interface FUser {
+  name: string;
+  fid: string;
+  uid: string;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
 }

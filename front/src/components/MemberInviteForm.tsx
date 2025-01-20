@@ -1,17 +1,21 @@
 import React, { useContext, useState } from "react";
-import { Member } from "../types";
+import { CommonResponseData, GroupResponse, Member } from "../types";
 import { UserContext } from "../contexts/UserContextProvider";
+import { addData } from "../firebase/firestore";
+import { arrayUnion } from "firebase/firestore";
 
 type friendIdForm = {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (friendId: string) => Promise<Member[] | undefined>; // 非同期で検索結果を返す関数
+  group: CommonResponseData<GroupResponse>[];
 };
 
 const MemberInviteForm: React.FC<friendIdForm> = ({
   isOpen,
   onClose,
   onSubmit,
+  group,
 }) => {
   const [friendId, setFriendId] = useState<string>("");
   const [searchResults, setSearchResults] = useState<Member[]>([]);
@@ -53,7 +57,9 @@ const MemberInviteForm: React.FC<friendIdForm> = ({
   };
 
   const handleInvite = (selectedMember: Member) => {
-    console.log(`Invited: ${selectedMember}`);
+    const updatedMembers = [...group[0].data.memberUids, selectedMember.uid];
+    addData("groups", group[0].id, "memberUids", updatedMembers);
+
     setSearchResults([]);
     setFriendId("");
     onClose();
