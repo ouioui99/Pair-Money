@@ -5,11 +5,17 @@ import { addData, getData } from "../firebase/firestore";
 
 interface GroupManegeProps {
   group: CommonResponseData<GroupResponse>[];
+  members: FUser[];
+  setMembers: React.Dispatch<React.SetStateAction<FUser[]>>;
 }
 
-const GroupManage: React.FC<GroupManegeProps> = ({ group }) => {
+const GroupManage: React.FC<GroupManegeProps> = ({
+  group,
+  members,
+  setMembers,
+}) => {
   const userContext = useContext(UserContext);
-  const [members, setMembers] = useState<FUser[]>([]);
+
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
 

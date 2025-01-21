@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { CommonResponseData, GroupResponse, Member } from "../types";
+import { CommonResponseData, FUser, GroupResponse, Member } from "../types";
 import { UserContext } from "../contexts/UserContextProvider";
 import { addData } from "../firebase/firestore";
 import { arrayUnion } from "firebase/firestore";
@@ -9,6 +9,7 @@ type friendIdForm = {
   onClose: () => void;
   onSubmit: (friendId: string) => Promise<Member[] | undefined>; // 非同期で検索結果を返す関数
   group: CommonResponseData<GroupResponse>[];
+  members: FUser[];
 };
 
 const MemberInviteForm: React.FC<friendIdForm> = ({
@@ -16,6 +17,7 @@ const MemberInviteForm: React.FC<friendIdForm> = ({
   onClose,
   onSubmit,
   group,
+  members,
 }) => {
   const [friendId, setFriendId] = useState<string>("");
   const [searchResults, setSearchResults] = useState<Member[]>([]);
@@ -131,30 +133,44 @@ const MemberInviteForm: React.FC<friendIdForm> = ({
               検索結果
             </h3>
             <ul className="space-y-3">
-              {searchResults.map((result, index) => (
-                <li
-                  key={result.uid} // Use `uid` as the unique key
-                  className="flex justify-between items-center p-3 border border-gray-300 rounded-md shadow-sm hover:bg-gray-100 transition"
-                >
-                  <div>
-                    <p className="text-gray-800 font-medium">{result.name}</p>
-                    <p className="text-sm text-gray-600">ID: {result.fid}</p>
-                    {result.uid === userContext?.user?.uid && ( // Compare with logged-in user ID
-                      <p className="text-sm text-green-500 font-semibold mt-1">
-                        自分のフレンドIDです
-                      </p>
-                    )}
-                  </div>
-                  {result.uid !== userContext?.user?.uid && ( // Hide the invite button if it's the logged-in user
-                    <button
-                      onClick={() => handleInvite(result)}
-                      className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
-                    >
-                      招待
-                    </button>
-                  )}
-                </li>
-              ))}
+              {searchResults.map((result, index) => {
+                const isMember = members.some(
+                  (member) => member.uid === result.uid
+                ); // members 配列内に uid が存在するかチェック
+                return (
+                  <li
+                    key={result.uid} // Use `uid` as the unique key
+                    className="flex justify-between items-center p-3 border border-gray-300 rounded-md shadow-sm hover:bg-gray-100 transition"
+                  >
+                    <div>
+                      <p className="text-gray-800 font-medium">{result.name}</p>
+                      <p className="text-sm text-gray-600">ID: {result.fid}</p>
+                      {/* 自分のフレンドIDであれば優先的に表示 */}
+                      {result.uid === userContext?.user?.uid ? (
+                        <p className="text-sm text-green-500 font-semibold mt-1">
+                          自分のフレンドIDです
+                        </p>
+                      ) : (
+                        // それ以外でメンバーに登録済みの場合のメッセージ
+                        isMember && (
+                          <p className="text-sm text-blue-500 font-semibold mt-1">
+                            すでにメンバーに登録済みです
+                          </p>
+                        )
+                      )}
+                    </div>
+                    {!isMember &&
+                      result.uid !== userContext?.user?.uid && ( // 既存メンバーまたは自分自身以外に「招待」ボタンを表示
+                        <button
+                          onClick={() => handleInvite(result)}
+                          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+                        >
+                          招待
+                        </button>
+                      )}
+                  </li>
+                );
+              })}
             </ul>
           </div>
         )}

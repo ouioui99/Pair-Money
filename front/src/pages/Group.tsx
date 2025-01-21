@@ -7,7 +7,7 @@ import { UserContext } from "../contexts/UserContextProvider";
 import { arrayUnion, serverTimestamp } from "firebase/firestore";
 import Alert from "../components/Alert";
 import { useFirestoreListeners } from "../util/hooks/useFirestoreListeners";
-import { CommonResponseData, GroupResponse, Member } from "../types";
+import { CommonResponseData, FUser, GroupResponse, Member } from "../types";
 import GroupManage from "../components/GroupManage";
 import MemberInviteForm from "../components/MemberInviteForm";
 
@@ -15,7 +15,7 @@ export default function Group() {
   const userContext = useContext(UserContext);
   const { addListener } = useFirestoreListeners();
   const [group, setGroup] = useState<CommonResponseData<GroupResponse>[]>([]);
-  const [members, setMembers] = useState<Member[]>([]);
+  const [members, setMembers] = useState<FUser[]>([]);
   const [alert, setAlert] = useState<{
     message: string;
     type: "success" | "error";
@@ -120,7 +120,11 @@ export default function Group() {
           </div>
         </div>
       ) : (
-        <GroupManage group={group}></GroupManage>
+        <GroupManage
+          group={group}
+          members={members}
+          setMembers={setMembers}
+        ></GroupManage>
       )}
 
       {showFormModal ? (
@@ -133,6 +137,7 @@ export default function Group() {
             onClose={handleCancelClick}
             onSubmit={handleOnSubmit}
             group={group}
+            members={members}
           />
         </div>
       ) : null}
