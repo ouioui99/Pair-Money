@@ -77,6 +77,12 @@ const GroupManage: React.FC<GroupManegeProps> = ({
 
   return (
     <div className="w-full overflow-hidden">
+      {/* グループ名の表示 */}
+      <div className="p-4 mt-3 flex items-center justify-center bg-gray-100 shadow-inner">
+        <h2 className="font-semibold text-gray-700 truncate text-center">
+          グループ名: {group[0].data.name}
+        </h2>
+      </div>
       <table className="min-w-full hidden md:table table-auto">
         <thead>
           <tr className="bg-gray-100 text-left">

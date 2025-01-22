@@ -1,41 +1,69 @@
-import React, { useEffect } from "react";
-import { MemberIndexList } from "../types";
+import React, { useContext, useEffect, useState } from "react";
+import { CommonResponseData, FUser, GroupResponse } from "../types";
+import { getData } from "../firebase/firestore";
+import { UserContext } from "../contexts/UserContextProvider";
 
 interface MemberSelect {
-  member: string;
-  setMember: (e: string) => void;
-  memberDataList: MemberIndexList[];
+  payerUid: string;
+  setPayerUid: (e: string) => void;
+  group: CommonResponseData<GroupResponse>[];
 }
 
 export const MemberSelect: React.FC<MemberSelect> = ({
-  member,
-  setMember,
-  memberDataList,
+  payerUid,
+  setPayerUid,
+  group,
 }) => {
-  // memberDataListが空でない場合に初期値を設定
+  const [groupMemberDataList, setGroupMemberDataList] = useState<FUser[]>([]);
+  const userContext = useContext(UserContext);
+  // payerUidDataListが空でない場合に初期値を設定
   useEffect(() => {
-    if (memberDataList.length > 0 && member === "") {
-      setMember(memberDataList[0].id);
-    } else {
-      setMember(member);
-    }
-  }, [memberDataList, setMember]);
+    const initialProcessing = async () => {
+      if (group.length > 0) {
+        if (userContext?.user?.uid) {
+          setPayerUid(userContext.user.uid);
+        }
 
-  const option = memberDataList.map((data, index) => (
-    <option key={index} value={data.id}>
-      {data.data.name}
+        const groupMemberUidList = group[0].data.memberUids;
+
+        const userDataList = await Promise.all(
+          groupMemberUidList.map((groupMemberUid) =>
+            getData<FUser>("users", {
+              subDoc: "uid",
+              is: "==",
+              subDocCondition: groupMemberUid,
+            })
+          )
+        );
+
+        const memberUserData = userDataList.map((userData) => userData[0]);
+
+        setGroupMemberDataList(memberUserData);
+      } else {
+        setPayerUid(payerUid);
+      }
+    };
+    initialProcessing();
+  }, [group, setPayerUid]);
+
+  const option = groupMemberDataList.map((data, index) => (
+    <option key={index} value={data.uid}>
+      {data.name}
     </option>
   ));
 
   return (
     <div className="mb-4">
-      <label htmlFor="member" className="block text-gray-700 font-medium mb-2">
+      <label
+        htmlFor="payerUid"
+        className="block text-gray-700 font-medium mb-2"
+      >
         支払ったメンバー
       </label>
       <select
-        id="member"
-        value={member}
-        onChange={(e) => setMember(e.target.value)}
+        id="payerUid"
+        value={payerUid}
+        onChange={(e) => setPayerUid(e.target.value)}
         className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
         required
       >

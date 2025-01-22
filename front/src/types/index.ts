@@ -50,7 +50,8 @@ export interface CreateSpendingRequest {
   amount: string;
   date: Date;
   category: string;
-  member: string;
+  payerUid: string;
+  groupId: string;
   uid: string;
   createdAt: FieldValue;
   updatedAt: FieldValue;
@@ -59,7 +60,7 @@ export interface CreateSpendingRequest {
 export interface SpendingFormValue {
   amount: string;
   date: dayjs.Dayjs;
-  member: string;
+  payerUid: string;
   category: string;
 }
 

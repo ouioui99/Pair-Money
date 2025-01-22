@@ -6,7 +6,9 @@ import { createData, realtimeGetter } from "../firebase/firestore";
 import { serverTimestamp } from "firebase/firestore";
 import {
   CategoryIndexList,
+  CommonResponseData,
   CreateSpendingRequest,
+  GroupResponse,
   MemberIndexList,
   SpendingFormValue,
 } from "../types";
@@ -20,9 +22,8 @@ export default function Home() {
   const [categoryDataList, setCategoryDataList] = useState<CategoryIndexList[]>(
     []
   );
-  const [membersDataList, setMemebersDataList] = useState<MemberIndexList[]>(
-    []
-  );
+
+  const [group, setGroup] = useState<CommonResponseData<GroupResponse>[]>([]);
   const [alert, setAlert] = useState<{
     message: string;
     type: "success" | "error";
@@ -33,8 +34,9 @@ export default function Home() {
       const spendingFormValue: CreateSpendingRequest = {
         amount: data.amount,
         date: data.date.toDate(),
-        member: data.member,
         category: data.category,
+        payerUid: data.payerUid,
+        groupId: group[0].id,
         uid: userContext.user.uid,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
@@ -75,17 +77,15 @@ export default function Home() {
             subDocCondition: userContext.user.uid,
           }
         );
-        const unsubscribeMembers = realtimeGetter(
-          "members",
-          setMemebersDataList,
-          {
-            subDoc: "uid",
-            is: "==",
-            subDocCondition: userContext.user.uid,
-          }
-        );
+
+        const unsubscribeGroups = realtimeGetter("groups", setGroup, {
+          subDoc: "memberUids",
+          is: "array-contains",
+          subDocCondition: userContext.user.uid,
+        });
+
         addListener(unsubscribeSpendingCategories);
-        addListener(unsubscribeMembers);
+        addListener(unsubscribeGroups);
       }
     };
     initialProcessing();
@@ -110,7 +110,7 @@ export default function Home() {
             onSubmit={handleOnSubmit}
             spendingInitialValues={undefined}
             categoryDataList={categoryDataList}
-            memberDataList={membersDataList}
+            group={group}
           />
         </div>
         <CustomBottomNavigation />

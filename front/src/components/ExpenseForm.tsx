@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { CategorySelect } from "./CategorySelect";
 import {
   CategoryIndexList,
+  CommonResponseData,
+  GroupResponse,
   MemberIndexList,
   SpendingFormValue,
   SpendingIndexList,
@@ -14,14 +16,14 @@ type ExpenseFormProps = {
   onSubmit: (data: SpendingFormValue) => void;
   spendingInitialValues?: SpendingIndexList;
   categoryDataList: CategoryIndexList[];
-  memberDataList: MemberIndexList[];
+  group: CommonResponseData<GroupResponse>[];
 };
 
 const ExpenseForm: React.FC<ExpenseFormProps> = ({
   onSubmit,
   spendingInitialValues,
   categoryDataList,
-  memberDataList,
+  group,
 }) => {
   const navigate = useNavigate();
 
@@ -41,7 +43,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
       ? spendingInitialValues?.data.category
       : ""
   );
-  const [member, setMember] = useState<string>(
+  const [payerUid, setPayerUid] = useState<string>(
     spendingInitialValues?.data.member !== undefined
       ? spendingInitialValues?.data.member
       : ""
@@ -50,13 +52,13 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (amount && date && category && member) {
-      onSubmit({ amount, date, category, member });
+    if (amount && date && category && payerUid) {
+      onSubmit({ amount, date, category, payerUid });
       setAmount("");
       setDate(dayjs()); // フォーム送信後も日付を今日にリセット
 
       setCategory(categoryDataList[0].data.category);
-      setMember(memberDataList[0].id);
+      //setMember(memberDataList[0].id);
     }
   };
 
@@ -115,9 +117,9 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
       </div>
 
       <MemberSelect
-        member={member}
-        setMember={setMember}
-        memberDataList={memberDataList}
+        payerUid={payerUid}
+        setPayerUid={setPayerUid}
+        group={group}
       ></MemberSelect>
 
       <CategorySelect

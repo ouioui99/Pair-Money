@@ -22,6 +22,7 @@ export default function Group() {
   } | null>(null);
   const [showFormModal, setShowFormModal] = useState(false);
   const [friendId, setFriendId] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const handleGroupCreate = async (groupName: string) => {
     if (userContext?.user?.uid) {
       const groupData = {
@@ -90,6 +91,21 @@ export default function Group() {
     };
     initialProcessing();
   }, [addListener]);
+
+  // group の変化を監視してローディングを終了する
+  useEffect(() => {
+    if (group.length != 0) {
+      setIsLoading(false);
+    }
+  }, [group]);
+
+  if (isLoading) {
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        <p className="text-gray-500">データを読み込み中です...</p>
+      </div>
+    );
+  }
 
   return (
     <div>
