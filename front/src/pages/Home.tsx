@@ -19,10 +19,6 @@ import { useFirestoreListeners } from "../util/hooks/useFirestoreListeners";
 export default function Home() {
   const userContext = useContext(UserContext);
   const { addListener } = useFirestoreListeners();
-  const [categoryDataList, setCategoryDataList] = useState<CategoryIndexList[]>(
-    []
-  );
-
   const [group, setGroup] = useState<CommonResponseData<GroupResponse>[]>([]);
   const [alert, setAlert] = useState<{
     message: string;
@@ -34,7 +30,7 @@ export default function Home() {
       const spendingFormValue: CreateSpendingRequest = {
         amount: data.amount,
         date: data.date.toDate(),
-        category: data.category,
+        categoryId: data.categoryId,
         payerUid: data.payerUid,
         groupId: group[0].id,
         uid: userContext.user.uid,
@@ -68,23 +64,12 @@ export default function Home() {
   useEffect(() => {
     const initialProcessing = async () => {
       if (userContext?.user?.uid) {
-        const unsubscribeSpendingCategories = realtimeGetter(
-          "spendingCategories",
-          setCategoryDataList,
-          {
-            subDoc: "uid",
-            is: "==",
-            subDocCondition: userContext.user.uid,
-          }
-        );
-
         const unsubscribeGroups = realtimeGetter("groups", setGroup, {
           subDoc: "memberUids",
           is: "array-contains",
           subDocCondition: userContext.user.uid,
         });
 
-        addListener(unsubscribeSpendingCategories);
         addListener(unsubscribeGroups);
       }
     };
@@ -106,12 +91,15 @@ export default function Home() {
             />
           )}
 
-          <ExpenseForm
-            onSubmit={handleOnSubmit}
-            spendingInitialValues={undefined}
-            categoryDataList={categoryDataList}
-            group={group}
-          />
+          {group.length === 0 ? (
+            <p>Loading group data...</p>
+          ) : (
+            <ExpenseForm
+              onSubmit={handleOnSubmit}
+              spendingInitialValues={undefined}
+              group={group}
+            />
+          )}
         </div>
         <CustomBottomNavigation />
       </div>

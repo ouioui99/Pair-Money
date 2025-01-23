@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CategorySelect } from "./CategorySelect";
 import {
   CategoryIndexList,
   CommonResponseData,
+  FUser,
   GroupResponse,
   MemberIndexList,
   SpendingFormValue,
@@ -11,21 +12,30 @@ import {
 } from "../types";
 import { MemberSelect } from "./MemberSelect";
 import dayjs, { Dayjs } from "dayjs";
+import { UserContext } from "../contexts/UserContextProvider";
+import { getData, realtimeGetter } from "../firebase/firestore";
+import { useFirestoreListeners } from "../util/hooks/useFirestoreListeners";
 
 type ExpenseFormProps = {
   onSubmit: (data: SpendingFormValue) => void;
   spendingInitialValues?: SpendingIndexList;
-  categoryDataList: CategoryIndexList[];
   group: CommonResponseData<GroupResponse>[];
 };
 
 const ExpenseForm: React.FC<ExpenseFormProps> = ({
   onSubmit,
   spendingInitialValues,
-  categoryDataList,
   group,
 }) => {
+  const userContext = useContext(UserContext);
   const navigate = useNavigate();
+  const { addListener } = useFirestoreListeners();
+
+  const [categoryDataList, setCategoryDataList] = useState<CategoryIndexList[]>(
+    []
+  );
+
+  const [groupMemberDataList, setGroupMemberDataList] = useState<FUser[]>([]);
 
   // transformResult.totalAmountが定義されていればその値を初期値とし、なければ空文字を設定
   const [amount, setAmount] = useState<string | "">(
@@ -38,9 +48,9 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
       ? dayjs(spendingInitialValues?.data.date.toDate()) // 初期値があれば day.js オブジェクトに変換
       : dayjs() // 今日の日付を初期値として設定
   ); // 初期状態として今日の日付を設定
-  const [category, setCategory] = useState<string>(
-    spendingInitialValues?.data.category !== undefined
-      ? spendingInitialValues?.data.category
+  const [categoryId, setCategoryId] = useState<string>(
+    spendingInitialValues?.data.categoryId !== undefined
+      ? spendingInitialValues?.data.categoryId
       : ""
   );
   const [payerUid, setPayerUid] = useState<string>(
@@ -48,16 +58,16 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
       ? spendingInitialValues?.data.member
       : ""
   );
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log(categoryId);
 
-    if (amount && date && category && payerUid) {
-      onSubmit({ amount, date, category, payerUid });
+    if (amount && date && categoryId && payerUid) {
+      onSubmit({ amount, date, categoryId, payerUid });
       setAmount("");
       setDate(dayjs()); // フォーム送信後も日付を今日にリセット
 
-      setCategory(categoryDataList[0].data.category);
+      setCategoryId(categoryDataList[0].data.name);
       //setMember(memberDataList[0].id);
     }
   };
@@ -67,6 +77,49 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
     e.preventDefault();
     navigate("/receipt-scanning");
   };
+
+  useEffect(() => {
+    const initialProcessing = async () => {
+      if (!payerUid) {
+        if (userContext?.user?.uid) {
+          setPayerUid(userContext.user.uid);
+        }
+        const groupMemberUidList = group[0].data.memberUids;
+        const userDataList = await Promise.all(
+          groupMemberUidList.map((groupMemberUid) =>
+            getData<FUser>("users", {
+              subDoc: "uid",
+              is: "==",
+              subDocCondition: groupMemberUid,
+            })
+          )
+        );
+        const memberUserData = userDataList.map((userData) => userData[0]);
+        setGroupMemberDataList(memberUserData);
+      } else {
+        setPayerUid(payerUid);
+      }
+    };
+    initialProcessing();
+  }, [group]);
+
+  // categoryDataListが空でない場合に初期値を設定
+  useEffect(() => {
+    const initialProcessing = async () => {
+      const unsubscribeSpendingCategories = realtimeGetter(
+        "spendingCategories",
+        setCategoryDataList,
+        {
+          subDoc: "groupId",
+          is: "==",
+          subDocCondition: group[0].id,
+        }
+      );
+
+      addListener(unsubscribeSpendingCategories);
+    };
+    initialProcessing();
+  }, [groupMemberDataList]);
 
   return (
     <form
@@ -119,12 +172,12 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
       <MemberSelect
         payerUid={payerUid}
         setPayerUid={setPayerUid}
-        group={group}
+        groupMemberDataList={groupMemberDataList}
       ></MemberSelect>
 
       <CategorySelect
-        category={category}
-        setCategory={setCategory}
+        categoryId={categoryId}
+        setCategoryId={setCategoryId}
         categoryDataList={categoryDataList}
       ></CategorySelect>
 

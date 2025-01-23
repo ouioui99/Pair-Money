@@ -2,7 +2,12 @@ import { useContext, useEffect, useState } from "react";
 import CustomBottomNavigation from "../components/CustomBottomNavigation";
 import GroupCreateForm from "../components/GroupCreateForm";
 import Header from "../components/Header";
-import { createData, getData, realtimeGetter } from "../firebase/firestore";
+import {
+  createData,
+  getData,
+  realtimeGetter,
+  seedingData,
+} from "../firebase/firestore";
 import { UserContext } from "../contexts/UserContextProvider";
 import { arrayUnion, serverTimestamp } from "firebase/firestore";
 import Alert from "../components/Alert";
@@ -34,6 +39,9 @@ export default function Group() {
 
       try {
         await createData("groups", groupData);
+
+        //TODO seedingDataを作成したグループIDで実行
+        //seedingData(result.uid);
         // 成功した場合のアラート
         setAlert({
           message: "グループ作成が成功しました！",

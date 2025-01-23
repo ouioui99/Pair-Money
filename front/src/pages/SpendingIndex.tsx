@@ -54,9 +54,9 @@ export default function SpendingIndex() {
   const handleOnSubmit = (data: SpendingFormValue) => {
     const spendingFormValue: SpendingUpdataRequest = {
       amount: data.amount,
-      member: data.member,
+      payerUid: data.payerUid,
       date: data.date.toDate(),
-      category: data.category,
+      category: data.categoryId,
     };
 
     if (selectedSpendingData) {

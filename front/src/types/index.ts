@@ -49,7 +49,7 @@ export type SpendingIndexList = {
 export interface CreateSpendingRequest {
   amount: string;
   date: Date;
-  category: string;
+  categoryId: string;
   payerUid: string;
   groupId: string;
   uid: string;
@@ -61,12 +61,12 @@ export interface SpendingFormValue {
   amount: string;
   date: dayjs.Dayjs;
   payerUid: string;
-  category: string;
+  categoryId: string;
 }
 
 export interface SpendingResponse {
   amount: string;
-  category: string;
+  categoryId: string;
   member: string;
   createdAt: FieldValue;
   date: dayjs.Dayjs;
@@ -76,15 +76,16 @@ export interface SpendingResponse {
 
 export interface SpendingUpdataRequest {
   amount: string;
-  member: string;
+  payerUid: string;
   category: string;
   date: Date;
 }
 
 //category
 export interface CategoryResponse {
-  category: string;
+  name: string;
   createdAt: FieldValue;
+  groupId: string;
   uid: string;
   updatedAt: FieldValue;
 }

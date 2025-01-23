@@ -56,7 +56,6 @@ export default function Signup() {
           };
 
           createData("users", user);
-          seedingData(result.uid);
 
           userContext.setUser(result);
           navigate("/");

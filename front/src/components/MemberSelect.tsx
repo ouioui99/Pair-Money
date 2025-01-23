@@ -1,51 +1,17 @@
-import React, { useContext, useEffect, useState } from "react";
-import { CommonResponseData, FUser, GroupResponse } from "../types";
-import { getData } from "../firebase/firestore";
-import { UserContext } from "../contexts/UserContextProvider";
+import React from "react";
+import { FUser } from "../types";
 
 interface MemberSelect {
   payerUid: string;
   setPayerUid: (e: string) => void;
-  group: CommonResponseData<GroupResponse>[];
+  groupMemberDataList: FUser[];
 }
 
 export const MemberSelect: React.FC<MemberSelect> = ({
   payerUid,
   setPayerUid,
-  group,
+  groupMemberDataList,
 }) => {
-  const [groupMemberDataList, setGroupMemberDataList] = useState<FUser[]>([]);
-  const userContext = useContext(UserContext);
-  // payerUidDataListが空でない場合に初期値を設定
-  useEffect(() => {
-    const initialProcessing = async () => {
-      if (group.length > 0) {
-        if (userContext?.user?.uid) {
-          setPayerUid(userContext.user.uid);
-        }
-
-        const groupMemberUidList = group[0].data.memberUids;
-
-        const userDataList = await Promise.all(
-          groupMemberUidList.map((groupMemberUid) =>
-            getData<FUser>("users", {
-              subDoc: "uid",
-              is: "==",
-              subDocCondition: groupMemberUid,
-            })
-          )
-        );
-
-        const memberUserData = userDataList.map((userData) => userData[0]);
-
-        setGroupMemberDataList(memberUserData);
-      } else {
-        setPayerUid(payerUid);
-      }
-    };
-    initialProcessing();
-  }, [group, setPayerUid]);
-
   const option = groupMemberDataList.map((data, index) => (
     <option key={index} value={data.uid}>
       {data.name}

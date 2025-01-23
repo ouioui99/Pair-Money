@@ -14,6 +14,7 @@ import {
   CategoryIndexList,
   CategoryResponse,
   CommonResponseData,
+  GroupResponse,
 } from "../types";
 import IndexListTHeader from "../components/IndexListTHeader";
 import MoneyTypeIndexListTbody from "../components/MoneyTypeIndexListTBody";
@@ -32,7 +33,9 @@ export default function SpendingCategory() {
   >([]);
   const [categoryData, setCategoryData] =
     useState<CommonResponseData<CategoryResponse>>();
+
   const [category, setCategory] = useState<string>("");
+  const [group, setGroup] = useState<CommonResponseData<GroupResponse>[]>([]);
   const [selectedDocumentID, setSelectedDocumentID] = useState<string | null>(
     null
   );
@@ -44,8 +47,9 @@ export default function SpendingCategory() {
     if (userContext?.user?.uid) {
       if (typeof categoryData === "undefined") {
         const categoryInputValue: CategoryResponse = {
-          category: data.category,
+          name: data.category,
           uid: userContext.user.uid,
+          groupId: group[0].id,
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
         };
@@ -67,7 +71,7 @@ export default function SpendingCategory() {
       index
     );
     if (typeof targetObject !== "undefined") {
-      setCategory(targetObject.data.category);
+      setCategory(targetObject.data.name);
       setCategoryData(targetObject);
     }
   };
@@ -89,27 +93,42 @@ export default function SpendingCategory() {
 
   const handleDelete = (documentID: string, item: CategoryIndexList) => {
     setSelectedDocumentID(documentID);
-    setSelectedCategoryName(item.data.category);
+    setSelectedCategoryName(item.data.name);
     setShowModal(true);
   };
 
   useEffect(() => {
     const initialProcessing = async () => {
       if (userContext?.user?.uid) {
+        const unsubscribeGroups = realtimeGetter("groups", setGroup, {
+          subDoc: "memberUids",
+          is: "array-contains",
+          subDocCondition: userContext.user.uid,
+        });
+
+        addListener(unsubscribeGroups);
+      }
+    };
+    initialProcessing();
+  }, [addListener]);
+
+  useEffect(() => {
+    const initialProcessing = async () => {
+      if (userContext?.user?.uid && 0 < group.length) {
         const unsubscribeSpendingCategories = realtimeGetter(
           "spendingCategories",
           setCategoryDataList,
           {
-            subDoc: "uid",
+            subDoc: "groupId",
             is: "==",
-            subDocCondition: userContext.user.uid,
+            subDocCondition: group[0].id,
           }
         );
         addListener(unsubscribeSpendingCategories);
       }
     };
     initialProcessing();
-  }, [addListener]);
+  }, [group]);
 
   return (
     <div className="h-[100dvh]">
