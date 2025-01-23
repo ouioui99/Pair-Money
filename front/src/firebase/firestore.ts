@@ -63,9 +63,9 @@ export const updateSpendingData = async (
 
   await updateDoc(targetDB, {
     amount: data.amount,
-    member: data.payerUid,
+    payerUid: data.payerUid,
     date: data.date,
-    category: data.category,
+    categoryId: data.categoryId,
     updatedAt: serverTimestamp(),
   });
 };

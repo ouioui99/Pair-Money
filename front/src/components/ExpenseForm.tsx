@@ -54,21 +54,23 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
       : ""
   );
   const [payerUid, setPayerUid] = useState<string>(
-    spendingInitialValues?.data.member !== undefined
-      ? spendingInitialValues?.data.member
+    spendingInitialValues?.data.payerUid !== undefined
+      ? spendingInitialValues?.data.payerUid
       : ""
   );
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(categoryId);
 
     if (amount && date && categoryId && payerUid) {
+      console.log({ categoryId });
+      console.log({ payerUid });
+
       onSubmit({ amount, date, categoryId, payerUid });
       setAmount("");
       setDate(dayjs()); // フォーム送信後も日付を今日にリセット
 
-      setCategoryId(categoryDataList[0].data.name);
-      //setMember(memberDataList[0].id);
+      setCategoryId("");
+      setPayerUid("");
     }
   };
 
@@ -79,26 +81,26 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
   };
 
   useEffect(() => {
+    if (spendingInitialValues) {
+      setCategoryId(spendingInitialValues?.data.categoryId);
+      setPayerUid(spendingInitialValues?.data.payerUid);
+    }
+  }, [spendingInitialValues]);
+
+  useEffect(() => {
     const initialProcessing = async () => {
-      if (!payerUid) {
-        if (userContext?.user?.uid) {
-          setPayerUid(userContext.user.uid);
-        }
-        const groupMemberUidList = group[0].data.memberUids;
-        const userDataList = await Promise.all(
-          groupMemberUidList.map((groupMemberUid) =>
-            getData<FUser>("users", {
-              subDoc: "uid",
-              is: "==",
-              subDocCondition: groupMemberUid,
-            })
-          )
-        );
-        const memberUserData = userDataList.map((userData) => userData[0]);
-        setGroupMemberDataList(memberUserData);
-      } else {
-        setPayerUid(payerUid);
-      }
+      const groupMemberUidList = group[0].data.memberUids;
+      const userDataList = await Promise.all(
+        groupMemberUidList.map((groupMemberUid) =>
+          getData<FUser>("users", {
+            subDoc: "uid",
+            is: "==",
+            subDocCondition: groupMemberUid,
+          })
+        )
+      );
+      const memberUserData = userDataList.map((userData) => userData[0]);
+      setGroupMemberDataList(memberUserData);
     };
     initialProcessing();
   }, [group]);

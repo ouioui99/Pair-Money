@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { CategoryIndexList } from "../types";
 
 interface CategorySelect {
@@ -17,13 +17,6 @@ export const CategorySelect: React.FC<CategorySelect> = ({
       {data.data.name}
     </option>
   ));
-
-  // categoryDataListが空でない場合に初期値を設定
-  useEffect(() => {
-    if (0 < categoryDataList.length) {
-      setCategoryId(categoryDataList[0].id);
-    }
-  }, [categoryDataList]);
 
   return (
     <div className="mb-4">

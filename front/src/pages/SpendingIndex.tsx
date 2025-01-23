@@ -4,6 +4,7 @@ import SpendingIndexListTBody from "../components/SpendingIndexListTBody";
 import {
   CategoryIndexList,
   CommonResponseData,
+  GroupResponse,
   MemberIndexList,
   SpendingFormValue,
   SpendingIndexList,
@@ -41,6 +42,7 @@ export default function SpendingIndex() {
   const [selectedDocumentID, setSelectedDocumentID] = useState<string | null>(
     null
   );
+  const [group, setGroup] = useState<CommonResponseData<GroupResponse>[]>([]);
   const [selectedSpendingData, setSelectedSpendingData] =
     useState<SpendingIndexList | null>(null);
   const [categoryDataList, setCategoryDataList] = useState<CategoryIndexList[]>(
@@ -56,7 +58,7 @@ export default function SpendingIndex() {
       amount: data.amount,
       payerUid: data.payerUid,
       date: data.date.toDate(),
-      category: data.categoryId,
+      categoryId: data.categoryId,
     };
 
     if (selectedSpendingData) {
@@ -131,9 +133,22 @@ export default function SpendingIndex() {
             subDocCondition: userContext.user.uid,
           }
         );
+
+        const initialProcessing = async () => {
+          if (userContext?.user?.uid) {
+            const unsubscribeGroups = realtimeGetter("groups", setGroup, {
+              subDoc: "memberUids",
+              is: "array-contains",
+              subDocCondition: userContext.user.uid,
+            });
+
+            addListener(unsubscribeGroups);
+          }
+        };
         addListener(unsubscribeSpendings);
         addListener(unsubscribeSpendingCategories);
         addListener(unsubscribeMembers);
+        addListener(initialProcessing);
       }
     };
 
@@ -205,8 +220,7 @@ export default function SpendingIndex() {
               spendingInitialValues={
                 selectedSpendingData ? selectedSpendingData : undefined
               }
-              categoryDataList={categoryDataList}
-              memberDataList={membersDataList}
+              group={group}
             />
           </div>
         ) : null}

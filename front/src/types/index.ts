@@ -67,7 +67,7 @@ export interface SpendingFormValue {
 export interface SpendingResponse {
   amount: string;
   categoryId: string;
-  member: string;
+  payerUid: string;
   createdAt: FieldValue;
   date: dayjs.Dayjs;
   uid: string;
@@ -77,7 +77,7 @@ export interface SpendingResponse {
 export interface SpendingUpdataRequest {
   amount: string;
   payerUid: string;
-  category: string;
+  categoryId: string;
   date: Date;
 }
 
