@@ -10,7 +10,7 @@ export interface IndexListTbody<T> {
   tbodyList: T[];
   handleEdit: (index: string) => void;
   handleDelete: (documentID: string, item: T) => void;
-  membersDataList?: MemberIndexList[];
+  groupMemberDataList?: FUser[];
 }
 
 export interface CommonResponseData<T> {

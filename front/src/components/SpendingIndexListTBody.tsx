@@ -6,7 +6,7 @@ const SpendingIndexListTBody = <T extends SpendingIndexList>({
   tbodyList,
   handleEdit,
   handleDelete,
-  membersDataList,
+  groupMemberDataList,
 }: IndexListTbody<T>) => {
   return (
     <tbody>
@@ -20,11 +20,11 @@ const SpendingIndexListTBody = <T extends SpendingIndexList>({
           </td>
           <td className="p-4">
             {convetMemberIdToMemberName(
-              spendingData.data.member,
-              membersDataList
+              spendingData.data.payerUid,
+              groupMemberDataList
             )}
           </td>
-          <td className="p-4">{spendingData.data.category}</td>
+          <td className="p-4">{spendingData.data.categoryId}</td>
           <td className="p-4">
             {/* 編集ボタン */}
             <button

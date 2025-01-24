@@ -4,6 +4,7 @@ import SpendingIndexListTBody from "../components/SpendingIndexListTBody";
 import {
   CategoryIndexList,
   CommonResponseData,
+  FUser,
   GroupResponse,
   MemberIndexList,
   SpendingFormValue,
@@ -14,6 +15,7 @@ import {
 import SpendingIndexListMobile from "../components/SpendingIndexListMobile";
 import {
   deleteDocument,
+  getData,
   realtimeGetter,
   updateSpendingData,
 } from "../firebase/firestore";
@@ -48,9 +50,8 @@ export default function SpendingIndex() {
   const [categoryDataList, setCategoryDataList] = useState<CategoryIndexList[]>(
     []
   );
-  const [membersDataList, setMemebersDataList] = useState<MemberIndexList[]>(
-    []
-  );
+  const [groupMemberDataList, setGroupMemberDataList] = useState<FUser[]>([]);
+
   const [selectMonth, setSelectMonth] = useState<string>("all");
 
   const handleOnSubmit = (data: SpendingFormValue) => {
@@ -124,15 +125,6 @@ export default function SpendingIndex() {
             subDocCondition: userContext.user.uid,
           }
         );
-        const unsubscribeMembers = realtimeGetter(
-          "members",
-          setMemebersDataList,
-          {
-            subDoc: "uid",
-            is: "==",
-            subDocCondition: userContext.user.uid,
-          }
-        );
 
         const initialProcessing = async () => {
           if (userContext?.user?.uid) {
@@ -147,13 +139,30 @@ export default function SpendingIndex() {
         };
         addListener(unsubscribeSpendings);
         addListener(unsubscribeSpendingCategories);
-        addListener(unsubscribeMembers);
         addListener(initialProcessing);
       }
     };
 
     initialProcessing();
   }, [addListener]);
+
+  useEffect(() => {
+    const initialProcessing = async () => {
+      const groupMemberUidList = group[0].data.memberUids;
+      const userDataList = await Promise.all(
+        groupMemberUidList.map((groupMemberUid) =>
+          getData<FUser>("users", {
+            subDoc: "uid",
+            is: "==",
+            subDocCondition: groupMemberUid,
+          })
+        )
+      );
+      const memberUserData = userDataList.map((userData) => userData[0]);
+      setGroupMemberDataList(memberUserData);
+    };
+    initialProcessing();
+  }, [group]);
 
   // 清算月で spendingDataList をフィルタリング
   const filteredSpendingDataList = !dayjs(selectMonth).isValid()
@@ -171,7 +180,7 @@ export default function SpendingIndex() {
   // フィルタリングした spendingDataList を基に payments を再計算
   const payments = calculatePaymentAmount(
     filteredSpendingDataList,
-    membersDataList
+    groupMemberDataList
   );
 
   return (
@@ -180,7 +189,7 @@ export default function SpendingIndex() {
 
       <PaymentScreen
         spendingDataList={spendingDataList}
-        membersDataList={membersDataList}
+        groupMemberDataList={groupMemberDataList}
         payments={payments}
         selectMonth={selectMonth}
         setSelectMonth={setSelectMonth}
@@ -199,7 +208,7 @@ export default function SpendingIndex() {
             tbodyList={filteredSpendingDataList} // フィルタリング後のデータを渡す
             handleEdit={handleEdit}
             handleDelete={handleDelete}
-            membersDataList={membersDataList}
+            groupMemberDataList={groupMemberDataList}
           />
         </table>
 
@@ -208,7 +217,7 @@ export default function SpendingIndex() {
           tbodyList={filteredSpendingDataList} // フィルタリング後のデータを渡す
           handleEdit={handleEdit}
           handleDelete={handleDelete}
-          membersDataList={membersDataList}
+          groupMemberDataList={groupMemberDataList}
         />
         {showFormModal ? (
           <div

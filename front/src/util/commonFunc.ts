@@ -1,4 +1,4 @@
-import { HandleDeleteArgs, MemberIndexList } from "../types";
+import { FUser, HandleDeleteArgs, MemberIndexList } from "../types";
 
 export const handleDelete = <T>(args: HandleDeleteArgs<T>) => {
   args.selectedDocumentIDSetter(args.documentID);
@@ -8,18 +8,18 @@ export const handleDelete = <T>(args: HandleDeleteArgs<T>) => {
 
 export const convetMemberIdToMemberName = (
   targetMemberId: string,
-  memberDataList?: MemberIndexList[]
+  memberDataList?: FUser[]
 ): string | null => {
   // 対象のメンバー名に一致する要素を検索
   let targetMember;
   if (memberDataList) {
     targetMember = memberDataList.find(
-      (member) => member.id === targetMemberId
+      (member) => member.uid === targetMemberId
     );
   }
 
   // 該当するメンバーが見つかればそのIDを返し、見つからなければnullを返す
-  return targetMember ? targetMember.data.name : null;
+  return targetMember ? targetMember.name : null;
 };
 
 export const sha256 = async (text: string) => {

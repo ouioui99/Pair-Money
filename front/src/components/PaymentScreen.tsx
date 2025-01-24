@@ -1,6 +1,7 @@
 import React from "react";
 import {
   CommonResponseData,
+  FUser,
   MemberIndexList,
   SpendingResponse,
 } from "../types";
@@ -18,7 +19,7 @@ interface Payment {
 
 interface PaymentScreenProps {
   spendingDataList: CommonResponseData<SpendingResponse>[];
-  membersDataList: MemberIndexList[];
+  groupMemberDataList: FUser[];
   payments: Payment[]; // 支払いリスト
   selectMonth: string;
   setSelectMonth: React.Dispatch<React.SetStateAction<string>>;
@@ -26,13 +27,13 @@ interface PaymentScreenProps {
 
 const PaymentScreen: React.FC<PaymentScreenProps> = ({
   spendingDataList,
-  membersDataList,
+  groupMemberDataList,
   payments,
   selectMonth,
   setSelectMonth,
 }) => {
   // メンバーの名前をリストに格納
-  const memberNames = membersDataList.map((member) => member.data.name);
+  const memberNames = groupMemberDataList.map((member) => member.name);
 
   // データのある月のみを抽出（重複を排除）
   const uniqueMonths = Array.from(
@@ -61,7 +62,7 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({
         });
 
   const totalPaidByPerson = calculateTotalPaidByPerson(
-    membersDataList,
+    groupMemberDataList,
     filteredSpendingDataList
   );
 

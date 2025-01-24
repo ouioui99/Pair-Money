@@ -1,5 +1,6 @@
 import {
   CommonResponseData,
+  FUser,
   MemberIndexList,
   PaymentSummary,
   SpendingResponse,
@@ -22,7 +23,7 @@ export const findTargetIDObject = <T>(
 
 export const calculatePaymentAmount = (
   spendingDataList: CommonResponseData<SpendingResponse>[],
-  memberList: MemberIndexList[]
+  memberList: FUser[]
 ): SplitResult[] => {
   const totalAmountObjct = calculateTotalPayAmount(
     spendingDataList,
@@ -35,12 +36,14 @@ export const calculatePaymentAmount = (
 
 const calculateTotalPayAmount = (
   spendingDataList: CommonResponseData<SpendingResponse>[],
-  memberList: MemberIndexList[]
+  memberList: FUser[]
 ): PaymentSummary => {
   const paymentSummary: PaymentSummary = spendingDataList.reduce(
     (acc, item) => {
-      const member = convetMemberIdToMemberName(item.data.member, memberList);
+      const member = convetMemberIdToMemberName(item.data.payerUid, memberList);
       const amount = parseInt(item.data.amount, 10);
+
+      console.log(member);
 
       // メンバーがすでに存在する場合は金額を加算、存在しない場合は初期化
       if (member) {
@@ -60,7 +63,7 @@ const calculateTotalPayAmount = (
 
 const calculateSplit = (
   payments: PaymentSummary,
-  members: MemberIndexList[]
+  members: FUser[]
 ): SplitResult[] => {
   const totalAmount = Object.values(payments).reduce(
     (sum, amount) => sum + amount,
@@ -73,7 +76,7 @@ const calculateSplit = (
   const balances: { [key: string]: number } = {};
 
   members.forEach((member) => {
-    const memberName = member.data.name;
+    const memberName = member.name;
     const paidAmount = payments[memberName] || 0;
 
     balances[memberName] = paidAmount - equalShare; // 支払った金額と均等分の差
@@ -117,13 +120,13 @@ const calculateSplit = (
 };
 
 export const calculateTotalPaidByPerson = (
-  membersDataList: MemberIndexList[],
+  membersDataList: FUser[],
   spendingDataList: CommonResponseData<SpendingResponse>[]
 ) => {
   const result = spendingDataList.reduce<Record<string, number>>(
     (totals, payment) => {
       const payer = convetMemberIdToMemberName(
-        payment.data.member,
+        payment.data.payerUid,
         membersDataList
       );
       const amount = parseInt(payment.data.amount, 10); // amountは文字列なので数値に変換
