@@ -1,10 +1,15 @@
 import dayjs from "dayjs";
 import { IndexListTbody, CommonResponseData, SpendingResponse } from "../types";
-import { convetMemberIdToMemberName } from "../util/commonFunc";
+import { convertIdToName } from "../util/commonFunc";
 
 export default function SpendingIndexListMobile<
   T extends CommonResponseData<SpendingResponse>
->({ tbodyList, handleEdit, handleDelete, membersDataList }: IndexListTbody<T>) {
+>({
+  tbodyList,
+  handleEdit,
+  handleDelete,
+  groupMemberDataList,
+}: IndexListTbody<T>) {
   return (
     <div className="block md:hidden">
       {tbodyList.map((spendingData, index) => (
@@ -27,9 +32,11 @@ export default function SpendingIndexListMobile<
           <div className="flex justify-between mb-3">
             <span className="font-medium text-gray-700 text-lg">支払い者</span>
             <span className="text-xl font-semibold text-gray-900">
-              {convetMemberIdToMemberName(
-                spendingData.data.member,
-                membersDataList
+              {convertIdToName(
+                spendingData.data.payerUid,
+                "uid",
+                "name",
+                groupMemberDataList
               )}
             </span>
           </div>
@@ -38,7 +45,12 @@ export default function SpendingIndexListMobile<
               カテゴリー
             </span>
             <span className="text-xl font-semibold text-gray-900">
-              {spendingData.data.category}
+              {convertIdToName(
+                spendingData.data.payerUid,
+                "uid",
+                "name",
+                groupMemberDataList
+              )}
             </span>
           </div>
 

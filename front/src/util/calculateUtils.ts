@@ -6,7 +6,7 @@ import {
   SpendingResponse,
   SplitResult,
 } from "../types";
-import { convetMemberIdToMemberName } from "./commonFunc";
+import { convertIdToName } from "./commonFunc";
 
 export const findTargetIDObject = <T>(
   List: CommonResponseData<T>[],
@@ -40,7 +40,12 @@ const calculateTotalPayAmount = (
 ): PaymentSummary => {
   const paymentSummary: PaymentSummary = spendingDataList.reduce(
     (acc, item) => {
-      const member = convetMemberIdToMemberName(item.data.payerUid, memberList);
+      const member = convertIdToName(
+        item.data.payerUid,
+        "uid",
+        "name",
+        memberList
+      );
       const amount = parseInt(item.data.amount, 10);
 
       console.log(member);
@@ -125,10 +130,13 @@ export const calculateTotalPaidByPerson = (
 ) => {
   const result = spendingDataList.reduce<Record<string, number>>(
     (totals, payment) => {
-      const payer = convetMemberIdToMemberName(
+      const payer = convertIdToName(
         payment.data.payerUid,
+        "uid",
+        "name",
         membersDataList
       );
+
       const amount = parseInt(payment.data.amount, 10); // amountは文字列なので数値に変換
       if (payer) {
         // 支払者がすでに存在する場合、金額を加算、ない場合は初期化

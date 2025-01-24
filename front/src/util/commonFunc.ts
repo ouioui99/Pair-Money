@@ -22,6 +22,19 @@ export const convetMemberIdToMemberName = (
   return targetMember ? targetMember.name : null;
 };
 
+export const convertIdToName = <T>(
+  targetId: string,
+  keyForId: keyof T, // ID に対応するキーを指定
+  keyForName: keyof T, // 名前に対応するキーを指定
+  dataList?: T[]
+): string | null => {
+  if (!dataList) return null;
+
+  const targetItem = dataList.find((item) => item[keyForId] === targetId);
+
+  return targetItem ? String(targetItem[keyForName]) : null;
+};
+
 export const sha256 = async (text: string) => {
   const uint8 = new TextEncoder().encode(text);
   const digest = await crypto.subtle.digest("SHA-256", uint8);

@@ -1,13 +1,20 @@
 import { SpendingIndexList, IndexListTbody } from "../types";
 import dayjs from "dayjs";
-import { convetMemberIdToMemberName } from "../util/commonFunc";
+import { convertIdToName } from "../util/commonFunc";
 
 const SpendingIndexListTBody = <T extends SpendingIndexList>({
   tbodyList,
   handleEdit,
   handleDelete,
   groupMemberDataList,
+  categoryDataList,
 }: IndexListTbody<T>) => {
+  const forDisplayCategoryDataList = categoryDataList.map(
+    (categoryDataObject) => {
+      return { id: categoryDataObject.id, name: categoryDataObject.data.name };
+    }
+  );
+
   return (
     <tbody>
       {tbodyList.map((spendingData, index) => (
@@ -19,12 +26,21 @@ const SpendingIndexListTBody = <T extends SpendingIndexList>({
             ￥{Number(spendingData.data.amount).toLocaleString()}
           </td>
           <td className="p-4">
-            {convetMemberIdToMemberName(
+            {convertIdToName(
               spendingData.data.payerUid,
+              "uid",
+              "name",
               groupMemberDataList
             )}
           </td>
-          <td className="p-4">{spendingData.data.categoryId}</td>
+          <td className="p-4">
+            {convertIdToName(
+              spendingData.data.categoryId,
+              "id",
+              "name",
+              forDisplayCategoryDataList
+            )}
+          </td>
           <td className="p-4">
             {/* 編集ボタン */}
             <button

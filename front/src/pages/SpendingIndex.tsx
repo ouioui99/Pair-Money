@@ -161,7 +161,10 @@ export default function SpendingIndex() {
       const memberUserData = userDataList.map((userData) => userData[0]);
       setGroupMemberDataList(memberUserData);
     };
-    initialProcessing();
+
+    if (0 < group.length) {
+      initialProcessing();
+    }
   }, [group]);
 
   // 清算月で spendingDataList をフィルタリング
@@ -209,6 +212,7 @@ export default function SpendingIndex() {
             handleEdit={handleEdit}
             handleDelete={handleDelete}
             groupMemberDataList={groupMemberDataList}
+            categoryDataList={categoryDataList}
           />
         </table>
 
@@ -218,6 +222,7 @@ export default function SpendingIndex() {
           handleEdit={handleEdit}
           handleDelete={handleDelete}
           groupMemberDataList={groupMemberDataList}
+          categoryDataList={categoryDataList}
         />
         {showFormModal ? (
           <div
