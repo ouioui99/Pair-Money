@@ -2,7 +2,6 @@ import React, { useContext, useState } from "react";
 import { CommonResponseData, FUser, GroupResponse, Member } from "../types";
 import { UserContext } from "../contexts/UserContextProvider";
 import { addData } from "../firebase/firestore";
-import { arrayUnion } from "firebase/firestore";
 
 type friendIdForm = {
   isOpen: boolean;
@@ -133,7 +132,7 @@ const MemberInviteForm: React.FC<friendIdForm> = ({
               検索結果
             </h3>
             <ul className="space-y-3">
-              {searchResults.map((result, index) => {
+              {searchResults.map((result) => {
                 const isMember = members.some(
                   (member) => member.uid === result.uid
                 ); // members 配列内に uid が存在するかチェック

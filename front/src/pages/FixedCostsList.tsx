@@ -9,7 +9,6 @@ import {
   FixedCostFormValue,
   FixedCostIndexList,
   FixedCostsResponse,
-  SpendingResponse,
 } from "../types";
 import {
   deleteDocument,
@@ -39,7 +38,7 @@ export default function FixedCostsList() {
     useState<FixedCostIndexList | null>(null);
 
   const [fixedDataList, setFixedDataList] = useState<
-    CommonResponseData<SpendingResponse>[]
+    CommonResponseData<FixedCostsResponse>[]
   >([]);
 
   const [categoryDataList, setCategoryDataList] = useState<CategoryIndexList[]>(
@@ -142,6 +141,7 @@ export default function FixedCostsList() {
 
     initialProcessing();
   }, [addListener]);
+
   return (
     <>
       <Header
@@ -155,7 +155,6 @@ export default function FixedCostsList() {
             tbodyList={fixedDataList}
             handleEdit={handleEdit}
             handleDelete={handleDelete}
-            membersDataList={[]}
           />
         </table>
 
@@ -202,7 +201,6 @@ export default function FixedCostsList() {
         tbodyList={fixedDataList}
         handleEdit={handleEdit}
         handleDelete={handleDelete}
-        membersDataList={[]}
       />
       <CustomBottomNavigation />
     </>

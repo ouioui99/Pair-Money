@@ -1,4 +1,4 @@
-import { FUser, HandleDeleteArgs, MemberIndexList } from "../types";
+import { FUser, HandleDeleteArgs } from "../types";
 
 export const handleDelete = <T>(args: HandleDeleteArgs<T>) => {
   args.selectedDocumentIDSetter(args.documentID);

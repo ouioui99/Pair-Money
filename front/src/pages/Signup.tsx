@@ -4,8 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../contexts/UserContextProvider";
 import { singup } from "../firebase/api/user/user";
 import { serverTimestamp } from "firebase/firestore";
-import { createData, seedingData } from "../firebase/firestore";
-import { fnv1a32, sha256 } from "../util/commonFunc";
+import { createData } from "../firebase/firestore";
+import { fnv1a32 } from "../util/commonFunc";
 import dayjs from "dayjs";
 
 export default function Signup() {

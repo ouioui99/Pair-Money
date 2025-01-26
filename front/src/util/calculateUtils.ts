@@ -1,7 +1,6 @@
 import {
   CommonResponseData,
   FUser,
-  MemberIndexList,
   PaymentSummary,
   SpendingResponse,
   SplitResult,

@@ -1,14 +1,14 @@
 export const spendingCategoriesSeedingData = [
   {
-    category: "食費",
+    name: "食費",
   },
   {
-    category: "家賃",
+    name: "家賃",
   },
   {
-    category: "光熱費",
+    name: "光熱費",
   },
   {
-    category: "娯楽",
+    name: "娯楽",
   },
 ];

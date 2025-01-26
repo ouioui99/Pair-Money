@@ -12,8 +12,6 @@ import {
   doc,
   updateDoc,
   writeBatch,
-  setDoc,
-  arrayUnion,
 } from "firebase/firestore";
 import { db } from "./config";
 import {
@@ -22,11 +20,19 @@ import {
   SpendingUpdataRequest,
 } from "../types";
 import { spendingCategoriesSeedingData } from "./data/spendingCategoriesSeedingData";
-import { membersSeedingData } from "./data/membersSeedingData";
 
 export const createData = async (table: string, data: Object) => {
   try {
     await addDoc(collection(db, table), data);
+  } catch (e) {
+    throw new Error((e as Error).message || "An unknown error occurred");
+  }
+};
+
+export const createDataReturnDocId = async (table: string, data: Object) => {
+  try {
+    const docRef = addDoc(collection(db, table), data);
+    return docRef;
   } catch (e) {
     throw new Error((e as Error).message || "An unknown error occurred");
   }
@@ -91,11 +97,6 @@ export const updateMemberData = async (id: string, data: MemberFormValue) => {
   });
 };
 
-type CategoryData = {
-  category: string;
-  uid: string;
-};
-
 export const getData = async <T>(
   table: string,
   conditions: { subDoc: string; is: WhereFilterOp; subDocCondition: string }
@@ -158,19 +159,28 @@ export const deleteDocument = async (
   }
 };
 
-export const seedingData = async (userId: string) => {
+export const seedingData = async (userId: string, groupId: string) => {
   const batch = writeBatch(db);
 
   for (const data of spendingCategoriesSeedingData) {
     const spendingCategoriesRef = doc(collection(db, "spendingCategories"));
+    const seedingData = groupId
+      ? {
+          ...data,
+          uid: userId,
+          groupId: groupId,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        }
+      : {
+          ...data,
+          uid: userId,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        };
 
     // 各ドキュメントにデータを設定
-    batch.set(spendingCategoriesRef, {
-      ...data,
-      uid: userId,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    });
+    batch.set(spendingCategoriesRef, seedingData);
   }
 
   // for (const data of membersSeedingData) {

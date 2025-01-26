@@ -94,8 +94,8 @@ const FixedCostsInputForm: React.FC<FixedCostsForm> = ({
             >
               <option value="">選択してください</option>
               {categoryDataList.map((item) => (
-                <option key={item.id} value={item.data.category}>
-                  {item.data.category}
+                <option key={item.id} value={item.data.name}>
+                  {item.data.name}
                 </option>
               ))}
             </select>

@@ -5,11 +5,9 @@ import { UserContext } from "../contexts/UserContextProvider";
 import { createData, realtimeGetter } from "../firebase/firestore";
 import { serverTimestamp } from "firebase/firestore";
 import {
-  CategoryIndexList,
   CommonResponseData,
   CreateSpendingRequest,
   GroupResponse,
-  MemberIndexList,
   SpendingFormValue,
 } from "../types";
 import Alert from "../components/Alert";

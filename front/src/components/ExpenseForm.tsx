@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CategorySelect } from "./CategorySelect";
 import {
@@ -6,13 +6,11 @@ import {
   CommonResponseData,
   FUser,
   GroupResponse,
-  MemberIndexList,
   SpendingFormValue,
   SpendingIndexList,
 } from "../types";
 import { MemberSelect } from "./MemberSelect";
 import dayjs, { Dayjs } from "dayjs";
-import { UserContext } from "../contexts/UserContextProvider";
 import { getData, realtimeGetter } from "../firebase/firestore";
 import { useFirestoreListeners } from "../util/hooks/useFirestoreListeners";
 
@@ -27,7 +25,6 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
   spendingInitialValues,
   group,
 }) => {
-  const userContext = useContext(UserContext);
   const navigate = useNavigate();
   const { addListener } = useFirestoreListeners();
 

@@ -3,7 +3,7 @@ import CustomBottomNavigation from "../components/CustomBottomNavigation";
 import GroupCreateForm from "../components/GroupCreateForm";
 import Header from "../components/Header";
 import {
-  createData,
+  createDataReturnDocId,
   getData,
   realtimeGetter,
   seedingData,
@@ -12,7 +12,7 @@ import { UserContext } from "../contexts/UserContextProvider";
 import { arrayUnion, serverTimestamp } from "firebase/firestore";
 import Alert from "../components/Alert";
 import { useFirestoreListeners } from "../util/hooks/useFirestoreListeners";
-import { CommonResponseData, FUser, GroupResponse, Member } from "../types";
+import { CommonResponseData, FUser, GroupResponse } from "../types";
 import GroupManage from "../components/GroupManage";
 import MemberInviteForm from "../components/MemberInviteForm";
 
@@ -26,7 +26,7 @@ export default function Group() {
     type: "success" | "error";
   } | null>(null);
   const [showFormModal, setShowFormModal] = useState(false);
-  const [friendId, setFriendId] = useState("");
+
   const [isLoading, setIsLoading] = useState(true);
   const handleGroupCreate = async (groupName: string) => {
     if (userContext?.user?.uid) {
@@ -38,10 +38,10 @@ export default function Group() {
       };
 
       try {
-        await createData("groups", groupData);
+        const groupRef = await createDataReturnDocId("groups", groupData);
 
-        //TODO seedingDataを作成したグループIDで実行
-        //seedingData(result.uid);
+        //seedingDataを作成したグループIDで実行
+        seedingData(userContext.user.uid, groupRef.id);
         // 成功した場合のアラート
         setAlert({
           message: "グループ作成が成功しました！",
@@ -58,7 +58,6 @@ export default function Group() {
   };
 
   const handleCancelClick = () => {
-    setFriendId("");
     setShowFormModal(false);
   };
 
@@ -102,9 +101,7 @@ export default function Group() {
 
   // group の変化を監視してローディングを終了する
   useEffect(() => {
-    if (group.length != 0) {
-      setIsLoading(false);
-    }
+    setIsLoading(false);
   }, [group]);
 
   if (isLoading) {

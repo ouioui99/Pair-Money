@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  CommonResponseData,
-  FUser,
-  MemberIndexList,
-  SpendingResponse,
-} from "../types";
+import { CommonResponseData, FUser, SpendingResponse } from "../types";
 import {
   calculateAllMembersTotalPaid,
   calculateTotalPaidByPerson,

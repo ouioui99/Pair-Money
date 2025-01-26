@@ -6,7 +6,6 @@ import {
   CommonResponseData,
   FUser,
   GroupResponse,
-  MemberIndexList,
   SpendingFormValue,
   SpendingIndexList,
   SpendingResponse,
