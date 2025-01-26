@@ -48,8 +48,6 @@ const calculateTotalPayAmount = (
       );
       const amount = parseInt(item.data.amount, 10);
 
-      console.log(member);
-
       // メンバーがすでに存在する場合は金額を加算、存在しない場合は初期化
       if (member) {
         if (acc[member]) {

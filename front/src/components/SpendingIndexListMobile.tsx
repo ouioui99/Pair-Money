@@ -9,7 +9,14 @@ export default function SpendingIndexListMobile<
   handleEdit,
   handleDelete,
   groupMemberDataList,
+  categoryDataList,
 }: IndexListTbody<T>) {
+  const forDisplayCategoryDataList = categoryDataList.map(
+    (categoryDataObject) => {
+      return { id: categoryDataObject.id, name: categoryDataObject.data.name };
+    }
+  );
+
   return (
     <div className="block md:hidden">
       {tbodyList.map((spendingData, index) => (
@@ -46,10 +53,10 @@ export default function SpendingIndexListMobile<
             </span>
             <span className="text-xl font-semibold text-gray-900">
               {convertIdToName(
-                spendingData.data.payerUid,
-                "uid",
+                spendingData.data.categoryId,
+                "id",
                 "name",
-                groupMemberDataList
+                forDisplayCategoryDataList
               )}
             </span>
           </div>

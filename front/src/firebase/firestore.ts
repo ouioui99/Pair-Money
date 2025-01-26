@@ -40,7 +40,6 @@ export const addData = async (
 ) => {
   const targetDB = doc(db, table, docId);
 
-  console.log(data);
   await updateDoc(targetDB, {
     [fieldName]: data,
   });
@@ -50,7 +49,7 @@ export const updateCategoryData = async (id: string, category: string) => {
   const targetDB = doc(db, "spendingCategories", id);
 
   await updateDoc(targetDB, {
-    category: category,
+    name: category,
     updatedAt: serverTimestamp(),
   });
 };

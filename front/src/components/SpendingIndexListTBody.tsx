@@ -9,11 +9,15 @@ const SpendingIndexListTBody = <T extends SpendingIndexList>({
   groupMemberDataList,
   categoryDataList,
 }: IndexListTbody<T>) => {
-  const forDisplayCategoryDataList = categoryDataList.map(
-    (categoryDataObject) => {
-      return { id: categoryDataObject.id, name: categoryDataObject.data.name };
-    }
-  );
+  let forDisplayCategoryDataList: { id: string; name: string }[];
+  if (categoryDataList) {
+    forDisplayCategoryDataList = categoryDataList.map((categoryDataObject) => {
+      return {
+        id: categoryDataObject.id,
+        name: categoryDataObject.data.name,
+      };
+    });
+  }
 
   return (
     <tbody>
