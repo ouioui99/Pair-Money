@@ -128,7 +128,8 @@ export const realtimeGetter = <T>(
     subDoc: string;
     is: WhereFilterOp;
     subDocCondition: string | {};
-  }
+  },
+  setLoading?: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   const q = query(
     collection(db, table),
@@ -142,6 +143,10 @@ export const realtimeGetter = <T>(
       results.push({ data: doc.data(), id: doc.id } as T);
     });
     setter(results);
+
+    if (setLoading) {
+      setLoading(false);
+    }
   });
 
   // `unsubscribe` を返して呼び出し元で解除可能にする

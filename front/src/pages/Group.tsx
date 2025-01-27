@@ -114,11 +114,15 @@ export default function Group() {
 
   return (
     <div>
-      <Header
-        title={"グループ管理"}
-        onClick={() => setShowFormModal(true)}
-        buttonTitle="メンバー招待"
-      ></Header>
+      {group.length === 0 ? (
+        <Header title={"グループ管理"}></Header>
+      ) : (
+        <Header
+          title={"グループ管理"}
+          onClick={() => setShowFormModal(true)}
+          buttonTitle="メンバー招待"
+        ></Header>
+      )}
 
       <div className="flex-1 flex items-center justify-center">
         <div className="w-full max-w-lg">

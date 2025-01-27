@@ -3,13 +3,30 @@ import CustomBottomNavigation from "../components/CustomBottomNavigation";
 import { FiUsers } from "react-icons/fi";
 import { AiOutlineCopy, AiOutlineFolderAdd } from "react-icons/ai";
 import Header from "../components/Header";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Alert from "../components/Alert";
 import { UserContext } from "../contexts/UserContextProvider";
+import { getData } from "../firebase/firestore";
+import { FUser } from "../types";
 
 export default function Mypage() {
   const navigate = useNavigate();
   const userContext = useContext(UserContext);
+
+  useEffect(() => {
+    const initialProcessing = async () => {
+      console.log(userContext?.user);
+      if (userContext?.user) {
+        const userData = await getData<FUser>("users", {
+          subDoc: "uid",
+          is: "==",
+          subDocCondition: userContext.user.uid,
+        });
+        userContext?.setUserData(userData[0]);
+      }
+    };
+    initialProcessing();
+  }, []);
 
   const [alertMessage, setAlertMessage] = useState("");
   const [alertType, setAlertType] = useState<"success" | "error">("success");
