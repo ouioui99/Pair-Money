@@ -133,7 +133,7 @@ export const realtimeGetter = <T>(
   const q = query(
     collection(db, table),
     where(conditions.subDoc, conditions.is, conditions.subDocCondition),
-    orderBy("updatedAt", "asc")
+    orderBy("createdAt", "asc")
   );
 
   const unsubscribe = onSnapshot(q, (querySnapshot) => {

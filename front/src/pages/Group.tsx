@@ -163,9 +163,8 @@ export default function Group() {
         </div>
       ) : null}
       {/* カスタムボトムナビゲーション */}
-      <footer className="w-full mt-auto">
-        <CustomBottomNavigation />
-      </footer>
+      <div className="mb-20"></div>
+      <CustomBottomNavigation />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CategorySelect } from "./CategorySelect";
 import {
@@ -13,6 +13,7 @@ import { MemberSelect } from "./MemberSelect";
 import dayjs, { Dayjs } from "dayjs";
 import { getData, realtimeGetter } from "../firebase/firestore";
 import { useFirestoreListeners } from "../util/hooks/useFirestoreListeners";
+import { UserContext } from "../contexts/UserContextProvider";
 
 type ExpenseFormProps = {
   onSubmit: (data: SpendingFormValue) => void;
@@ -26,6 +27,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
   group,
 }) => {
   const navigate = useNavigate();
+  const userContext = useContext(UserContext);
   const { addListener } = useFirestoreListeners();
 
   const [categoryDataList, setCategoryDataList] = useState<CategoryIndexList[]>(
@@ -63,8 +65,13 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
       setAmount("");
       setDate(dayjs()); // フォーム送信後も日付を今日にリセット
 
-      setCategoryId("");
-      setPayerUid("");
+      if (userContext?.userData) {
+        setPayerUid(userContext?.userData?.uid);
+      }
+
+      if (0 < categoryDataList.length) {
+        setCategoryId(categoryDataList[0].id);
+      }
     }
   };
 
@@ -73,13 +80,6 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
     e.preventDefault();
     navigate("/receipt-scanning");
   };
-
-  useEffect(() => {
-    if (spendingInitialValues) {
-      setCategoryId(spendingInitialValues?.data.categoryId);
-      setPayerUid(spendingInitialValues?.data.payerUid);
-    }
-  }, [spendingInitialValues]);
 
   useEffect(() => {
     const initialProcessing = async () => {
@@ -115,6 +115,16 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
       addListener(unsubscribeSpendingCategories);
     };
     initialProcessing();
+  }, [groupMemberDataList]);
+
+  useEffect(() => {
+    if (payerUid === "" && userContext?.userData) {
+      setPayerUid(userContext?.userData?.uid);
+    }
+
+    if (categoryId === "" && 0 < categoryDataList.length) {
+      setCategoryId(categoryDataList[0].id);
+    }
   }, [groupMemberDataList]);
 
   return (

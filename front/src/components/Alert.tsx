@@ -42,10 +42,10 @@ const Alert: React.FC<AlertProps> = ({ message, type, onClose }) => {
 
   return (
     <div
-      className={`fixed top-4 left-1/2 transform -translate-x-1/2 p-4 w-full max-w-md text-white rounded shadow-lg ${alertClasses} 
-        transition-all duration-500 ease-out ${
-          isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
-        }`}
+      className={`fixed top-16 left-1/2 transform -translate-x-1/2 p-4 w-full max-w-md text-white rounded shadow-lg ${alertClasses} 
+    transition-all duration-500 ease-out ${
+      isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
+    }`}
     >
       <div className="flex items-center">
         <div className="flex-1">{message}</div>

@@ -181,6 +181,7 @@ export default function SpendingCategory() {
         handleEdit={handleEdit}
         handleDelete={handleDelete}
       />
+      <div className="mb-20"></div>
       <CustomBottomNavigation />
     </div>
   );

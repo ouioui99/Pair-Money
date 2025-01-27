@@ -1,19 +1,64 @@
 import { useNavigate } from "react-router-dom";
 import CustomBottomNavigation from "../components/CustomBottomNavigation";
 import { FiUsers } from "react-icons/fi";
-import { AiOutlineFolderAdd } from "react-icons/ai";
+import { AiOutlineCopy, AiOutlineFolderAdd } from "react-icons/ai";
 import Header from "../components/Header";
+import { useContext, useState } from "react";
+import Alert from "../components/Alert";
+import { UserContext } from "../contexts/UserContextProvider";
 
 export default function Mypage() {
   const navigate = useNavigate();
+  const userContext = useContext(UserContext);
+
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertType, setAlertType] = useState<"success" | "error">("success");
+
+  const handleCopy = () => {
+    if (userContext?.userData) {
+      navigator.clipboard
+        .writeText(userContext.userData.fid)
+        .then(() => {
+          setAlertMessage("フレンドIDをコピーしました！");
+          setAlertType("success");
+        })
+        .catch(() => {
+          setAlertMessage("コピーに失敗しました。");
+          setAlertType("error");
+        });
+    }
+  };
 
   return (
     <div>
       {/* ヘッダーセクション */}
-      <Header title={"マイページ"}></Header>
+      <Header title={"マイページ"} />
+
+      {/* アラート */}
+      <Alert
+        message={alertMessage}
+        type={alertType}
+        onClose={() => setAlertMessage("")}
+      />
 
       {/* メインコンテンツ */}
       <main className="flex flex-col items-center justify-center space-y-6 bg-gray-100 min-h-screen py-8">
+        {/* フレンドID表示 */}
+        <div className="flex flex-col items-center space-y-2">
+          <div className="text-lg font-medium text-gray-700">フレンドID</div>
+          <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded shadow-md">
+            <span className="text-gray-800 font-mono">
+              {userContext?.userData?.fid}
+            </span>
+            <button
+              onClick={handleCopy}
+              className="flex items-center justify-center text-blue-500 hover:text-blue-600 focus:outline-none"
+            >
+              <AiOutlineCopy size={20} />
+            </button>
+          </div>
+        </div>
+
         {/* ボタン群 */}
         <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6">
           {/* メンバー作成ボタン */}
@@ -24,15 +69,6 @@ export default function Mypage() {
             <FiUsers className="mr-2" size={20} />
             グループ管理
           </button>
-
-          {/* 固定費一覧画面遷移ボタン */}
-          {/* <button
-            onClick={() => navigate("/fixed-costs-list")}
-            className="flex items-center justify-center w-48 px-6 py-3 bg-purple-500 text-white rounded hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-400 shadow-md"
-          >
-            <AiOutlineEdit className="mr-2" size={20} />
-            固定費一覧
-          </button> */}
 
           {/* カテゴリ一覧画面遷移ボタン */}
           <button
