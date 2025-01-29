@@ -12,7 +12,6 @@ export default defineConfig({
     env({ prefix: "VITE", mountedPath: "process.env" }),
   ],
   server: {
-    https: true,
     // External Publication
     host: "0.0.0.0",
     // You can change the port for starting up.

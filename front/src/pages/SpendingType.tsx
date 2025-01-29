@@ -1,29 +1,31 @@
-import React, { useContext, useEffect, useState } from "react";
-import MoneyTypeIndexList from "../components/MoneyTypeIndexListTBody";
+import { useContext, useEffect, useState } from "react";
 import SpendingCategoriesInputFormModal from "../components/SpendingCategoriesInputFormModal";
 import {
   deleteDocument,
-  getData,
-  insertData,
+  createData,
   realtimeGetter,
   updateCategoryData,
 } from "../firebase/firestore";
 import { UserContext } from "../contexts/UserContextProvider";
-import { FieldValue, serverTimestamp } from "firebase/firestore";
+import { serverTimestamp } from "firebase/firestore";
 import DeleteConfirmModal from "../components/DeleteConfirmModal";
 import { findTargetIDObject } from "../util/calculateUtils";
 import {
   CategoryIndexList,
   CategoryResponse,
   CommonResponseData,
-  SpendingIndexList,
+  GroupResponse,
 } from "../types";
 import IndexListTHeader from "../components/IndexListTHeader";
 import MoneyTypeIndexListTbody from "../components/MoneyTypeIndexListTBody";
 import MoneyTypeIndexListMobile from "../components/MoneyTypeIndexListMobile";
+import CustomBottomNavigation from "../components/CustomBottomNavigation";
+import Header from "../components/Header";
+import { useFirestoreListeners } from "../util/hooks/useFirestoreListeners";
 
 export default function SpendingCategory() {
   const userContext = useContext(UserContext);
+  const { addListener } = useFirestoreListeners();
   const [showModal, setShowModal] = useState(false);
   const [showFormModal, setShowFormModal] = useState(false);
   const [categoryDataList, setCategoryDataList] = useState<
@@ -31,7 +33,9 @@ export default function SpendingCategory() {
   >([]);
   const [categoryData, setCategoryData] =
     useState<CommonResponseData<CategoryResponse>>();
+
   const [category, setCategory] = useState<string>("");
+  const [group, setGroup] = useState<CommonResponseData<GroupResponse>[]>([]);
   const [selectedDocumentID, setSelectedDocumentID] = useState<string | null>(
     null
   );
@@ -43,13 +47,14 @@ export default function SpendingCategory() {
     if (userContext?.user?.uid) {
       if (typeof categoryData === "undefined") {
         const categoryInputValue: CategoryResponse = {
-          category: data.category,
+          name: data.category,
           uid: userContext.user.uid,
+          groupId: group[0].id,
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
         };
 
-        insertData("spendingCategories", categoryInputValue);
+        createData("spendingCategories", categoryInputValue);
       } else {
         updateCategoryData(categoryData.id, data.category);
       }
@@ -66,7 +71,7 @@ export default function SpendingCategory() {
       index
     );
     if (typeof targetObject !== "undefined") {
-      setCategory(targetObject.data.category);
+      setCategory(targetObject.data.name);
       setCategoryData(targetObject);
     }
   };
@@ -80,37 +85,58 @@ export default function SpendingCategory() {
     setSelectedDocumentID(null);
   };
 
+  const handleCancelClick = () => {
+    setSelectedCategoryName(null);
+    setCategory("");
+    setShowFormModal(false);
+  };
+
   const handleDelete = (documentID: string, item: CategoryIndexList) => {
     setSelectedDocumentID(documentID);
-    setSelectedCategoryName(item.data.category);
+    setSelectedCategoryName(item.data.name);
     setShowModal(true);
   };
 
   useEffect(() => {
     const initialProcessing = async () => {
       if (userContext?.user?.uid) {
-        realtimeGetter("spendingCategories", setCategoryDataList, {
-          subDoc: "uid",
-          is: "==",
+        const unsubscribeGroups = realtimeGetter("groups", setGroup, {
+          subDoc: "memberUids",
+          is: "array-contains",
           subDocCondition: userContext.user.uid,
         });
+
+        addListener(unsubscribeGroups);
       }
     };
     initialProcessing();
-  }, []);
+  }, [addListener]);
+
+  useEffect(() => {
+    const initialProcessing = async () => {
+      if (userContext?.user?.uid && 0 < group.length) {
+        const unsubscribeSpendingCategories = realtimeGetter(
+          "spendingCategories",
+          setCategoryDataList,
+          {
+            subDoc: "groupId",
+            is: "==",
+            subDocCondition: group[0].id,
+          }
+        );
+        addListener(unsubscribeSpendingCategories);
+      }
+    };
+    initialProcessing();
+  }, [group]);
 
   return (
-    <>
-      <header className="p-4 border-b flex items-center justify-between">
-        <h1 className="text-xl font-semibold">カテゴリー一覧</h1>
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          onClick={() => setShowFormModal(true)}
-        >
-          新規作成
-        </button>
-      </header>
-      <div className="overflow-hidden">
+    <div className="h-[100dvh]">
+      <Header
+        title={"カテゴリ一覧"}
+        onClick={() => setShowFormModal(true)}
+      ></Header>
+      <div className="flex-grow">
         <table className="min-w-full hidden md:table table-auto">
           <IndexListTHeader tHeaders={["カテゴリー", "操作"]} />
           <MoneyTypeIndexListTbody<CommonResponseData<CategoryResponse>>
@@ -122,7 +148,7 @@ export default function SpendingCategory() {
 
         <SpendingCategoriesInputFormModal
           isOpen={showFormModal}
-          onClose={() => setShowFormModal(false)}
+          onClose={handleCancelClick}
           onSubmit={handleOnSubmit}
           category={category}
           setCategory={setCategory}
@@ -155,6 +181,8 @@ export default function SpendingCategory() {
         handleEdit={handleEdit}
         handleDelete={handleDelete}
       />
-    </>
+      <div className="mb-20"></div>
+      <CustomBottomNavigation />
+    </div>
   );
 }

@@ -3,9 +3,9 @@ import IndexListTHeader from "../components/IndexListTHeader";
 import SpendingIndexListTBody from "../components/SpendingIndexListTBody";
 import {
   CategoryIndexList,
-  CategoryResponse,
   CommonResponseData,
-  CreateSpendingRequest,
+  FUser,
+  GroupResponse,
   SpendingFormValue,
   SpendingIndexList,
   SpendingResponse,
@@ -14,54 +14,61 @@ import {
 import SpendingIndexListMobile from "../components/SpendingIndexListMobile";
 import {
   deleteDocument,
-  insertData,
+  getData,
   realtimeGetter,
   updateSpendingData,
 } from "../firebase/firestore";
 import { UserContext } from "../contexts/UserContextProvider";
-import { serverTimestamp } from "firebase/firestore";
-import { findTargetIDObject } from "../util/calculateUtils";
+import {
+  calculatePaymentAmount,
+  findTargetIDObject,
+} from "../util/calculateUtils";
 import DeleteConfirmModal from "../components/DeleteConfirmModal";
 import ExpenseForm from "../components/ExpenseForm";
-import { useLocation } from "react-router-dom";
+import CustomBottomNavigation from "../components/CustomBottomNavigation";
+import PaymentScreen from "../components/PaymentScreen";
+import Header from "../components/Header";
+import { useFirestoreListeners } from "../util/hooks/useFirestoreListeners";
+import dayjs from "dayjs";
 
 export default function SpendingIndex() {
   const userContext = useContext(UserContext);
+  const { addListener } = useFirestoreListeners();
+
   const [spendingDataList, setSpendingDataList] = useState<
     CommonResponseData<SpendingResponse>[]
   >([]);
   const [showModal, setShowModal] = useState(false);
-  const [spending, setSpendig] = useState<string>("");
   const [showFormModal, setShowFormModal] = useState(false);
-  const [spendingData, setSpendingData] =
-    useState<CommonResponseData<SpendingResponse>>();
   const [selectedDocumentID, setSelectedDocumentID] = useState<string | null>(
     null
   );
+  const [group, setGroup] = useState<CommonResponseData<GroupResponse>[]>([]);
   const [selectedSpendingData, setSelectedSpendingData] =
     useState<SpendingIndexList | null>(null);
-
   const [categoryDataList, setCategoryDataList] = useState<CategoryIndexList[]>(
     []
   );
+  const [groupMemberDataList, setGroupMemberDataList] = useState<FUser[]>([]);
+
+  const [selectMonth, setSelectMonth] = useState<string>("all");
 
   const handleOnSubmit = (data: SpendingFormValue) => {
     const spendingFormValue: SpendingUpdataRequest = {
       amount: data.amount,
-      date: data.date,
-      category: data.category,
+      payerUid: data.payerUid,
+      date: data.date.toDate(),
+      categoryId: data.categoryId,
     };
 
     if (selectedSpendingData) {
-      console.log(selectedSpendingData.id);
-
       updateSpendingData(selectedSpendingData.id, spendingFormValue);
       setShowFormModal(false);
     }
   };
+
   const handleEdit = (index: string) => {
     setShowFormModal(true);
-    console.log(index);
 
     const targetObject = findTargetIDObject<SpendingResponse>(
       spendingDataList,
@@ -99,39 +106,122 @@ export default function SpendingIndex() {
   useEffect(() => {
     const initialProcessing = async () => {
       if (userContext?.user?.uid) {
-        realtimeGetter("spendings", setSpendingDataList, {
-          subDoc: "uid",
-          is: "==",
-          subDocCondition: userContext.user.uid,
-        });
-        realtimeGetter("spendingCategories", setCategoryDataList, {
-          subDoc: "uid",
-          is: "==",
-          subDocCondition: userContext.user.uid,
-        });
+        const unsubscribeSpendings = realtimeGetter(
+          "spendings",
+          setSpendingDataList,
+          {
+            subDoc: "uid",
+            is: "==",
+            subDocCondition: userContext.user.uid,
+          }
+        );
+        const unsubscribeSpendingCategories = realtimeGetter(
+          "spendingCategories",
+          setCategoryDataList,
+          {
+            subDoc: "uid",
+            is: "==",
+            subDocCondition: userContext.user.uid,
+          }
+        );
+
+        const initialProcessing = async () => {
+          if (userContext?.user?.uid) {
+            const unsubscribeGroups = realtimeGetter("groups", setGroup, {
+              subDoc: "memberUids",
+              is: "array-contains",
+              subDocCondition: userContext.user.uid,
+            });
+
+            addListener(unsubscribeGroups);
+          }
+        };
+        addListener(unsubscribeSpendings);
+        addListener(unsubscribeSpendingCategories);
+        addListener(initialProcessing);
       }
     };
+
     initialProcessing();
-  }, []);
+  }, [addListener]);
+
+  useEffect(() => {
+    const initialProcessing = async () => {
+      const groupMemberUidList = group[0].data.memberUids;
+      const userDataList = await Promise.all(
+        groupMemberUidList.map((groupMemberUid) =>
+          getData<FUser>("users", {
+            subDoc: "uid",
+            is: "==",
+            subDocCondition: groupMemberUid,
+          })
+        )
+      );
+      const memberUserData = userDataList.map((userData) => userData[0]);
+      setGroupMemberDataList(memberUserData);
+    };
+
+    if (0 < group.length) {
+      initialProcessing();
+    }
+  }, [group]);
+
+  // 清算月で spendingDataList をフィルタリング
+  const filteredSpendingDataList = !dayjs(selectMonth).isValid()
+    ? spendingDataList
+    : spendingDataList.filter((spendingData) => {
+        const date = dayjs(spendingData.data.date.toDate());
+        const yearMonth = `${date.year()}-${date.month() + 1}`; // YYYY-MM形式
+        const selectMonthDayjs = dayjs(selectMonth);
+        return (
+          yearMonth ===
+          `${selectMonthDayjs.year()}-${selectMonthDayjs.month() + 1}`
+        );
+      });
+
+  // フィルタリングした spendingDataList を基に payments を再計算
+  const payments = calculatePaymentAmount(
+    filteredSpendingDataList,
+    groupMemberDataList
+  );
+
   return (
     <>
-      <header className="p-4 border-b flex items-center justify-between">
-        <h1 className="text-xl font-semibold">支出一覧</h1>
-      </header>
+      <Header title={"支出情報"}></Header>
+
+      <PaymentScreen
+        spendingDataList={spendingDataList}
+        groupMemberDataList={groupMemberDataList}
+        payments={payments}
+        selectMonth={selectMonth}
+        setSelectMonth={setSelectMonth}
+      />
+
       <div className="overflow-hidden">
+        <div className="p-4 border-b flex items-center justify-between bg-gray-50">
+          <h2 className="text-lg font-semibold">支出一覧</h2>
+        </div>
+
         <table className="min-w-full hidden md:table table-auto">
-          <IndexListTHeader tHeaders={["日付", "金額", "カテゴリー", "操作"]} />
+          <IndexListTHeader
+            tHeaders={["日付", "金額", "支払い者", "カテゴリー", "操作"]}
+          />
           <SpendingIndexListTBody<CommonResponseData<SpendingResponse>>
-            tbodyList={spendingDataList}
+            tbodyList={filteredSpendingDataList} // フィルタリング後のデータを渡す
             handleEdit={handleEdit}
             handleDelete={handleDelete}
+            groupMemberDataList={groupMemberDataList}
+            categoryDataList={categoryDataList}
           />
         </table>
+
         {/* モバイルビュー */}
         <SpendingIndexListMobile<CommonResponseData<SpendingResponse>>
-          tbodyList={spendingDataList}
+          tbodyList={filteredSpendingDataList} // フィルタリング後のデータを渡す
           handleEdit={handleEdit}
           handleDelete={handleDelete}
+          groupMemberDataList={groupMemberDataList}
+          categoryDataList={categoryDataList}
         />
         {showFormModal ? (
           <div
@@ -143,7 +233,7 @@ export default function SpendingIndex() {
               spendingInitialValues={
                 selectedSpendingData ? selectedSpendingData : undefined
               }
-              categoryDataList={categoryDataList}
+              group={group}
             />
           </div>
         ) : null}
@@ -169,6 +259,8 @@ export default function SpendingIndex() {
           }
         />
       </div>
+      <div className="mb-20"></div>
+      <CustomBottomNavigation />
     </>
   );
 }

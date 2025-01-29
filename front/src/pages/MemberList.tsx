@@ -1,67 +1,60 @@
 import React, { useContext, useEffect, useState } from "react";
-import FixedCostsInputForm from "../components/FixedCostsInputForm";
 
 import DeleteConfirmModal from "../components/DeleteConfirmModal";
 import IndexListTHeader from "../components/IndexListTHeader";
 import {
-  CategoryIndexList,
   CommonResponseData,
-  FixedCostFormValue,
-  FixedCostIndexList,
-  FixedCostsResponse,
+  MemberFormValue,
+  MemberIndexList,
+  MembersResponse,
 } from "../types";
 import {
   deleteDocument,
   createData,
   realtimeGetter,
-  updateFixedCostData,
+  updateMemberData,
 } from "../firebase/firestore";
 import { UserContext } from "../contexts/UserContextProvider";
-import FixedCostIndexListTBody from "../components/FixedCostIndexListTBody";
 import { serverTimestamp } from "firebase/firestore";
 import { findTargetIDObject } from "../util/calculateUtils";
 import CustomBottomNavigation from "../components/CustomBottomNavigation";
-import FixedCostIndexListMobile from "../components/FixedCostIndexListMobile";
-
+import MemberIndexListTBody from "../components/MemberIndexListTBody";
+import MemberInputForm from "../components/MemberInputForm";
+import MemberIndexListMobile from "../components/MemberIndexListMobile";
 import Header from "../components/Header";
 import { useFirestoreListeners } from "../util/hooks/useFirestoreListeners";
 
-export default function FixedCostsList() {
-  const { addListener } = useFirestoreListeners();
+export default function MemberList() {
   const userContext = useContext(UserContext);
+  const { addListener } = useFirestoreListeners();
   const [showModal, setShowModal] = useState(false);
   const [showFormModal, setShowFormModal] = useState(false);
   const [selectedDocumentID, setSelectedDocumentID] = useState<string | null>(
     null
   );
-  const [selectedFixedCostData, setSelectedFixedCostData] =
-    useState<FixedCostIndexList | null>(null);
+  const [selectedMemberData, setSelectedMemberData] =
+    useState<MemberIndexList | null>(null);
 
-  const [fixedDataList, setFixedDataList] = useState<
-    CommonResponseData<FixedCostsResponse>[]
+  const [memberDataList, setMemberDataList] = useState<
+    CommonResponseData<MembersResponse>[]
   >([]);
-
-  const [categoryDataList, setCategoryDataList] = useState<CategoryIndexList[]>(
-    []
-  );
 
   const [isEdit, setIsEdit] = useState(false);
 
-  const handleOnSubmit = (fixedFormData: FixedCostFormValue) => {
+  const handleOnSubmit = (memberFormData: MemberFormValue) => {
     if (userContext?.user?.uid) {
       if (!isEdit) {
-        const fixedCostFormValue: FixedCostsResponse = {
-          category: fixedFormData.category,
-          amount: fixedFormData.amount,
+        const membarFormValue: MembersResponse = {
+          name: memberFormData.name,
           uid: userContext.user.uid,
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
         };
 
-        createData("fixedCosts", fixedCostFormValue);
+        createData("members", membarFormValue);
       } else {
         if (selectedDocumentID) {
-          updateFixedCostData(selectedDocumentID, fixedFormData);
+          updateMemberData(selectedDocumentID, memberFormData);
           setIsEdit(false);
         }
       }
@@ -75,27 +68,22 @@ export default function FixedCostsList() {
     setIsEdit(true);
     setSelectedDocumentID(index);
 
-    const targetObject = findTargetIDObject<FixedCostsResponse>(
-      fixedDataList,
+    const targetObject = findTargetIDObject<MembersResponse>(
+      memberDataList,
       index
     );
     if (typeof targetObject !== "undefined") {
-      setSelectedFixedCostData(targetObject);
+      setSelectedMemberData(targetObject);
     }
   };
 
   const handleDelete = (
     documentID: string,
-    spendingIndexList: FixedCostIndexList
+    memberIndexList: MemberIndexList
   ) => {
     setSelectedDocumentID(documentID);
-    setSelectedFixedCostData(spendingIndexList);
+    setSelectedMemberData(memberIndexList);
     setShowModal(true);
-  };
-
-  const handleCancelClick = () => {
-    setSelectedFixedCostData(null);
-    setShowFormModal(false);
   };
 
   const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -104,8 +92,13 @@ export default function FixedCostsList() {
     }
   };
 
+  const handleCancelClick = () => {
+    setSelectedMemberData(null);
+    setShowFormModal(false);
+  };
+
   const confirmDelete = () => {
-    const collectionName = "fixedCosts";
+    const collectionName = "members";
     if (selectedDocumentID) {
       deleteDocument(collectionName, selectedDocumentID);
     }
@@ -116,43 +109,33 @@ export default function FixedCostsList() {
   useEffect(() => {
     const initialProcessing = async () => {
       if (userContext?.user?.uid) {
-        const unsubscribeSpendingCategories = realtimeGetter(
-          "spendingCategories",
-          setCategoryDataList,
+        const unsubscribeMembers = realtimeGetter(
+          "members",
+          setMemberDataList,
           {
             subDoc: "uid",
             is: "==",
             subDocCondition: userContext.user.uid,
           }
         );
-        const unsubscribeFixedCosts = realtimeGetter(
-          "fixedCosts",
-          setFixedDataList,
-          {
-            subDoc: "uid",
-            is: "==",
-            subDocCondition: userContext.user.uid,
-          }
-        );
-        addListener(unsubscribeSpendingCategories);
-        addListener(unsubscribeFixedCosts);
+        addListener(unsubscribeMembers);
       }
     };
 
     initialProcessing();
   }, [addListener]);
-
   return (
     <>
       <Header
-        title={"固定費一覧"}
+        title={"メンバー一覧"}
         onClick={() => setShowFormModal(true)}
       ></Header>
+
       <div className="overflow-hidden">
         <table className="min-w-full hidden md:table table-auto">
-          <IndexListTHeader tHeaders={["金額", "カテゴリー", "操作"]} />
-          <FixedCostIndexListTBody<CommonResponseData<FixedCostsResponse>>
-            tbodyList={fixedDataList}
+          <IndexListTHeader tHeaders={["メンバー名", "操作"]} />
+          <MemberIndexListTBody<CommonResponseData<MembersResponse>>
+            tbodyList={memberDataList}
             handleEdit={handleEdit}
             handleDelete={handleDelete}
           />
@@ -163,14 +146,13 @@ export default function FixedCostsList() {
             className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60"
             onClick={handleBackgroundClick}
           >
-            <FixedCostsInputForm
+            <MemberInputForm
               isOpen={showFormModal}
               onClose={handleCancelClick}
               onSubmit={handleOnSubmit}
               initialValues={
-                selectedFixedCostData ? selectedFixedCostData : undefined
+                selectedMemberData ? selectedMemberData : undefined
               }
-              categoryDataList={categoryDataList}
             />
           </div>
         ) : null}
@@ -180,15 +162,15 @@ export default function FixedCostsList() {
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         onConfirm={confirmDelete}
-        title="この固定費を削除しますか？"
+        title="このメンバーを削除しますか？"
         description={
-          selectedFixedCostData ? (
+          selectedMemberData ? (
             <>
               <p className="text-sm text-center text-gray-600 mb-4">
-                以下の固定費を削除すると元に戻せません。
+                以下のメンバーを削除すると元に戻せません。
               </p>
               <p className="text-lg font-bold text-black bg-gray-100 px-4 py-2 rounded-md text-center">
-                {/* 「{selectedFixedCostData}」 */}
+                「{selectedMemberData.data.name}」
               </p>
             </>
           ) : (
@@ -197,8 +179,8 @@ export default function FixedCostsList() {
         }
       />
 
-      <FixedCostIndexListMobile<CommonResponseData<FixedCostsResponse>>
-        tbodyList={fixedDataList}
+      <MemberIndexListMobile<CommonResponseData<MembersResponse>>
+        tbodyList={memberDataList}
         handleEdit={handleEdit}
         handleDelete={handleDelete}
       />

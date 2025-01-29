@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { FieldValue } from "firebase/firestore";
 
 //common
@@ -9,6 +10,8 @@ export interface IndexListTbody<T> {
   tbodyList: T[];
   handleEdit: (index: string) => void;
   handleDelete: (documentID: string, item: T) => void;
+  groupMemberDataList?: FUser[];
+  categoryDataList?: CategoryIndexList[];
 }
 
 export interface CommonResponseData<T> {
@@ -26,6 +29,18 @@ export interface HandleDeleteArgs<T> {
   showModalSetter: (value: React.SetStateAction<boolean>) => void;
 }
 
+export interface paymentType {
+  payer: string;
+  receiver: string;
+  amount: number;
+}
+
+export interface headerProp {
+  title: string;
+  onClick?: () => void;
+  buttonTitle?: string;
+}
+
 //spending
 export type SpendingIndexList = {
   data: SpendingResponse;
@@ -34,8 +49,10 @@ export type SpendingIndexList = {
 
 export interface CreateSpendingRequest {
   amount: string;
-  date: string;
-  category: string;
+  date: Date;
+  categoryId: string;
+  payerUid: string;
+  groupId: string;
   uid: string;
   createdAt: FieldValue;
   updatedAt: FieldValue;
@@ -43,29 +60,33 @@ export interface CreateSpendingRequest {
 
 export interface SpendingFormValue {
   amount: string;
-  date: string;
-  category: string;
+  date: dayjs.Dayjs;
+  payerUid: string;
+  categoryId: string;
 }
 
 export interface SpendingResponse {
   amount: string;
-  category: string;
+  categoryId: string;
+  payerUid: string;
   createdAt: FieldValue;
-  date: string;
+  date: dayjs.Dayjs;
   uid: string;
   updatedAt: FieldValue;
 }
 
 export interface SpendingUpdataRequest {
   amount: string;
-  category: string;
-  date: string;
+  payerUid: string;
+  categoryId: string;
+  date: Date;
 }
 
 //category
 export interface CategoryResponse {
-  category: string;
+  name: string;
   createdAt: FieldValue;
+  groupId: string;
   uid: string;
   updatedAt: FieldValue;
 }
@@ -92,4 +113,65 @@ export interface FixedCostsResponse {
 export interface FixedCostFormValue {
   amount: string;
   category: string;
+}
+
+export interface FixedCostUpdataRequest {
+  amount: string;
+  category: string;
+}
+
+//member
+export interface MemberIndexList {
+  data: MembersResponse;
+  id: string;
+}
+
+export interface MembersResponse {
+  name: string;
+  createdAt: FieldValue;
+  uid: string;
+  updatedAt: FieldValue;
+}
+
+export interface MemberFormValue {
+  name: string;
+}
+
+//util
+export interface PaymentSummary {
+  [member: string]: number; // メンバー名をキーとして、その支払い合計金額を格納
+}
+
+export interface SplitResult {
+  payer: string; // 支払う人
+  receiver: string; // 支払われる人
+  amount: number; // 支払う金額
+}
+
+export interface GroupResponse {
+  memberUids: [];
+  name: string;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
+export interface Timestamp {
+  seconds: number;
+  nanoseconds: number;
+}
+
+export interface Member {
+  createdAt: Timestamp;
+  fid: string;
+  name: string;
+  updatedAt: Timestamp;
+  uid: string;
+}
+
+export interface FUser {
+  name: string;
+  fid: string;
+  uid: string;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
 }

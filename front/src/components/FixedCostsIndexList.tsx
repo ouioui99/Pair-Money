@@ -1,5 +1,3 @@
-import React from "react";
-
 interface Props {
   fixedCosts: FixedCostType[];
   handleEdit: (index: number) => void;

@@ -1,36 +1,20 @@
-import { FieldValue } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
-
-interface CategoryData {
-  category: string;
-  uid: string;
-  createdAt: FieldValue;
-  updatedAt: FieldValue;
-}
+import React from "react";
+import { CategoryIndexList } from "../types";
 
 interface CategorySelect {
-  category: string;
-  setCategory: (e: string) => void;
-  categoryDataList: { data: CategoryData; id: string }[];
+  categoryId: string;
+  setCategoryId: (e: string) => void;
+  categoryDataList: CategoryIndexList[];
 }
 
 export const CategorySelect: React.FC<CategorySelect> = ({
-  category,
-  setCategory,
+  categoryId,
+  setCategoryId,
   categoryDataList,
 }) => {
-  // categoryDataListが空でない場合に初期値を設定
-  useEffect(() => {
-    if (categoryDataList.length > 0 && category === "") {
-      setCategory(categoryDataList[0].data.category);
-    } else {
-      setCategory(category);
-    }
-  }, [categoryDataList, setCategory]);
-
   const option = categoryDataList.map((data, index) => (
-    <option key={index} value={data.data.category}>
-      {data.data.category}
+    <option key={index} value={data.id}>
+      {data.data.name}
     </option>
   ));
 
@@ -44,8 +28,8 @@ export const CategorySelect: React.FC<CategorySelect> = ({
       </label>
       <select
         id="category"
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
+        value={categoryId}
+        onChange={(e) => setCategoryId(e.target.value)}
         className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
         required
       >

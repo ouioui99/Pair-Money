@@ -1,4 +1,3 @@
-import React from "react";
 import { CategoryIndexList, IndexListTbody } from "../types";
 
 const MoneyTypeIndexListMobile = <T extends CategoryIndexList>({
@@ -18,7 +17,7 @@ const MoneyTypeIndexListMobile = <T extends CategoryIndexList>({
               カテゴリー
             </span>
             <span className="text-xl font-semibold text-gray-900">
-              {tbodyData.data.category}
+              {tbodyData.data.name}
             </span>
           </div>
           <div className="flex justify-end mt-4 space-x-4">

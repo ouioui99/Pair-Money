@@ -1,16 +1,16 @@
-import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Login from "../pages/Login";
 import Home from "../pages/Home";
 import Signup from "../pages/Signup";
 import PrivateRouter from "./PrivateRouter";
 import PublicRouter from "./PublicRouter";
-import CustomBottomNavigation from "../components/CustomBottomNavigation";
 import FixedCostsList from "../pages/FixedCostsList";
 import Mypage from "../pages/Mypage";
 import ReceiptScanning from "../pages/ReceiptScanning";
 import SpendingIndex from "../pages/SpendingIndex";
 import SpendingType from "../pages/SpendingType";
+import MemberList from "../pages/MemberList";
+import Group from "../pages/Group";
 
 export default function Router() {
   return (
@@ -29,7 +29,6 @@ export default function Router() {
           element={
             <PrivateRouter>
               <SpendingType />
-              <CustomBottomNavigation />
             </PrivateRouter>
           }
         />
@@ -38,7 +37,6 @@ export default function Router() {
           element={
             <PrivateRouter>
               <Mypage />
-              <CustomBottomNavigation />
             </PrivateRouter>
           }
         />
@@ -47,7 +45,6 @@ export default function Router() {
           element={
             <PrivateRouter>
               <ReceiptScanning />
-              {/* <CustomBottomNavigation /> */}
             </PrivateRouter>
           }
         />
@@ -56,7 +53,6 @@ export default function Router() {
           element={
             <PrivateRouter>
               <SpendingIndex />
-              <CustomBottomNavigation />
             </PrivateRouter>
           }
         />
@@ -65,7 +61,22 @@ export default function Router() {
           element={
             <PrivateRouter>
               <FixedCostsList />
-              <CustomBottomNavigation />
+            </PrivateRouter>
+          }
+        />
+        <Route
+          path="/member-list"
+          element={
+            <PrivateRouter>
+              <MemberList />
+            </PrivateRouter>
+          }
+        />
+        <Route
+          path="/group"
+          element={
+            <PrivateRouter>
+              <Group />
             </PrivateRouter>
           }
         />

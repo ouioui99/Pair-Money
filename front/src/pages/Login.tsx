@@ -2,15 +2,23 @@ import React, { useContext, useState } from "react";
 import TextFormInput from "../components/TextFormInput";
 import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../contexts/UserContextProvider";
-import { login, singup } from "../firebase/api/user/user";
+import { login } from "../firebase/api/user/user";
 
 export default function Login() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [errorMessages, setErrorMessages] = useState({
+    email: "",
+    password: "",
+    general: "",
+  });
   const userContext = useContext(UserContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setErrorMessages({ email: "", password: "", general: "" }); // Reset errors
+
     if (userContext) {
       login(email, password)
         .then((result) => {
@@ -19,10 +27,44 @@ export default function Login() {
         })
         .catch((error) => {
           console.log(error.errorCode);
+
+          // Handle error codes
+          switch (error.errorCode) {
+            case "auth/user-disabled":
+              setErrorMessages((prev) => ({
+                ...prev,
+                email: "そのメールアドレスは利用できません",
+              }));
+              break;
+            case "auth/invalid-email":
+              setErrorMessages((prev) => ({
+                ...prev,
+                email: "メールアドレスのフォーマットが正しくありません",
+              }));
+              break;
+            case "auth/user-not-found":
+              setErrorMessages((prev) => ({
+                ...prev,
+                email: "ユーザーが見つかりません",
+              }));
+              break;
+            case "auth/wrong-password":
+              setErrorMessages((prev) => ({
+                ...prev,
+                password: "パスワードが違います",
+              }));
+              break;
+            default:
+              setErrorMessages((prev) => ({
+                ...prev,
+                general: "ログインに失敗しました。もう一度お試しください。",
+              }));
+              break;
+          }
         });
     }
-    e.preventDefault();
   };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded shadow-md">
@@ -43,7 +85,11 @@ export default function Login() {
               required={true}
               value={email}
               onChange={setEmail}
+              error={!!errorMessages.email}
             />
+            {errorMessages.email && (
+              <p className="mt-1 text-sm text-red-500">{errorMessages.email}</p>
+            )}
           </div>
           <div>
             <label
@@ -60,8 +106,17 @@ export default function Login() {
               required={true}
               value={password}
               onChange={setPassword}
+              error={!!errorMessages.password}
             />
+            {errorMessages.password && (
+              <p className="mt-1 text-sm text-red-500">
+                {errorMessages.password}
+              </p>
+            )}
           </div>
+          {errorMessages.general && (
+            <p className="mt-1 text-sm text-red-500">{errorMessages.general}</p>
+          )}
           <div>
             <button
               type="submit"

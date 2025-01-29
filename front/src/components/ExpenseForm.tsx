@@ -1,70 +1,77 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CategorySelect } from "./CategorySelect";
-import { FieldValue } from "firebase/firestore";
 import {
   CategoryIndexList,
+  CommonResponseData,
+  FUser,
+  GroupResponse,
   SpendingFormValue,
   SpendingIndexList,
 } from "../types";
-
-interface TransformResult {
-  totalAmount?: number;
-  error?: { title: string; message: string };
-}
-
-interface CategoryData {
-  data: {
-    category: string;
-    uid: string;
-    createdAt: FieldValue;
-    updatedAt: FieldValue;
-  };
-  id: string;
-}
+import { MemberSelect } from "./MemberSelect";
+import dayjs, { Dayjs } from "dayjs";
+import { getData, realtimeGetter } from "../firebase/firestore";
+import { useFirestoreListeners } from "../util/hooks/useFirestoreListeners";
+import { UserContext } from "../contexts/UserContextProvider";
 
 type ExpenseFormProps = {
   onSubmit: (data: SpendingFormValue) => void;
   spendingInitialValues?: SpendingIndexList;
-  categoryDataList: CategoryIndexList[];
+  group: CommonResponseData<GroupResponse>[];
 };
 
 const ExpenseForm: React.FC<ExpenseFormProps> = ({
   onSubmit,
   spendingInitialValues,
-  categoryDataList,
+  group,
 }) => {
   const navigate = useNavigate();
+  const userContext = useContext(UserContext);
+  const { addListener } = useFirestoreListeners();
 
-  const today = new Date();
-  const formattedToday = `${today.getFullYear()}-${String(
-    today.getMonth() + 1
-  ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+  const [categoryDataList, setCategoryDataList] = useState<CategoryIndexList[]>(
+    []
+  );
+
+  const [groupMemberDataList, setGroupMemberDataList] = useState<FUser[]>([]);
+
   // transformResult.totalAmountが定義されていればその値を初期値とし、なければ空文字を設定
   const [amount, setAmount] = useState<string | "">(
     spendingInitialValues?.data.amount !== undefined
       ? spendingInitialValues?.data.amount
       : ""
   );
-  const [date, setDate] = useState<string>(
-    spendingInitialValues?.data.date !== undefined
-      ? spendingInitialValues?.data.date
-      : formattedToday
+  const [date, setDate] = useState<Dayjs>(
+    spendingInitialValues?.data.date
+      ? dayjs(spendingInitialValues?.data.date.toDate()) // 初期値があれば day.js オブジェクトに変換
+      : dayjs() // 今日の日付を初期値として設定
   ); // 初期状態として今日の日付を設定
-  const [category, setCategory] = useState<string>(
-    spendingInitialValues?.data.category !== undefined
-      ? spendingInitialValues?.data.category
+  const [categoryId, setCategoryId] = useState<string>(
+    spendingInitialValues?.data.categoryId !== undefined
+      ? spendingInitialValues?.data.categoryId
       : ""
   );
-
+  const [payerUid, setPayerUid] = useState<string>(
+    spendingInitialValues?.data.payerUid !== undefined
+      ? spendingInitialValues?.data.payerUid
+      : ""
+  );
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (amount && date && category) {
-      onSubmit({ amount: amount, date, category });
+    if (amount && date && categoryId && payerUid) {
+      onSubmit({ amount, date, categoryId, payerUid });
       setAmount("");
-      setDate(formattedToday); // フォーム送信後も日付を今日にリセット
-      setCategory("");
+      setDate(dayjs()); // フォーム送信後も日付を今日にリセット
+
+      if (userContext?.userData) {
+        setPayerUid(userContext?.userData?.uid);
+      }
+
+      if (0 < categoryDataList.length) {
+        setCategoryId(categoryDataList[0].id);
+      }
     }
   };
 
@@ -74,12 +81,83 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
     navigate("/receipt-scanning");
   };
 
+  useEffect(() => {
+    const initialProcessing = async () => {
+      const groupMemberUidList = group[0].data.memberUids;
+      const userDataList = await Promise.all(
+        groupMemberUidList.map((groupMemberUid) =>
+          getData<FUser>("users", {
+            subDoc: "uid",
+            is: "==",
+            subDocCondition: groupMemberUid,
+          })
+        )
+      );
+      const memberUserData = userDataList.map((userData) => userData[0]);
+      setGroupMemberDataList(memberUserData);
+    };
+    initialProcessing();
+  }, [group]);
+
+  // categoryDataListが空でない場合に初期値を設定
+  useEffect(() => {
+    const initialProcessing = async () => {
+      const unsubscribeSpendingCategories = realtimeGetter(
+        "spendingCategories",
+        setCategoryDataList,
+        {
+          subDoc: "groupId",
+          is: "==",
+          subDocCondition: group[0].id,
+        }
+      );
+
+      addListener(unsubscribeSpendingCategories);
+    };
+    initialProcessing();
+  }, [groupMemberDataList]);
+
+  useEffect(() => {
+    if (payerUid === "" && userContext?.userData) {
+      setPayerUid(userContext?.userData?.uid);
+    }
+
+    if (categoryId === "" && 0 < categoryDataList.length) {
+      setCategoryId(categoryDataList[0].id);
+    }
+  }, [groupMemberDataList]);
+
   return (
     <form
       onSubmit={handleSubmit}
       className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md"
     >
+      {spendingInitialValues ? (
+        <h2 className="text-xl font-semibold text-gray-800 mb-6 text-center">
+          支出編集
+        </h2>
+      ) : (
+        <h2 className="text-xl font-semibold text-gray-800 mb-6 text-center">
+          支出登録
+        </h2>
+      )}
       <div className="mb-4 font-bold">
+        <div className="mb-4">
+          <label
+            htmlFor="date"
+            className="block text-gray-700 font-medium mb-2"
+          >
+            日付
+          </label>
+          <input
+            type="date"
+            id="date"
+            value={date.format("YYYY-MM-DD")}
+            onChange={(e) => setDate(dayjs(e.target.value))}
+            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
+            required
+          />
+        </div>
         <label
           htmlFor="amount"
           className="block text-gray-700 font-medium mb-2"
@@ -97,23 +175,15 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
         />
       </div>
 
-      <div className="mb-4">
-        <label htmlFor="date" className="block text-gray-700 font-medium mb-2">
-          日付
-        </label>
-        <input
-          type="date"
-          id="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
-          required
-        />
-      </div>
+      <MemberSelect
+        payerUid={payerUid}
+        setPayerUid={setPayerUid}
+        groupMemberDataList={groupMemberDataList}
+      ></MemberSelect>
 
       <CategorySelect
-        category={category}
-        setCategory={setCategory}
+        categoryId={categoryId}
+        setCategoryId={setCategoryId}
         categoryDataList={categoryDataList}
       ></CategorySelect>
 

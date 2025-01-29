@@ -2,7 +2,6 @@ import React, { Dispatch, SetStateAction, useState } from "react";
 import { analyzeImage } from "../googleCloud/api/cloudVision";
 import { transformApiData } from "../util/apiUtils";
 import { useNavigate } from "react-router-dom";
-import PopupExample from "./PopupExample";
 
 type Props = {
   setImage: Dispatch<SetStateAction<string | undefined>>;
@@ -21,8 +20,6 @@ export default function PhotoResult(props: Props) {
   >();
 
   const togglePopup = () => {
-    console.log(isOpen);
-
     setIsOpen(!isOpen);
   };
   const navigate = useNavigate();
