@@ -27,12 +27,14 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true); // ローディング状態
 
   const handleOnSubmit = async (data: SpendingFormValue) => {
+    console.log("aaavvvv");
+
     if (userContext?.user?.uid) {
       const spendingFormValue: CreateSpendingRequest = {
         amount: data.amount,
         date: data.date.toDate(),
         categoryId: data.categoryId,
-        payerUid: data.payerUid,
+        payerUid: data.commonAccountPaid ? null : data.payerUid,
         commonAccountPaid: data.commonAccountPaid,
         groupId: group[0].id,
         uid: userContext.user.uid,

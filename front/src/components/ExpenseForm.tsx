@@ -62,17 +62,14 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (amount && date && categoryId && payerUid) {
-      if (commonAccountPaid) {
-        onSubmit({
-          amount,
-          date,
-          categoryId,
-          payerUid: null,
-          commonAccountPaid,
-        });
-      }
-      onSubmit({ amount, date, categoryId, payerUid, commonAccountPaid });
+    if (amount && date && categoryId) {
+      onSubmit({
+        amount,
+        date,
+        categoryId,
+        payerUid,
+        commonAccountPaid,
+      });
       setAmount("");
       setDate(dayjs()); // フォーム送信後も日付を今日にリセット
 

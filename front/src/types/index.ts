@@ -71,6 +71,7 @@ export interface SpendingResponse {
   amount: string;
   categoryId: string;
   payerUid: string;
+  commonAccountPaid: boolean;
   createdAt: FieldValue;
   date: dayjs.Dayjs;
   uid: string;
@@ -79,7 +80,8 @@ export interface SpendingResponse {
 
 export interface SpendingUpdataRequest {
   amount: string;
-  payerUid: string;
+  payerUid: string | null;
+  commonAccountPaid: boolean;
   categoryId: string;
   date: Date;
 }

@@ -46,20 +46,25 @@ const calculateTotalPayAmount = (
         memberList
       );
       const amount = parseInt(item.data.amount, 10);
+      const isCommonAccount = item.data.commonAccountPaid || false;
+      const memberCount = memberList.length;
 
-      // メンバーがすでに存在する場合は金額を加算、存在しない場合は初期化
-      if (member) {
-        if (acc[member]) {
-          acc[member] += amount;
-        } else {
-          acc[member] = amount;
-        }
+      if (isCommonAccount) {
+        // 共通口座の支払いを各メンバーに均等に割り勘
+        const sharePerMember = Math.floor(amount / memberCount);
+        memberList.forEach((member) => {
+          acc[member.name] = (acc[member.name] || 0) + sharePerMember;
+        });
+      } else if (member) {
+        // 通常支払い処理
+        acc[member] = (acc[member] || 0) + amount;
       }
 
       return acc;
     },
     {} as PaymentSummary
   );
+
   return paymentSummary;
 };
 
@@ -125,6 +130,8 @@ export const calculateTotalPaidByPerson = (
   membersDataList: FUser[],
   spendingDataList: CommonResponseData<SpendingResponse>[]
 ) => {
+  const memberNames = membersDataList.map((member) => member.name);
+
   const result = spendingDataList.reduce<Record<string, number>>(
     (totals, payment) => {
       const payer = convertIdToName(
@@ -134,9 +141,17 @@ export const calculateTotalPaidByPerson = (
         membersDataList
       );
 
-      const amount = parseInt(payment.data.amount, 10); // amountは文字列なので数値に変換
-      if (payer) {
-        // 支払者がすでに存在する場合、金額を加算、ない場合は初期化
+      const amount = parseInt(payment.data.amount, 10);
+      const isCommonAccount = payment.data.commonAccountPaid || false;
+
+      if (isCommonAccount) {
+        // 共通口座支払いをすべてのメンバーに均等加算
+        const sharePerMember = Math.floor(amount / memberNames.length);
+        memberNames.forEach((name) => {
+          totals[name] = (totals[name] || 0) + sharePerMember;
+        });
+      } else if (payer) {
+        // 通常の支払い処理
         totals[payer] = (totals[payer] || 0) + amount;
       }
 

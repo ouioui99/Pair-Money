@@ -57,6 +57,7 @@ export default function SpendingIndex() {
     const spendingFormValue: SpendingUpdataRequest = {
       amount: data.amount,
       payerUid: data.payerUid,
+      commonAccountPaid: data.commonAccountPaid,
       date: data.date.toDate(),
       categoryId: data.categoryId,
     };
@@ -204,7 +205,14 @@ export default function SpendingIndex() {
 
         <table className="min-w-full hidden md:table table-auto">
           <IndexListTHeader
-            tHeaders={["日付", "金額", "支払い者", "カテゴリー", "操作"]}
+            tHeaders={[
+              "日付",
+              "金額",
+              "支払い",
+              "支払い者",
+              "カテゴリー",
+              "操作",
+            ]}
           />
           <SpendingIndexListTBody<CommonResponseData<SpendingResponse>>
             tbodyList={filteredSpendingDataList} // フィルタリング後のデータを渡す

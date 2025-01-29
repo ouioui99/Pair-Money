@@ -29,6 +29,20 @@ const SpendingIndexListTBody = <T extends SpendingIndexList>({
           <td className="p-4">
             ￥{Number(spendingData.data.amount).toLocaleString()}
           </td>
+          {/* 共通口座バッジ表示 */}
+          <td className="p-4 w-17 whitespace-nowrap">
+            <span
+              className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                spendingData.data.commonAccountPaid
+                  ? "bg-green-200 text-green-800"
+                  : "bg-gray-200 text-gray-800"
+              }`}
+            >
+              {spendingData.data.commonAccountPaid
+                ? "共通支払い"
+                : "個別支払い"}
+            </span>
+          </td>
           <td className="p-4">
             {convertIdToName(
               spendingData.data.payerUid,
@@ -45,6 +59,7 @@ const SpendingIndexListTBody = <T extends SpendingIndexList>({
               forDisplayCategoryDataList
             )}
           </td>
+
           <td className="p-4">
             {/* 編集ボタン */}
             <button

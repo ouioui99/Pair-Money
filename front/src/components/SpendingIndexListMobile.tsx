@@ -49,6 +49,20 @@ export default function SpendingIndexListMobile<
             </span>
           </div>
           <div className="flex justify-between mb-3">
+            <span className="font-medium text-gray-700 text-lg">支払い</span>
+            <span
+              className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                spendingData.data.commonAccountPaid
+                  ? "bg-green-200 text-green-800"
+                  : "bg-gray-200 text-gray-800"
+              }`}
+            >
+              {spendingData.data.commonAccountPaid
+                ? "共通支払い"
+                : "個別支払い"}
+            </span>
+          </div>
+          <div className="flex justify-between mb-3">
             <span className="font-medium text-gray-700 text-lg">
               カテゴリー
             </span>
