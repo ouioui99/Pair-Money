@@ -47,7 +47,7 @@ export default function Mypage() {
   };
 
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       {/* ヘッダーセクション */}
       <Header title={"マイページ"} />
 
@@ -59,7 +59,7 @@ export default function Mypage() {
       />
 
       {/* メインコンテンツ */}
-      <main className="flex flex-col items-center justify-center space-y-6 bg-gray-100 min-h-screen py-8">
+      <main className="flex flex-col items-center justify-center space-y-6 bg-gray-100 flex-1 py-8">
         {/* フレンドID表示 */}
         <div className="flex flex-col items-center space-y-2">
           <div className="text-lg font-medium text-gray-700">フレンドID</div>

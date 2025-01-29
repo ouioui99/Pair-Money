@@ -36,6 +36,8 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
 
   const [groupMemberDataList, setGroupMemberDataList] = useState<FUser[]>([]);
 
+  const [commonAccountPaid, setCommonAccountPaid] = useState<boolean>(false);
+
   // transformResult.totalAmountが定義されていればその値を初期値とし、なければ空文字を設定
   const [amount, setAmount] = useState<string | "">(
     spendingInitialValues?.data.amount !== undefined
@@ -61,7 +63,16 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
     e.preventDefault();
 
     if (amount && date && categoryId && payerUid) {
-      onSubmit({ amount, date, categoryId, payerUid });
+      if (commonAccountPaid) {
+        onSubmit({
+          amount,
+          date,
+          categoryId,
+          payerUid: null,
+          commonAccountPaid,
+        });
+      }
+      onSubmit({ amount, date, categoryId, payerUid, commonAccountPaid });
       setAmount("");
       setDate(dayjs()); // フォーム送信後も日付を今日にリセット
 
@@ -168,10 +179,29 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
           type="number"
           id="amount"
           value={amount}
-          onChange={(e) => setAmount(e.target.value || "")}
+          onChange={(e) => {
+            setAmount(e.target.value || "");
+          }}
           className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
           placeholder="例: 1000"
           required
+        />
+      </div>
+
+      {/* 全員で割り勘チェックボックス */}
+      <div className="mb-4">
+        <label
+          htmlFor="commonAccountPaid"
+          className="block text-gray-700 font-medium mb-2"
+        >
+          共通口座からの支払い
+        </label>
+        <input
+          type="checkbox"
+          id="commonAccountPaid"
+          checked={commonAccountPaid}
+          onChange={(e) => setCommonAccountPaid(e.target.checked)}
+          className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
         />
       </div>
 
@@ -179,6 +209,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
         payerUid={payerUid}
         setPayerUid={setPayerUid}
         groupMemberDataList={groupMemberDataList}
+        commonAccountPaid={commonAccountPaid}
       ></MemberSelect>
 
       <CategorySelect
