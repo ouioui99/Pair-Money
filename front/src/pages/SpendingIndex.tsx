@@ -107,15 +107,6 @@ export default function SpendingIndex() {
   useEffect(() => {
     const initialProcessing = async () => {
       if (userContext?.user?.uid) {
-        const unsubscribeSpendings = realtimeGetter(
-          "spendings",
-          setSpendingDataList,
-          {
-            subDoc: "groupId",
-            is: "==",
-            subDocCondition: userContext.user.uid,
-          }
-        );
         const unsubscribeSpendingCategories = realtimeGetter(
           "spendingCategories",
           setCategoryDataList,
@@ -137,7 +128,7 @@ export default function SpendingIndex() {
             addListener(unsubscribeGroups);
           }
         };
-        addListener(unsubscribeSpendings);
+
         addListener(unsubscribeSpendingCategories);
         addListener(initialProcessing);
       }
@@ -168,15 +159,17 @@ export default function SpendingIndex() {
   }, [group]);
 
   useEffect(() => {
-    const initialProcessing = async () => {
+    const unsubscribeSpendings = async () => {
       realtimeGetter("spendings", setSpendingDataList, {
         subDoc: "groupId",
         is: "==",
         subDocCondition: group[0].id,
       });
+      addListener(unsubscribeSpendings);
     };
+    console.log(group);
     if (0 < group.length) {
-      initialProcessing();
+      unsubscribeSpendings();
     }
   }, [group]);
 

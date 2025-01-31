@@ -153,7 +153,7 @@ export interface SplitResult {
 }
 
 export interface GroupResponse {
-  memberUids: [];
+  memberUids: [string, ...string[]];
   name: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;

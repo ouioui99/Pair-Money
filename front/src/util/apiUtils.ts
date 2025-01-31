@@ -10,7 +10,6 @@ export const transformApiData = (apiData: any): transformResult => {
 
   const result: transformResult = {};
 
-  console.log(textAnnotations);
   if (typeof textAnnotations == "undefined") {
     result.error = {
       title: "文字の認識に失敗しました。",

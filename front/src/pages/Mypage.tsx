@@ -15,7 +15,6 @@ export default function Mypage() {
 
   useEffect(() => {
     const initialProcessing = async () => {
-      console.log(userContext?.user);
       if (userContext?.user) {
         const userData = await getData<FUser>("users", {
           subDoc: "uid",

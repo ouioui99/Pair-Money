@@ -127,14 +127,15 @@ const GroupManage: React.FC<GroupManegeProps> = ({
             </div>
 
             <div className="flex justify-end mt-4 space-x-4">
-              {member.uid != userContext?.user?.uid && (
-                <button
-                  onClick={() => handleDelete(member.uid)}
-                  className="bg-red-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 transition-all transform hover:scale-105 flex items-center space-x-2"
-                >
-                  削除
-                </button>
-              )}
+              {member.uid != userContext?.user?.uid &&
+                member.uid != group[0].data.memberUids[0] && (
+                  <button
+                    onClick={() => handleDelete(member.uid)}
+                    className="bg-red-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 transition-all transform hover:scale-105 flex items-center space-x-2"
+                  >
+                    削除
+                  </button>
+                )}
             </div>
           </div>
         ))}

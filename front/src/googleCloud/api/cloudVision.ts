@@ -2,7 +2,6 @@ import axios from "axios";
 
 export const analyzeImage = async (image: string) => {
   const API_KEY = import.meta.env.VITE_REACT_APP_GOOGLE_CLOUD_VISION_API_KEY;
-  console.log(API_KEY);
 
   const url = `https://vision.googleapis.com/v1/images:annotate?key=${API_KEY}`;
 
@@ -25,7 +24,6 @@ export const analyzeImage = async (image: string) => {
 
   try {
     const response = await axios.post(url, request);
-    console.log(response.data.responses[0]);
 
     return response.data.responses[0];
   } catch (error) {
