@@ -9,15 +9,8 @@ export default function SpendingIndexListMobile<
   handleEdit,
   handleDelete,
   groupMemberDataList,
-  categoryDataList,
+  forDisplayCategoryDataList,
 }: IndexListTbody<T>) {
-  let forDisplayCategoryDataList: { id: string; name: string }[];
-  if (categoryDataList) {
-    forDisplayCategoryDataList = categoryDataList.map((categoryDataObject) => {
-      return { id: categoryDataObject.id, name: categoryDataObject.data.name };
-    });
-  }
-
   return (
     <div className="block md:hidden">
       {tbodyList.map((spendingData, index) => (
