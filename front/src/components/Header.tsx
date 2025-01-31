@@ -14,7 +14,6 @@ const Header = ({ title, onClick, buttonTitle = "新規作成" }: headerProp) =>
         userContext?.setUser(null);
         navigate("/login");
       } else {
-        console.log(result);
       }
     });
   };

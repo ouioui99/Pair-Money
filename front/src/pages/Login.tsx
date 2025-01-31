@@ -26,8 +26,6 @@ export default function Login() {
           navigate("/");
         })
         .catch((error) => {
-          console.log(error.errorCode);
-
           // Handle error codes
           switch (error.errorCode) {
             case "auth/user-disabled":

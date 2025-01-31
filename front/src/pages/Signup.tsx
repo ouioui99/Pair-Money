@@ -61,8 +61,6 @@ export default function Signup() {
           navigate("/");
         })
         .catch((e) => {
-          console.log(e);
-
           // Handle specific error codes
           switch (e.errorCode) {
             case "auth/email-already-in-use":

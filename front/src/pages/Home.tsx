@@ -53,7 +53,6 @@ export default function Home() {
         });
       }
     } else {
-      console.log("ユーザーIDがありません");
       setAlert({
         message: "ログイン状態を確認してください。",
         type: "error",

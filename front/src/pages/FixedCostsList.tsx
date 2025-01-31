@@ -67,7 +67,6 @@ export default function FixedCostsList() {
       }
     } else {
       //ユーザIDなしのエラー処理
-      console.log("");
     }
   };
   const handleEdit = (index: string) => {

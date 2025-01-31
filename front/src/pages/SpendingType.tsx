@@ -60,7 +60,6 @@ export default function SpendingCategory() {
       }
     } else {
       //ユーザIDなしのエラー処理
-      console.log("");
     }
     setCategoryData(undefined);
   };

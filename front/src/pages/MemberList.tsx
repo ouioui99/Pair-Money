@@ -60,7 +60,6 @@ export default function MemberList() {
       }
     } else {
       //ユーザIDなしのエラー処理
-      console.log("");
     }
   };
   const handleEdit = (index: string) => {

@@ -31,7 +31,7 @@ function ExpenseFormPopup() {
   // フォーム送信を処理
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    console.log("Submitted Data:", formData);
+
     // データ送信処理
     setIsOpen(false); // 送信後にポップアップを閉じる
   };
