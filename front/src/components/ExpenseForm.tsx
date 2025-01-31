@@ -163,9 +163,6 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({
       addListener(unsubscribeSpendingCategories);
     };
     initialProcessing();
-  }, [groupMemberDataList]);
-
-  useEffect(() => {
     if (payerUid === "" && userContext?.userData) {
       setPayerUid(userContext?.userData?.uid);
     }
