@@ -111,7 +111,7 @@ export default function SpendingIndex() {
           "spendings",
           setSpendingDataList,
           {
-            subDoc: "uid",
+            subDoc: "groupId",
             is: "==",
             subDocCondition: userContext.user.uid,
           }
@@ -120,7 +120,7 @@ export default function SpendingIndex() {
           "spendingCategories",
           setCategoryDataList,
           {
-            subDoc: "uid",
+            subDoc: "groupId",
             is: "==",
             subDocCondition: userContext.user.uid,
           }
@@ -162,6 +162,19 @@ export default function SpendingIndex() {
       setGroupMemberDataList(memberUserData);
     };
 
+    if (0 < group.length) {
+      initialProcessing();
+    }
+  }, [group]);
+
+  useEffect(() => {
+    const initialProcessing = async () => {
+      realtimeGetter("spendings", setSpendingDataList, {
+        subDoc: "groupId",
+        is: "==",
+        subDocCondition: group[0].id,
+      });
+    };
     if (0 < group.length) {
       initialProcessing();
     }
@@ -209,7 +222,7 @@ export default function SpendingIndex() {
               "日付",
               "金額",
               "支払い",
-              "支払い者",
+              "清算者",
               "カテゴリー",
               "操作",
             ]}

@@ -6,6 +6,7 @@ interface MemberSelect {
   setPayerUid: (e: string) => void;
   groupMemberDataList: FUser[];
   commonAccountPaid?: boolean;
+  error?: string | null;
 }
 
 export const MemberSelect: React.FC<MemberSelect> = ({
@@ -13,6 +14,7 @@ export const MemberSelect: React.FC<MemberSelect> = ({
   setPayerUid,
   groupMemberDataList,
   commonAccountPaid,
+  error,
 }) => {
   const option = groupMemberDataList.map((data, index) => (
     <option key={index} value={data.uid}>
@@ -26,22 +28,26 @@ export const MemberSelect: React.FC<MemberSelect> = ({
         htmlFor="payerUid"
         className="block text-gray-700 font-medium mb-2"
       >
-        支払ったメンバー
+        清算者
       </label>
       {commonAccountPaid ? (
         <div className="w-full p-2 h-10 border border-gray-300 bg-gray-100 text-gray-500 rounded-md flex items-center cursor-not-allowed">
           共通口座での支払い
         </div>
       ) : (
-        <select
-          id="payerUid"
-          value={payerUid}
-          onChange={(e) => setPayerUid(e.target.value)}
-          className="w-full p-2 h-10 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
-          required={!commonAccountPaid}
-        >
-          {option}
-        </select>
+        <div>
+          <select
+            id="payerUid"
+            value={payerUid}
+            onChange={(e) => setPayerUid(e.target.value)}
+            className={`w-full p-2 h-10 border ${
+              error ? "border-red-500" : "border-gray-300"
+            } rounded-md focus:outline-none focus:ring focus:ring-indigo-200`}
+          >
+            {option}
+          </select>
+          {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+        </div>
       )}
     </div>
   );

@@ -130,8 +130,6 @@ export const calculateTotalPaidByPerson = (
   membersDataList: FUser[],
   spendingDataList: CommonResponseData<SpendingResponse>[]
 ) => {
-  const memberNames = membersDataList.map((member) => member.name);
-
   const result = spendingDataList.reduce<Record<string, number>>(
     (totals, payment) => {
       const payer = convertIdToName(
@@ -144,14 +142,8 @@ export const calculateTotalPaidByPerson = (
       const amount = parseInt(payment.data.amount, 10);
       const isCommonAccount = payment.data.commonAccountPaid || false;
 
-      if (isCommonAccount) {
-        // 共通口座支払いをすべてのメンバーに均等加算
-        const sharePerMember = Math.floor(amount / memberNames.length);
-        memberNames.forEach((name) => {
-          totals[name] = (totals[name] || 0) + sharePerMember;
-        });
-      } else if (payer) {
-        // 通常の支払い処理
+      // 共通口座支払いはメンバーに含めない
+      if (!isCommonAccount && payer) {
         totals[payer] = (totals[payer] || 0) + amount;
       }
 
@@ -161,6 +153,17 @@ export const calculateTotalPaidByPerson = (
   );
 
   return result;
+};
+
+export const calculateCommonAccountTotal = (
+  spendingDataList: CommonResponseData<SpendingResponse>[]
+) => {
+  return spendingDataList.reduce((total, payment) => {
+    if (payment.data.commonAccountPaid) {
+      return total + parseInt(payment.data.amount, 10);
+    }
+    return total;
+  }, 0);
 };
 
 export const calculateAllMembersTotalPaid = (

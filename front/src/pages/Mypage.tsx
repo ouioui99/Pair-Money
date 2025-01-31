@@ -59,20 +59,22 @@ export default function Mypage() {
       />
 
       {/* メインコンテンツ */}
-      <main className="flex flex-col items-center justify-center space-y-6 bg-gray-100 flex-1 py-8">
+      <main className="flex flex-col items-center justify-center space-y-6 bg-blue-50 flex-1 py-8">
         {/* フレンドID表示 */}
         <div className="flex flex-col items-center space-y-2">
           <div className="text-lg font-medium text-gray-700">フレンドID</div>
-          <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded shadow-md">
-            <span className="text-gray-800 font-mono">
-              {userContext?.userData?.fid}
-            </span>
-            <button
-              onClick={handleCopy}
-              className="flex items-center justify-center text-blue-500 hover:text-blue-600 focus:outline-none"
-            >
-              <AiOutlineCopy size={20} />
-            </button>
+          <div className="mt-8 bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            <div className="flex items-center justify-center space-x-4">
+              <span className="text-2xl font-mono text-gray-800">
+                {userContext?.userData?.fid}
+              </span>
+              <button
+                onClick={handleCopy}
+                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
+              >
+                <AiOutlineCopy size={20} />
+              </button>
+            </div>
           </div>
         </div>
 
