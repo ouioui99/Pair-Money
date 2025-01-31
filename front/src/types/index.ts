@@ -11,7 +11,7 @@ export interface IndexListTbody<T> {
   handleEdit: (index: string) => void;
   handleDelete: (documentID: string, item: T) => void;
   groupMemberDataList?: FUser[];
-  categoryDataList?: CategoryIndexList[];
+  forDisplayCategoryDataList?: { id: string; name: string }[];
 }
 
 export interface CommonResponseData<T> {

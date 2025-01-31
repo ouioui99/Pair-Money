@@ -30,6 +30,7 @@ import PaymentScreen from "../components/PaymentScreen";
 import Header from "../components/Header";
 import { useFirestoreListeners } from "../util/hooks/useFirestoreListeners";
 import dayjs from "dayjs";
+import { convertIdToName } from "../util/commonFunc";
 
 export default function SpendingIndex() {
   const userContext = useContext(UserContext);
@@ -52,6 +53,7 @@ export default function SpendingIndex() {
   const [groupMemberDataList, setGroupMemberDataList] = useState<FUser[]>([]);
 
   const [selectMonth, setSelectMonth] = useState<string>("all");
+  const [initialSetupComplete, setInitialSetupComplete] = useState(false);
 
   const handleOnSubmit = (data: SpendingFormValue) => {
     const spendingFormValue: SpendingUpdataRequest = {
@@ -104,41 +106,56 @@ export default function SpendingIndex() {
     }
   };
 
+  const forDisplayCategoryDataList: { id: string; name: string }[] =
+    categoryDataList.map((categoryDataObject) => {
+      return {
+        id: categoryDataObject.id,
+        name: categoryDataObject.data.name,
+      };
+    });
+
   useEffect(() => {
     const initialProcessing = async () => {
       if (userContext?.user?.uid) {
-        const unsubscribeSpendingCategories = realtimeGetter(
-          "spendingCategories",
-          setCategoryDataList,
-          {
-            subDoc: "groupId",
-            is: "==",
-            subDocCondition: userContext.user.uid,
-          }
-        );
+        const unsubscribeGroups = realtimeGetter("groups", setGroup, {
+          subDoc: "memberUids",
+          is: "array-contains",
+          subDocCondition: userContext.user.uid,
+        });
 
-        const initialProcessing = async () => {
-          if (userContext?.user?.uid) {
-            const unsubscribeGroups = realtimeGetter("groups", setGroup, {
-              subDoc: "memberUids",
-              is: "array-contains",
-              subDocCondition: userContext.user.uid,
-            });
-
-            addListener(unsubscribeGroups);
-          }
-        };
-
-        addListener(unsubscribeSpendingCategories);
-        addListener(initialProcessing);
+        addListener(unsubscribeGroups);
+        setInitialSetupComplete(true);
       }
     };
 
     initialProcessing();
-  }, [addListener]);
+  }, []);
 
   useEffect(() => {
     const initialProcessing = async () => {
+      const groupId = group[0].id;
+      const unsubscribeSpendings = realtimeGetter(
+        "spendings",
+        setSpendingDataList,
+        {
+          subDoc: "groupId",
+          is: "==",
+          subDocCondition: groupId,
+        }
+      );
+      const unsubscribeSpendingCategories = realtimeGetter(
+        "spendingCategories",
+        setCategoryDataList,
+        {
+          subDoc: "groupId",
+          is: "==",
+          subDocCondition: groupId,
+        }
+      );
+
+      addListener(unsubscribeSpendingCategories);
+      addListener(unsubscribeSpendings);
+
       const groupMemberUidList = group[0].data.memberUids;
       const userDataList = await Promise.all(
         groupMemberUidList.map((groupMemberUid) =>
@@ -156,22 +173,7 @@ export default function SpendingIndex() {
     if (0 < group.length) {
       initialProcessing();
     }
-  }, [group]);
-
-  useEffect(() => {
-    const unsubscribeSpendings = async () => {
-      realtimeGetter("spendings", setSpendingDataList, {
-        subDoc: "groupId",
-        is: "==",
-        subDocCondition: group[0].id,
-      });
-      addListener(unsubscribeSpendings);
-    };
-    console.log(group);
-    if (0 < group.length) {
-      unsubscribeSpendings();
-    }
-  }, [group]);
+  }, [initialSetupComplete, group]);
 
   // 清算月で spendingDataList をフィルタリング
   const filteredSpendingDataList = !dayjs(selectMonth).isValid()
@@ -225,7 +227,7 @@ export default function SpendingIndex() {
             handleEdit={handleEdit}
             handleDelete={handleDelete}
             groupMemberDataList={groupMemberDataList}
-            categoryDataList={categoryDataList}
+            forDisplayCategoryDataList={forDisplayCategoryDataList}
           />
         </table>
 
@@ -235,7 +237,7 @@ export default function SpendingIndex() {
           handleEdit={handleEdit}
           handleDelete={handleDelete}
           groupMemberDataList={groupMemberDataList}
-          categoryDataList={categoryDataList}
+          forDisplayCategoryDataList={forDisplayCategoryDataList}
         />
         {showFormModal ? (
           <div
@@ -256,17 +258,54 @@ export default function SpendingIndex() {
           isOpen={showModal}
           onClose={() => setShowModal(false)}
           onConfirm={confirmDelete}
-          title="このカテゴリーを削除しますか？"
+          title="この支出を削除しますか？"
           description={
             selectedSpendingData ? (
-              <>
-                <p className="text-sm text-center text-gray-600 mb-4">
-                  以下のカテゴリーを削除すると元に戻せません。
+              <div className="space-y-4">
+                <p className="text-sm text-center text-gray-600">
+                  以下の支出情報が削除されます。本当に削除してよろしいですか？
                 </p>
-                <p className="text-lg font-bold text-black bg-gray-100 px-4 py-2 rounded-md text-center">
-                  「{selectedSpendingData.id}」
-                </p>
-              </>
+                <div className="p-6 bg-white rounded-lg shadow-md">
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="text-gray-500 text-sm">日付</span>
+                    <span className="text-gray-800 text-base font-semibold">
+                      {dayjs(selectedSpendingData.data.date.toDate()).format(
+                        "YYYY-MM-DD"
+                      ) || "不明"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="text-gray-500 text-sm">金額</span>
+                    <span className="text-green-600 text-lg font-bold">
+                      ¥
+                      {selectedSpendingData.data.amount?.toLocaleString() ||
+                        "0"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="text-gray-500 text-sm">清算者</span>
+                    <span className="text-gray-800 text-base font-medium">
+                      {convertIdToName(
+                        selectedSpendingData.data.payerUid,
+                        "uid",
+                        "name",
+                        groupMemberDataList
+                      ) || "不明"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-500 text-sm">カテゴリー</span>
+                    <span className="text-gray-800 text-base font-medium">
+                      {convertIdToName(
+                        selectedSpendingData.data.categoryId,
+                        "id",
+                        "name",
+                        forDisplayCategoryDataList
+                      ) || "未分類"}
+                    </span>
+                  </div>
+                </div>
+              </div>
             ) : (
               "削除すると元に戻せません。本当に削除してよろしいですか？"
             )

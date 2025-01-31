@@ -28,9 +28,12 @@ export const convertIdToName = <T>(
   keyForName: keyof T, // 名前に対応するキーを指定
   dataList?: T[]
 ): string => {
+  console.log(dataList);
+
   if (!dataList) return "-";
 
   const targetItem = dataList.find((item) => item[keyForId] === targetId);
+  console.log(targetItem);
 
   return targetItem ? String(targetItem[keyForName]) : "-";
 };

@@ -7,18 +7,8 @@ const SpendingIndexListTBody = <T extends SpendingIndexList>({
   handleEdit,
   handleDelete,
   groupMemberDataList,
-  categoryDataList,
+  forDisplayCategoryDataList,
 }: IndexListTbody<T>) => {
-  let forDisplayCategoryDataList: { id: string; name: string }[];
-  if (categoryDataList) {
-    forDisplayCategoryDataList = categoryDataList.map((categoryDataObject) => {
-      return {
-        id: categoryDataObject.id,
-        name: categoryDataObject.data.name,
-      };
-    });
-  }
-
   return (
     <tbody>
       {tbodyList.map((spendingData, index) => (
