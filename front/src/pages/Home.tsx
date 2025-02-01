@@ -14,17 +14,16 @@ import Alert from "../components/Alert";
 import Header from "../components/Header";
 import { useFirestoreListeners } from "../util/hooks/useFirestoreListeners";
 import { useNavigate } from "react-router-dom";
+import useAlert from "../util/hooks/useAlert";
 
 export default function Home() {
   const userContext = useContext(UserContext);
   const navigate = useNavigate();
   const { addListener } = useFirestoreListeners();
   const [group, setGroup] = useState<CommonResponseData<GroupResponse>[]>([]);
-  const [alert, setAlert] = useState<{
-    message: string;
-    type: "success" | "error";
-  } | null>(null);
+
   const [isLoading, setIsLoading] = useState(true); // ローディング状態
+  const { alert, showAlert, clearAlert } = useAlert();
 
   const handleOnSubmit = async (data: SpendingFormValue) => {
     if (userContext?.user?.uid) {
@@ -41,22 +40,13 @@ export default function Home() {
       };
       try {
         await createData("spendings", spendingFormValue);
-        setAlert({
-          message: "支出の作成が成功しました！",
-          type: "success",
-        });
+        showAlert("支出の作成が成功しました！", "success");
       } catch (error) {
         console.error("支出作成に失敗しました", error);
-        setAlert({
-          message: "支出の作成に失敗しました。再試行してください。",
-          type: "error",
-        });
+        showAlert("支出の作成に失敗しました。再試行してください。", "error");
       }
     } else {
-      setAlert({
-        message: "ログイン状態を確認してください。",
-        type: "error",
-      });
+      showAlert("ログイン状態を確認してください。", "error");
     }
   };
 
@@ -93,7 +83,7 @@ export default function Home() {
             <Alert
               message={alert.message}
               type={alert.type}
-              onClose={() => setAlert(null)}
+              onClose={() => clearAlert}
             />
           )}
 

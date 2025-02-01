@@ -71,7 +71,7 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({
   const commonAccountTotal = calculateCommonAccountTotal(spendingDataList);
 
   return (
-    <div className="min-h-screen bg-blue-50 p-8">
+    <div className="bg-blue-50 p-8">
       <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
         <div className="p-8">
           <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">
@@ -109,9 +109,13 @@ const PaymentScreen: React.FC<PaymentScreenProps> = ({
             <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">
               支払い情報
             </h2>
-            <h3 className="text-xl font-semibold mb-4 text-center text-gray-700">
-              清算方法
-            </h3>
+
+            {0 < payments.length && (
+              <h3 className="text-xl font-semibold mb-4 text-center text-gray-700">
+                清算方法
+              </h3>
+            )}
+
             <ul className="space-y-4">
               {payments.map((payment, index) => (
                 <li

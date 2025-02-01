@@ -1,11 +1,19 @@
-import { SpendingIndexList, IndexListTbody } from "../types";
+import { FUser, SpendingIndexList } from "../types";
 import dayjs from "dayjs";
 import { convertIdToName } from "../util/commonFunc";
 
+export interface IndexListTbody<T> {
+  tbodyList: T[];
+  selectedItems: SpendingIndexList[];
+  handleCheckboxChange: (spendingData: SpendingIndexList) => void;
+  groupMemberDataList?: FUser[];
+  forDisplayCategoryDataList?: { id: string; name: string }[];
+}
+
 const SpendingIndexListTBody = <T extends SpendingIndexList>({
   tbodyList,
-  handleEdit,
-  handleDelete,
+  selectedItems,
+  handleCheckboxChange,
   groupMemberDataList,
   forDisplayCategoryDataList,
 }: IndexListTbody<T>) => {
@@ -13,6 +21,17 @@ const SpendingIndexListTBody = <T extends SpendingIndexList>({
     <tbody>
       {tbodyList.map((spendingData, index) => (
         <tr key={index} className="border-t hover:bg-gray-200">
+          {/* チェックボックスセクション */}
+          <td className="p-4">
+            <input
+              type="checkbox"
+              className="form-checkbox h-5 w-5 text-blue-500 border-gray-300 rounded"
+              checked={selectedItems.some(
+                (item) => item.id === spendingData.id
+              )}
+              onChange={() => handleCheckboxChange(spendingData)}
+            />
+          </td>
           <td className="p-4 whitespace-nowrap">
             {dayjs(spendingData.data.date.toDate()).format("YYYY-MM-DD")}
           </td>
@@ -50,22 +69,22 @@ const SpendingIndexListTBody = <T extends SpendingIndexList>({
             )}
           </td>
 
-          <td className="p-4">
-            {/* 編集ボタン */}
-            <button
+          {/* <td className="p-4"> */}
+          {/* 編集ボタン */}
+          {/* <button
               onClick={() => handleEdit(spendingData.id)}
               className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition mr-2"
             >
               編集
-            </button>
-            {/* 削除ボタン */}
-            <button
+            </button> */}
+          {/* 削除ボタン */}
+          {/* <button
               onClick={() => handleDelete(spendingData.id, spendingData)}
               className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
             >
               削除
-            </button>
-          </td>
+            </button> */}
+          {/* </td> */}
         </tr>
       ))}
     </tbody>

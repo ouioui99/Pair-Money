@@ -31,6 +31,7 @@ import Header from "../components/Header";
 import { useFirestoreListeners } from "../util/hooks/useFirestoreListeners";
 import dayjs from "dayjs";
 import { convertIdToName } from "../util/commonFunc";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
 
 export default function SpendingIndex() {
   const userContext = useContext(UserContext);
@@ -54,6 +55,7 @@ export default function SpendingIndex() {
 
   const [selectMonth, setSelectMonth] = useState<string>("all");
   const [initialSetupComplete, setInitialSetupComplete] = useState(false);
+  const [selectedItems, setSelectedItems] = useState<SpendingIndexList[]>([]);
 
   const handleOnSubmit = (data: SpendingFormValue) => {
     const spendingFormValue: SpendingUpdataRequest = {
@@ -67,6 +69,7 @@ export default function SpendingIndex() {
     if (selectedSpendingData) {
       updateSpendingData(selectedSpendingData.id, spendingFormValue);
       setShowFormModal(false);
+      setSelectedItems([]);
     }
   };
 
@@ -113,6 +116,22 @@ export default function SpendingIndex() {
         name: categoryDataObject.data.name,
       };
     });
+
+  const handleCheckboxChange = (spendingData: SpendingIndexList) => {
+    setSelectedItems((prevSelected) => {
+      const isSelected = prevSelected.some(
+        (item) => item.id === spendingData.id
+      );
+
+      if (isSelected) {
+        // チェック解除: 選択リストから除去
+        return prevSelected.filter((item) => item.id !== spendingData.id);
+      } else {
+        // チェック: リストに追加
+        return [...prevSelected, spendingData];
+      }
+    });
+  };
 
   useEffect(() => {
     const initialProcessing = async () => {
@@ -207,25 +226,46 @@ export default function SpendingIndex() {
       />
 
       <div className="overflow-hidden">
-        <div className="p-4 border-b flex items-center justify-between bg-gray-50">
+        <div className="p-4 border-b flex items-center justify-between bg-gray-50 h-16">
           <h2 className="text-lg font-semibold">支出一覧</h2>
+
+          <div className="flex gap-2">
+            <button
+              className={`flex items-center gap-2 h-10 px-4 text-base rounded-md transition-all focus:outline-none 
+          ${
+            selectedItems.length === 1
+              ? "bg-blue-500 text-white hover:bg-blue-600 focus:ring-2 focus:ring-blue-300"
+              : "bg-gray-300 text-gray-600 cursor-not-allowed"
+          }`}
+              disabled={selectedItems.length != 1}
+              onClick={() => handleEdit(selectedItems[0].id)}
+            >
+              <FiEdit className="w-5 h-5" />
+              編集
+            </button>
+
+            <button
+              className={`flex items-center gap-2 h-10 px-4 text-base rounded-md transition-all focus:outline-none 
+    ${
+      1 <= selectedItems.length
+        ? "bg-red-500 text-white hover:bg-red-600 focus:ring-2 focus:ring-red-300"
+        : "bg-gray-300 text-gray-600 cursor-not-allowed"
+    }`}
+            >
+              <FiTrash2 className="w-5 h-5" />
+              削除
+            </button>
+          </div>
         </div>
 
         <table className="min-w-full hidden md:table table-auto">
           <IndexListTHeader
-            tHeaders={[
-              "日付",
-              "金額",
-              "支払い",
-              "清算者",
-              "カテゴリー",
-              "操作",
-            ]}
+            tHeaders={["", "日付", "金額", "支払い", "清算者", "カテゴリー"]}
           />
           <SpendingIndexListTBody<CommonResponseData<SpendingResponse>>
             tbodyList={filteredSpendingDataList} // フィルタリング後のデータを渡す
-            handleEdit={handleEdit}
-            handleDelete={handleDelete}
+            selectedItems={selectedItems}
+            handleCheckboxChange={handleCheckboxChange}
             groupMemberDataList={groupMemberDataList}
             forDisplayCategoryDataList={forDisplayCategoryDataList}
           />
@@ -234,8 +274,8 @@ export default function SpendingIndex() {
         {/* モバイルビュー */}
         <SpendingIndexListMobile<CommonResponseData<SpendingResponse>>
           tbodyList={filteredSpendingDataList} // フィルタリング後のデータを渡す
-          handleEdit={handleEdit}
-          handleDelete={handleDelete}
+          selectedItems={selectedItems}
+          handleCheckboxChange={handleCheckboxChange}
           groupMemberDataList={groupMemberDataList}
           forDisplayCategoryDataList={forDisplayCategoryDataList}
         />
