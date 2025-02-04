@@ -102,11 +102,13 @@ export default function SpendingIndex() {
       deleteDocments(collectionName, selectedSpendingDataList);
     }
     setShowModal(false);
+    setSelectedItems([]);
     setSelectedSpendingDataList([]);
   };
 
   const handleDelete = (selectedItems: SpendingIndexList[]) => {
     setSelectedSpendingDataList(selectedItems);
+
     setShowModal(true);
   };
 
