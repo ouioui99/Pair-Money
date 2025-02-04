@@ -13,7 +13,7 @@ import {
 } from "../types";
 import SpendingIndexListMobile from "../components/SpendingIndexListMobile";
 import {
-  deleteDocument,
+  deleteDocments,
   getData,
   realtimeGetter,
   updateSpendingData,
@@ -32,6 +32,8 @@ import { useFirestoreListeners } from "../util/hooks/useFirestoreListeners";
 import dayjs from "dayjs";
 import { convertIdToName } from "../util/commonFunc";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
+import useAlert from "../util/hooks/useAlert";
+import Alert from "../components/Alert";
 
 export default function SpendingIndex() {
   const userContext = useContext(UserContext);
@@ -42,12 +44,14 @@ export default function SpendingIndex() {
   >([]);
   const [showModal, setShowModal] = useState(false);
   const [showFormModal, setShowFormModal] = useState(false);
-  const [selectedDocumentID, setSelectedDocumentID] = useState<string | null>(
-    null
-  );
+
   const [group, setGroup] = useState<CommonResponseData<GroupResponse>[]>([]);
   const [selectedSpendingData, setSelectedSpendingData] =
     useState<SpendingIndexList | null>(null);
+  const [selectedSpendingDataList, setSelectedSpendingDataList] = useState<
+    SpendingIndexList[]
+  >([]);
+
   const [categoryDataList, setCategoryDataList] = useState<CategoryIndexList[]>(
     []
   );
@@ -56,6 +60,7 @@ export default function SpendingIndex() {
   const [selectMonth, setSelectMonth] = useState<string>("all");
   const [initialSetupComplete, setInitialSetupComplete] = useState(false);
   const [selectedItems, setSelectedItems] = useState<SpendingIndexList[]>([]);
+  const { alert, showAlert, clearAlert } = useAlert();
 
   const handleOnSubmit = (data: SpendingFormValue) => {
     const spendingFormValue: SpendingUpdataRequest = {
@@ -67,9 +72,15 @@ export default function SpendingIndex() {
     };
 
     if (selectedSpendingData) {
-      updateSpendingData(selectedSpendingData.id, spendingFormValue);
-      setShowFormModal(false);
-      setSelectedItems([]);
+      updateSpendingData(selectedSpendingData.id, spendingFormValue)
+        .then(() => {
+          setSelectedItems([]);
+          setShowFormModal(false);
+          showAlert("支出の修正が成功しました！", "success");
+        })
+        .catch(() => {
+          showAlert("支出の修正が失敗しました", "error");
+        });
     }
   };
 
@@ -87,25 +98,22 @@ export default function SpendingIndex() {
 
   const confirmDelete = () => {
     const collectionName = "spendings";
-    if (selectedDocumentID) {
-      deleteDocument(collectionName, selectedDocumentID);
+    if (selectedSpendingDataList) {
+      deleteDocments(collectionName, selectedSpendingDataList);
     }
     setShowModal(false);
-    setSelectedDocumentID(null);
+    setSelectedSpendingDataList([]);
   };
 
-  const handleDelete = (
-    documentID: string,
-    spendingIndexList: SpendingIndexList
-  ) => {
-    setSelectedDocumentID(documentID);
-    setSelectedSpendingData(spendingIndexList);
+  const handleDelete = (selectedItems: SpendingIndexList[]) => {
+    setSelectedSpendingDataList(selectedItems);
     setShowModal(true);
   };
 
   const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
       setShowFormModal(false);
+      clearAlert();
     }
   };
 
@@ -215,6 +223,13 @@ export default function SpendingIndex() {
 
   return (
     <>
+      {alert && (
+        <Alert
+          message={alert.message}
+          type={alert.type}
+          onClose={() => clearAlert()}
+        />
+      )}
       <Header title={"支出情報"}></Header>
 
       <PaymentScreen
@@ -225,133 +240,131 @@ export default function SpendingIndex() {
         setSelectMonth={setSelectMonth}
       />
 
-      <div className="overflow-hidden">
-        <div className="p-4 border-b flex items-center justify-between bg-gray-50 h-16">
-          <h2 className="text-lg font-semibold">支出一覧</h2>
+      <div className="sticky top-0 z-10 p-4 border-b flex items-center justify-between bg-gray-50 h-16">
+        <h2 className="text-lg font-semibold">支出一覧</h2>
 
-          <div className="flex gap-2">
-            <button
-              className={`flex items-center gap-2 h-10 px-4 text-base rounded-md transition-all focus:outline-none 
+        <div className="flex gap-2">
+          <button
+            className={`flex items-center gap-2 h-10 px-4 text-base rounded-md transition-all focus:outline-none 
           ${
             selectedItems.length === 1
               ? "bg-blue-500 text-white hover:bg-blue-600 focus:ring-2 focus:ring-blue-300"
               : "bg-gray-300 text-gray-600 cursor-not-allowed"
           }`}
-              disabled={selectedItems.length != 1}
-              onClick={() => handleEdit(selectedItems[0].id)}
-            >
-              <FiEdit className="w-5 h-5" />
-              編集
-            </button>
+            disabled={selectedItems.length != 1}
+            onClick={() => handleEdit(selectedItems[0].id)}
+          >
+            <FiEdit className="w-5 h-5" />
+            編集
+          </button>
 
-            <button
-              className={`flex items-center gap-2 h-10 px-4 text-base rounded-md transition-all focus:outline-none 
-    ${
-      1 <= selectedItems.length
-        ? "bg-red-500 text-white hover:bg-red-600 focus:ring-2 focus:ring-red-300"
-        : "bg-gray-300 text-gray-600 cursor-not-allowed"
-    }`}
-            >
-              <FiTrash2 className="w-5 h-5" />
-              削除
-            </button>
-          </div>
+          <button
+            className={`flex items-center gap-2 h-10 px-4 text-base rounded-md transition-all focus:outline-none 
+          ${
+            1 <= selectedItems.length
+              ? "bg-red-500 text-white hover:bg-red-600 focus:ring-2 focus:ring-red-300"
+              : "bg-gray-300 text-gray-600 cursor-not-allowed"
+          }`}
+            onClick={() => handleDelete(selectedItems)}
+          >
+            <FiTrash2 className="w-5 h-5" />
+            削除
+          </button>
         </div>
+      </div>
 
-        <table className="min-w-full hidden md:table table-auto">
-          <IndexListTHeader
-            tHeaders={["", "日付", "金額", "支払い", "清算者", "カテゴリー"]}
-          />
-          <SpendingIndexListTBody<CommonResponseData<SpendingResponse>>
-            tbodyList={filteredSpendingDataList} // フィルタリング後のデータを渡す
-            selectedItems={selectedItems}
-            handleCheckboxChange={handleCheckboxChange}
-            groupMemberDataList={groupMemberDataList}
-            forDisplayCategoryDataList={forDisplayCategoryDataList}
-          />
-        </table>
-
-        {/* モバイルビュー */}
-        <SpendingIndexListMobile<CommonResponseData<SpendingResponse>>
+      <table className="min-w-full hidden md:table table-auto">
+        <IndexListTHeader
+          tHeaders={["", "日付", "金額", "支払い", "清算者", "カテゴリー"]}
+        />
+        <SpendingIndexListTBody<CommonResponseData<SpendingResponse>>
           tbodyList={filteredSpendingDataList} // フィルタリング後のデータを渡す
           selectedItems={selectedItems}
           handleCheckboxChange={handleCheckboxChange}
           groupMemberDataList={groupMemberDataList}
           forDisplayCategoryDataList={forDisplayCategoryDataList}
         />
-        {showFormModal ? (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60"
-            onClick={handleBackgroundClick}
-          >
-            <ExpenseForm
-              onSubmit={handleOnSubmit}
-              spendingInitialValues={
-                selectedSpendingData ? selectedSpendingData : undefined
-              }
-              group={group}
-            />
-          </div>
-        ) : null}
+      </table>
 
-        <DeleteConfirmModal
-          isOpen={showModal}
-          onClose={() => setShowModal(false)}
-          onConfirm={confirmDelete}
-          title="この支出を削除しますか？"
-          description={
-            selectedSpendingData ? (
-              <div className="space-y-4">
-                <p className="text-sm text-center text-gray-600">
-                  以下の支出情報が削除されます。本当に削除してよろしいですか？
-                </p>
-                <div className="p-6 bg-white rounded-lg shadow-md">
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-gray-500 text-sm">日付</span>
-                    <span className="text-gray-800 text-base font-semibold">
-                      {dayjs(selectedSpendingData.data.date.toDate()).format(
-                        "YYYY-MM-DD"
-                      ) || "不明"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-gray-500 text-sm">金額</span>
-                    <span className="text-green-600 text-lg font-bold">
-                      ¥
-                      {selectedSpendingData.data.amount?.toLocaleString() ||
-                        "0"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-gray-500 text-sm">清算者</span>
-                    <span className="text-gray-800 text-base font-medium">
-                      {convertIdToName(
-                        selectedSpendingData.data.payerUid,
-                        "uid",
-                        "name",
-                        groupMemberDataList
-                      ) || "不明"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-500 text-sm">カテゴリー</span>
-                    <span className="text-gray-800 text-base font-medium">
-                      {convertIdToName(
-                        selectedSpendingData.data.categoryId,
-                        "id",
-                        "name",
-                        forDisplayCategoryDataList
-                      ) || "未分類"}
-                    </span>
-                  </div>
+      {/* モバイルビュー */}
+      <SpendingIndexListMobile<CommonResponseData<SpendingResponse>>
+        tbodyList={filteredSpendingDataList} // フィルタリング後のデータを渡す
+        selectedItems={selectedItems}
+        handleCheckboxChange={handleCheckboxChange}
+        groupMemberDataList={groupMemberDataList}
+        forDisplayCategoryDataList={forDisplayCategoryDataList}
+      />
+      {showFormModal ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60"
+          onClick={handleBackgroundClick}
+        >
+          <ExpenseForm
+            onSubmit={handleOnSubmit}
+            spendingInitialValues={
+              selectedSpendingData ? selectedSpendingData : undefined
+            }
+            group={group}
+          />
+        </div>
+      ) : null}
+
+      <DeleteConfirmModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onConfirm={confirmDelete}
+        title="この支出を削除しますか？"
+        description={
+          selectedSpendingData ? (
+            <div className="space-y-4">
+              <p className="text-sm text-center text-gray-600">
+                以下の支出情報が削除されます。本当に削除してよろしいですか？
+              </p>
+              <div className="p-6 bg-white rounded-lg shadow-md">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-gray-500 text-sm">日付</span>
+                  <span className="text-gray-800 text-base font-semibold">
+                    {dayjs(selectedSpendingData.data.date.toDate()).format(
+                      "YYYY-MM-DD"
+                    ) || "不明"}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-gray-500 text-sm">金額</span>
+                  <span className="text-green-600 text-lg font-bold">
+                    ¥{selectedSpendingData.data.amount?.toLocaleString() || "0"}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-gray-500 text-sm">清算者</span>
+                  <span className="text-gray-800 text-base font-medium">
+                    {convertIdToName(
+                      selectedSpendingData.data.payerUid,
+                      "uid",
+                      "name",
+                      groupMemberDataList
+                    ) || "不明"}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500 text-sm">カテゴリー</span>
+                  <span className="text-gray-800 text-base font-medium">
+                    {convertIdToName(
+                      selectedSpendingData.data.categoryId,
+                      "id",
+                      "name",
+                      forDisplayCategoryDataList
+                    ) || "未分類"}
+                  </span>
                 </div>
               </div>
-            ) : (
-              "削除すると元に戻せません。本当に削除してよろしいですか？"
-            )
-          }
-        />
-      </div>
+            </div>
+          ) : (
+            "削除すると元に戻せません。本当に削除してよろしいですか？"
+          )
+        }
+      />
+
       <div className="mb-20"></div>
       <CustomBottomNavigation />
     </>

@@ -83,7 +83,7 @@ export default function Home() {
             <Alert
               message={alert.message}
               type={alert.type}
-              onClose={() => clearAlert}
+              onClose={() => clearAlert()}
             />
           )}
 

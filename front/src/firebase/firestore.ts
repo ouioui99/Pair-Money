@@ -164,6 +164,25 @@ export const deleteDocument = async (
   }
 };
 
+export const deleteDocments = async (
+  collectionName: string,
+  documentDataList: { id: string; data: object }[]
+) => {
+  const batch = writeBatch(db);
+
+  documentDataList.forEach((data) => {
+    const docRef = doc(db, collectionName, data.id);
+
+    batch.delete(docRef);
+  });
+
+  try {
+    await batch.commit();
+  } catch (error) {
+    console.error("ドキュメントの書き込み中にエラーが発生しました: ", error);
+  }
+};
+
 export const seedingData = async (userId: string, groupId: string) => {
   const batch = writeBatch(db);
 

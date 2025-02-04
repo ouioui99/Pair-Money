@@ -28,7 +28,6 @@ export default function SpendingIndexListMobile<
   return (
     <div className="block md:hidden">
       <div className="max-w-3xl mx-auto bg-gray-50 min-h-screen p-4">
-        <h1 className="text-2xl font-bold mb-4 text-gray-800">経費一覧</h1>
         <ul className="space-y-2">
           {tbodyList.map((spendingData) => (
             <li
