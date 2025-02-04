@@ -27,7 +27,7 @@ export default function SpendingIndexListMobile<
 }: IndexListTbody<T>) {
   return (
     <div className="block md:hidden">
-      <div className="max-w-3xl mx-auto bg-gray-50 min-h-screen p-4">
+      <div className="max-w-3xl mx-auto bg-gray-50 p-4">
         <ul className="space-y-2">
           {tbodyList.map((spendingData) => (
             <li
