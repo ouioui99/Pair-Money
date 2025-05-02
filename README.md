@@ -88,3 +88,6 @@
   - id
   - user_id
   - type
+
+##　デプロイ方法
+https://zenn.dev/hisasy/articles/ec057b18566215
