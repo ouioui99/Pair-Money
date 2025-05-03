@@ -120,7 +120,7 @@ export default function Group() {
         <Header
           title={"グループ管理"}
           onClick={() => setShowFormModal(true)}
-          buttonTitle="メンバー招待"
+          buttonTitle="メンバ招待"
         ></Header>
       )}
 
@@ -166,8 +166,7 @@ export default function Group() {
           />
         </div>
       ) : null}
-      {/* カスタムボトムナビゲーション */}
-      <div className="mb-20"></div>
+      <div className="h-[60px]" />
       <CustomBottomNavigation />
     </div>
   );
